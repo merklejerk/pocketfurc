@@ -6,7 +6,6 @@ return function( container ) {
 	var _this = this;
 	var _pinned = true;
 	var _elem = $("<div class='chat-buffer' />");
-	var _newLineAlertElem = $("<div class='new-line-alert' />");
 
 	var _onScroll = function( e )
 	{
@@ -36,11 +35,12 @@ return function( container ) {
 
 	var _toggleNewLineAlert = function( toggled )
 	{
-		var elemVisible = _newLineAlertElem.is( ":visible" );
-		if (!toggled && elemVisible)
-			_newLineAlertElem.hide( );
-		else if (toggled && !elemVisible)
-			_newLineAlertElem.show( );
+		_icon = _elem.find( "new-chat-alert" );
+		var iconVisible = _elem.is( ":visible" );
+		if (!toggled && iconVisible)
+			_icon.hide( );
+		else if (toggled && !iconVisible)
+			_icon.show( );
 	}
 
 	this.isPinned = function( )
