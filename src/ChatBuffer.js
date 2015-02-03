@@ -1,11 +1,13 @@
-define( ["jquery.all","underscore","util","templates.compiled.js"],
-	function( $, _, util, templates ) {
+define( ["jquery.all","underscore","util","templates.compiled", "jsfurc/jsfurc"],
+	function( $, _, util, templates, jsfurc ) {
 
 return function( container ) {
 
 	var _this = this;
 	var _pinned = true;
-	var _elem = $("<div class='chat-buffer' />");
+	var _elem = $(templates["chat-buffer"]( ));
+	var _events = new jsfurc.Eventful( );
+	var _maxLines = 312;
 
 	var _onScroll = function( e )
 	{
@@ -22,11 +24,12 @@ return function( container ) {
 
 	this.resized = function( )
 	{
-		_this.contentsChanged( );
+		_contentAdded( );
 	}
 
 	var _contentAdded = function( )
 	{
+		_cullLines( );
 		if (_pinned)
 			_elem.scrollTop( _elem.get(0).scrollHeight );
 		else
@@ -57,8 +60,36 @@ return function( container ) {
 			} ));
 		if (!withTimestamp)
 			line.children( "timestamp" ).remove( );
-		_elem.append( line );
+		_elem.children( ".buffer" ).append( line );
 		_contentAdded( );
+	}
+
+	this.contentsChanged = function( )
+	{
+		_contentAdded( );
+	}
+
+	this.getLines = function( )
+	{
+		return _elem.find( "> .buffer > .line > .body > *" );
+	}
+
+	var _cullLines = function( )
+	{
+		var lines = _elem.find( "> .buffer > .line").toArray( );
+		if (lines.length > _maxLines)
+		{
+			var culledLines = lines.slice( _maxLines );
+			_.each( culledLines,
+				function( line ) {
+					_events.raise( "line-culled", $(line).detach( ) );
+				} );
+		}
+	}
+
+	this.setLineLimit = function( numLines )
+	{
+		_maxLines = numLines;
 	}
 
 	container.append( _elem );
