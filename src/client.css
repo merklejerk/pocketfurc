@@ -122,9 +122,188 @@ body
 	width: 2ex;
 	height: 2em;
 	margin-top: -2.5em;
-	background-image: url("/img/new-chat-alert.png");
-	background-size: 100%;
+	display: none;
+}
+
+#content .chat-buffer > .buffer > .line
+{
+	margin: 0.65em 0.5ex;
+	word-break: break-word;
+	line-height: 135%;
+}
+
+#content .chat-buffer > .line > .timestamp
+{
+	margin-right: 0.25ex;
+	font-family: monospace;
+	font-size: 0.85em;
+	color: #999;
+}
+
+#content .chat-buffer .raw-chat
+{
+	font-style: sans-serif;
+	color: black;
+}
+
+#content .chat-buffer .fancy-block
+{
+	width: 93%;
+	display: flex;
+	flex-direction: row;
+	margin: 0 auto 0 1ex;
+}
+
+#content .chat-buffer .fancy-block.echo
+{
+	margin: 0 1ex 0 auto;
+}
+
+#content .chat-buffer .fancy-block > .arm
+{
+	align-self: flex-basis;
+	width: 90px;
+	height: 41px;
 	background-repeat: no-repeat;
+	background-size: 100%;
+	margin: 0 -1ex 0 0;
+}
+
+#content .chat-buffer .fancy-block.echo > .arm
+{
+	align-self: flex-end;
+	transform: scale( -1, -1 );
+	margin: 0 0 0 -1ex;
+}
+
+#content .chat-buffer .fancy-block > .content-container
+{
+	width: 100%;
+	padding: 0.5em 2ex;
+	color: black;
+	font-family: sans-serif;
+	font-size: 1em;
+}
+
+#content .chat-buffer .fancy-block > .content-container > .content
+{
+	margin: 0 1.5ex;
+}
+
+#content .chat-buffer .fancy-block > .content-container > .age
+{
+	text-align: right;
+	font-size: 0.8em;
+	color: rgb(153,153,153);
+	font-style: italic;
+	margin-top: 0.2em;
+}
+
+#content .chat-buffer .fancy-block > .content-container > .content > .line
+{
+	margin: 0.25em 0;
+	word-break: break-word;
+}
+
+#content .chat-buffer .fancy-block > .content-container > .content > .line:last-child
+{
+	margin: 0 0;
+}
+
+#content .chat-buffer .fancy-block > .content-container > .content > .line:first-child
+{
+	margin: 0 0;
+}
+
+#content .chat-buffer .fancy-block > .content-container > .head
+{
+	font-size: 1em;
+	color: black;
+	margin: 0.25ex 0 0.5em 0;
+}
+
+#content .chat-buffer .fancy-block > .content-container .username
+{
+	font-size: 1.15em;
+	color: rgb(255,127,42);
+	font-weight: bold;
+}
+
+#content .chat-buffer .fancy-block.whisper > .arm
+{
+	background-image: url("img/chat-balloon-arm-whisper.svg");
+}
+
+#content .chat-buffer .fancy-block.whisper > .content-container
+{
+	background-color: rgb(66,66,66);
+	color: white;
+}
+
+#content .chat-buffer .fancy-block.whisper > .content-container > .head
+{
+	color: white;
+}
+
+#content .chat-buffer .fancy-block.speech > .arm
+{
+	background-image: url("img/chat-balloon-arm-speech.svg");
+}
+
+#content .chat-buffer .fancy-block.speech > .content-container
+{
+	background-color: rgb(255,237,168);
+	color: black;
+}
+
+#content .chat-buffer .fancy-block.emote > .arm
+{
+	background-image: url("img/chat-balloon-arm-emote.svg");
+}
+
+#content .chat-buffer .fancy-block.emote > .content-container
+{
+	background-color: rgb(189, 236, 247);
+	color: black;
+	border-radius: 0.6em;
+}
+
+#content .chat-buffer .fancy-block.emote
+{
+	margin: 0 auto;
+}
+
+#content .chat-buffer .fancy-block.emote > .content-container > .content
+{
+	margin: 0 0;
+}
+
+#content .chat-buffer .fancy-block.emote > .content-container > .content > .line
+{
+	text-align: center;
+	font-style: italic;
+}
+
+#content .chat-buffer .fancy-block.system > .content-container
+{
+	background-color: rgb(255,123,123);
+	color: white;
+	border-radius: 0.6em;
+}
+
+#content .chat-buffer .fancy-block.system > .content-container > .age
+{
+	color: rgb(228,228,228);
+}
+
+#content .chat-buffer .fancy-block.system
+{
+	margin: 0 auto;
+}
+
+#content .chat-buffer .fancy-block.system > .content-container > .content
+{
+	margin: 0 0;
 }
 
 #content .chat-input
@@ -140,44 +319,6 @@ body
    resize: none;
    font-size: 1.0em;
    font-family: sans-serif;
-}
-
-#content .chat-buffer > .line
-{
-	margin: 0.65em 0.5ex;
-	word-break: break-word;
-	line-height: 135%;
-}
-
-#content .chat-buffer > .line > .timestamp
-{
-	margin-right: 0.25ex;
-	font-family: monospace;
-	font-size: 0.85em;
-	color: #999;
-}
-
-#content .chat-buffer > .line > .body
-{
-	color: black;
-	font-style: sans-serif;
-}
-
-#content .chat-buffer > .line > .body > .chat
-{
-	color: red;
-	font-style: italic;
-	font-size: 1.0em;
-}
-
-#content .chat-buffer > .line > .body .name
-{
-	font-weight: bold;
-}
-
-#content .chat-buffer > .line > .body > .echo .name
-{
-	color: blue;
 }
 
 .modal-cover

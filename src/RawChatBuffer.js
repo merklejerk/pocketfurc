@@ -18,9 +18,9 @@ return function( container ) {
 			{
 				"message": msg
 			} );
-		_buffer.appendLine( body );
+		_buffer.appendLine( body, true );
 	}
-	
+
 };
 
 } );

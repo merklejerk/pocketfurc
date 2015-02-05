@@ -12,7 +12,7 @@ return function( container )
 
 	this.appendChat = function( msg )
 	{
-		return _chatBuffer.appendChat( msg );
+		return _chatBuffer.appendSystemMessage( msg );
 	}
 
 	this.appendSpeech = function( player, msg )

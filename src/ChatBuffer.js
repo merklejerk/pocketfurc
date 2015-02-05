@@ -6,14 +6,14 @@ return function( container ) {
 	var _this = this;
 	var _pinned = true;
 	var _elem = $(templates["chat-buffer"]( ));
-	var _events = new jsfurc.Eventful( );
+	var _events = new jsfurc.Eventful( this );
 	var _maxLines = 312;
 
 	var _onScroll = function( e )
 	{
 		var h = _elem.get(0).scrollHeight;
 		_pinned = _elem.height( ) + _elem.scrollTop( ) >= h;
-		if (pinned)
+		if (_pinned)
 			_toggleNewLineAlert( false );
 	}
 
@@ -55,11 +55,11 @@ return function( container ) {
 	{
 		var line = $(templates["chat-buffer-line"](
 			{
-				"timestamp": withTimestamp ? util.createTimestamp( ) : "",
-				"body": body
+				"timestamp": withTimestamp ? util.createTimestamp( ) : ""
 			} ));
+		line.children( ".body" ).append( body );
 		if (!withTimestamp)
-			line.children( "timestamp" ).remove( );
+			line.children( ".timestamp" ).remove( );
 		_elem.children( ".buffer" ).append( line );
 		_contentAdded( );
 	}
@@ -79,7 +79,7 @@ return function( container ) {
 		var lines = _elem.find( "> .buffer > .line").toArray( );
 		if (lines.length > _maxLines)
 		{
-			var culledLines = lines.slice( _maxLines );
+			var culledLines = lines.slice( -_maxLines );
 			_.each( culledLines,
 				function( line ) {
 					_events.raise( "line-culled", $(line).detach( ) );
