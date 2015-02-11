@@ -10,6 +10,18 @@ module.exports = function( container )
 	var _elem = $(templates["chat-input"]( ));
 	var _events = new Eventful( this );
 
+	this.focus = function( )
+	{
+		_elem.children( ".text" ).focus( );
+		_placeCaretAtEnd( );
+	}
+
+	var _onInput = function( e )
+	{
+		_cleanInput( );
+		_refresh( );
+	}
+
 	var _onKeyUp = function( e )
 	{
 		if (e.keyCode == 13 && !e.shiftKey && !e.shiftKey)
@@ -18,16 +30,6 @@ module.exports = function( container )
 			if (!_isEmpty( ))
 				_submit( );
 		}
-		_cleanInput( );
-		_refresh( );
-	}
-
-	var _onPaste = function( e )
-	{
-		_.defer( function( ) {
-			_cleanInput( );
-			_refresh( );
-		} );
 	}
 
 	var _onFocus = function( e )
@@ -49,14 +51,15 @@ module.exports = function( container )
 	{
 		var input = _parseInput( );
 		_elem.children( ".text" ).html( "" );
-		if (input.mode == "whisper")
+		if (input.mode == "whisper" && input.player && input.msg)
 			_events.raise( "whisper", input.player, input.msg );
-		else if (input.mode == "emote")
+		else if (input.mode == "emote" && input.msg)
 			_events.raise( "emote", input.msg );
-		else if (input.mode == "raw")
+		else if (input.mode == "raw" && input.msg)
 			_events.raise( "raw", input.msg );
-		else if (input.mode == "speech")
+		else if (input.mode == "speech" && input.msg)
 			_events.raise( "speech", input.msg );
+		_refresh( );
 	}
 
 	var _refresh = function( )
@@ -104,27 +107,45 @@ module.exports = function( container )
 
 	var _getText = function( )
 	{
-		return _elem.children( ".text" ).text( );
+		return _elem.children( ".text" ).html( );
+	}
+
+	var _setText = function( text )
+	{
+		var container = _elem.children( ".text" );
+		container.html( text );
+		_placeCaretAtEnd( );
+		_cleanInput( );
+		_refresh( );
+	}
+
+	var _placeCaretAtEnd = function( )
+	{
+		var selection = window.getSelection( );
+		var range = document.createRange( );
+		range.selectNodeContents( _elem.children( ".text" ).get( 0 ) );
+		range.collapse( );
+		selection.removeAllRanges( );
+		selection.addRange( range );
 	}
 
 	var _parseInput = function ( )
 	{
 		var text = _getText( );
 		var m;
-		if (m = /^\/(\S+)\s+(\S.*)$/.exec( text ))
-			return { "mode": "whisper", "player": m[1], "msg": m[2] };
-		if (m = /^:\s*(.+)/.exec( text ))
-			return { "mode": "emote", "msg": m[1] };
-		if (m = /^`(.+)/.exec( text ))
-			return { "mode": "raw", "msg": m[1] };
+		if (m = /^\/((\S+)\s+(\S.*))?/.exec( text ))
+			return { "mode": "whisper", "player": m[2], "msg": m[3] };
+		if (m = /^:(\s*(.+))?/.exec( text ))
+			return { "mode": "emote", "msg": m[2] };
+		if (m = /^`((.+)?)/.exec( text ))
+			return { "mode": "raw", "msg": m[2] };
 		return { "mode": "speech", "msg": text };
 	}
 
 	var _cleanInput = function( )
 	{
 		var textNode = _elem.children( ".text" ).get( 0 );
-		var selection = window.getSelection( );
-		var selRange = selection.rangeCount > 0 ? selection.getRangeAt( 0 ) : null;
+		var selectionRange = _saveSelection( textNode );
 		_.each( _.toArray( textNode.childNodes ),
 			function( child )
 			{
@@ -134,7 +155,28 @@ module.exports = function( container )
 					textNode.removeChild( child );
 				}
 			} );
-		//textNode.normalize( );
+		_restoreSelection( selectionRange );
+		textNode.normalize( );
+	}
+
+	var _saveSelection = function( )
+	{
+		var selection = window.getSelection( );
+		if (selection.rangeCount > 0)
+		{
+			var range = selection.getRangeAt( 0 );
+			return range.cloneRange( );
+		}
+	}
+
+	var _restoreSelection = function( range )
+	{
+		if (range)
+		{
+			var selection = window.getSelection( );
+			selection.removeAllRanges( );
+			selection.addRange( range );
+		}
 	}
 
 	var _extractTextNodes = function( node, root, before )
@@ -173,13 +215,38 @@ module.exports = function( container )
 		return _elem.outerHeight( );
 	}
 
+	var _cycleChatMode = function( )
+	{
+		var input = _parseInput( );
+		var order = ["speech","emote","whisper","raw"];
+		var mode = order[(_.indexOf( order, input.mode ) + 1) % order.length];
+		var contents = _getText( );
+		if (input.mode != "speech")
+		{
+			// Consume the first letter.
+			contents = contents.substr( 1 );
+		}
+		if (mode != "speech")
+		{
+			// Add a prefix.
+			var prefixMap = {
+					"emote": ":",
+					"whisper": "/",
+					"raw": "`"
+				};
+			contents = prefixMap[mode] + contents;
+		}
+		_setText( contents );
+	}
+
 	container.append( _elem );
 	_elem.children( ".text" )
 		.on( "keyup", _onKeyUp )
-		.on( "paste", _onPaste )
+		.on( "input", _onInput )
 		.on( "focus", _onFocus )
 		.on( "blur", _onBlur );
 	_elem.on( "click", _onClick );
 	_elem.children( ".send" ).on( "click", _onSubmitClicked );
+	_elem.children( ".mode" ).on( "click", _cycleChatMode );
 	_refresh( );
 };

@@ -27,10 +27,16 @@ var _initWindow = function( )
 {
 	// Don't rely on this ever getting fired.
 	chrome.app.window.current( ).onClosed.addListener( function( ) {
-		// Attempt graceful shutdown. happening
-		if (_client)
-			_client.quit( true );
-	} );
+			// Attempt graceful shutdown. happening
+			if (_client)
+				_client.quit( true );
+		} );
+	// Chromes apps don't always respect vh vw changes.
+	$(window).on( "resize", function( ) {
+			$("body").css( {
+				"width": $(window).width( ),
+				"height": $(window).height( ) } );
+		} );
 }
 
 var _initHeader = function( )
@@ -141,6 +147,7 @@ var _displayStatus = function( level, msg )
 var _onLoggedIn = function( )
 {
 	_header.setLoggedIn( true );
+	_chatArea.focusInput( );
 }
 
 var _onHeartbeat = function( )

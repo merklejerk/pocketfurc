@@ -48,6 +48,11 @@ module.exports = function( container )
 		return _chatBuffer.appendWhisperEcho( player, msg );
 	}
 
+	this.focusInput = function( )
+	{
+		_chatInput.focus( );
+	}
+
 	var _onInputWhisper = function( player, msg )
 	{
 		_events.raise( "whisper", player, msg );
@@ -63,6 +68,11 @@ module.exports = function( container )
 		_events.raise( "speech", msg );
 	}
 
+	var _onInputRaw = function( msg )
+	{
+		_events.raise( "raw", msg );
+	}
+
 	var _fit = function( )
 	{
 		var containerHeight = _elem.height( );
@@ -76,6 +86,7 @@ module.exports = function( container )
 	_chatInput.on( "whisper", _onInputWhisper );
 	_chatInput.on( "emote", _onInputEmote );
 	_chatInput.on( "speech", _onInputSpeech );
+	_chatInput.on( "raw", _onInputRaw );
 	_chatInput.on( "grow shrink", _fit );
 	$(window).on( "resize", _fit );
 	_.defer( _fit );

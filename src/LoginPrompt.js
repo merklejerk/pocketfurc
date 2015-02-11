@@ -24,6 +24,7 @@ module.exports = function( )
 		_.defer( function( ) {
 				_elem.show( );
 				_elem.addClass( "expanded" )
+				_elem.find( "> .contents .name" ).focus( );
 			} );
 	}
 
