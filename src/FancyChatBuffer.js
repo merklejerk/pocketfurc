@@ -1,78 +1,101 @@
-define( ["jquery.all","underscore","util","templates.compiled",
-	"ChatBuffer"],
-	function( $, _, util, templates, ChatBuffer ) {
+var $ = require( "jquery" );
+var _ = require( "underscore" );
+var util = require( "./util" );
+var templates = require( "./templates" );
+var ChatBuffer = require( "./ChatBuffer" );
+var ContentEncoder = require( "./FancyChatBufferContentEncoder" );
 
-return function( container ) {
-
-
+module.exports = function( container ) {
 	var _this = this;
 	var _pinned = true;
 	var _buffer = new ChatBuffer( container );
 	var _lastLine;
 	var _updateTimer;
 	var _lastBlock;
+	var _contentEncoder = new ContentEncoder( );
 
-	this.resized = function( )
+	this.resize = function( height )
 	{
-		_buffer.resized( );
+		_buffer.resize( height );
 	}
 
 	this.appendSystemMessage = function( msg )
 	{
-		var params = {"message": msg };
-		var block = $(templates["fancy-chat-buffer-block-system"]( params ));
-		var content = $(templates["fancy-chat-buffer-content-system"]( params ));
-		_appendLine( block, content, "system:" + name );
+		var params = {"message": _encodeContent( msg ) };
+		if (params.message.length)
+		{
+			var block = $(templates["fancy-chat-buffer-block-system"]( params ));
+			var content = $(templates["fancy-chat-buffer-content-system"]( params ));
+			_appendLine( block, content, "system:" + name );
+		}
 	}
 
 	this.appendSpeech = function( name, msg )
 	{
-		var params = {"name": name, "message": msg };
-		var block = $(templates["fancy-chat-buffer-block-speech"]( params ));
-		var content = $(templates["fancy-chat-buffer-content-speech"]( params ));
-		_appendLine( block, content, "speech:" + name );
+		var params = {"name": _encodeName( name ), "message": _encodeContent( msg ) };
+		if (params.message.length)
+		{
+			var block = $(templates["fancy-chat-buffer-block-speech"]( params ));
+			var content = $(templates["fancy-chat-buffer-content-speech"]( params ));
+			_appendLine( block, content, "speech:" + name );
+		}
 	}
 
 	this.appendWhisper = function( name, msg )
 	{
-		var params = {"name": name, "message": msg };
-		var block = $(templates["fancy-chat-buffer-block-whisper"]( params ));
-		var content = $(templates["fancy-chat-buffer-content-whisper"]( params ));
-		_appendLine( block, content, "whisper:" + name );
+		var params = {"name": _encodeName( name ), "message": _encodeContent( msg ) };
+		if (params.message.length)
+		{
+			var block = $(templates["fancy-chat-buffer-block-whisper"]( params ));
+			var content = $(templates["fancy-chat-buffer-content-whisper"]( params ));
+			_appendLine( block, content, "whisper:" + name );
+		}
 	}
 
 	this.appendEmote = function( name, msg )
 	{
-		msg = msg.charAt(0) == "'" ? msg : " " + msg;
-		var params = {"name": name, "message": msg };
-		var block = $(templates["fancy-chat-buffer-block-emote"]( params ));
-		var content = $(templates["fancy-chat-buffer-content-emote"]( params ));
-		_appendLine( block, content, "emote:" + name );
+		var params = {"name": _encodeName( name ), "message": _encodeContent( msg ) };
+		if (params.message.length)
+		{
+			params.message = params.message.charAt(0) == "'" ? params.message : " " + params.message;
+			var block = $(templates["fancy-chat-buffer-block-emote"]( params ));
+			var content = $(templates["fancy-chat-buffer-content-emote"]( params ));
+			_appendLine( block, content, "emote" ); // Emotes all go together
+		}
 	}
 
 	this.appendSpeechEcho = function( name, msg )
 	{
-		var params = {"name": name, "message": msg };
-		var block = $(templates["fancy-chat-buffer-block-speech-echo"]( params ));
-		var content = $(templates["fancy-chat-buffer-content-speech-echo"]( params ));
-		_appendLine( block, content, "speech-echo:" + name );
+		var params = {"name": _encodeName( name ), "message": _encodeContent( msg ) };
+		if (params.message.length)
+		{
+			var block = $(templates["fancy-chat-buffer-block-speech-echo"]( params ));
+			var content = $(templates["fancy-chat-buffer-content-speech-echo"]( params ));
+			_appendLine( block, content, "speech-echo:" + name );
+		}
 	}
 
 	this.appendEmoteEcho = function( name, msg )
 	{
-		msg = msg.charAt(0) == "'" ? msg : " " + msg;
-		var params = {"name": name, "message": msg };
-		var block = $(templates["fancy-chat-buffer-block-emote-echo"]( params ));
-		var content = $(templates["fancy-chat-buffer-content-emote-echo"]( params ));
-		_appendLine( block, content, "emote-echo:" + name );
+		var params = {"name": _encodeName( name ), "message": _encodeContent( msg ) };
+		if (params.message.length)
+		{
+			params.message = params.message.charAt(0) == "'" ? params.message : " " + params.message;
+			var block = $(templates["fancy-chat-buffer-block-emote-echo"]( params ));
+			var content = $(templates["fancy-chat-buffer-content-emote-echo"]( params ));
+			_appendLine( block, content, "emote" ); // Emotes all go together
+		}
 	}
 
 	this.appendWhisperEcho = function( name, msg )
 	{
-		var params = {"name": name, "message": msg };
-		var block = $(templates["fancy-chat-buffer-block-whisper-echo"]( params ));
-		var content = $(templates["fancy-chat-buffer-content-whisper-echo"]( params ));
-		_appendLine( block, content, "whisper-echo:" + name );
+		var params = {"name": _encodeName( name ), "message": _encodeContent( msg ) };
+		if (params.message.length)
+		{
+			var block = $(templates["fancy-chat-buffer-block-whisper-echo"]( params ));
+			var content = $(templates["fancy-chat-buffer-content-whisper-echo"]( params ));
+			_appendLine( block, content, "whisper-echo:" + name );
+		}
 	}
 
 	var _appendLine = function( block, content, blockType )
@@ -104,6 +127,29 @@ return function( container ) {
 					e.preventDefault( );
 					_showPlayerMenu( $(this).attr( "data-username" ) );
 				} );
+	}
+
+	var _fixContentLinks = function( contentElem )
+	{
+		contentElem.find( "a[href]" ).each(
+			function( ) {
+				var a = $(this);
+				var href = a.attr( "href" );
+				if (href.indexOf( "http://" ) != 0 &&
+					href.indexOf( "https://" ) != 0 &&
+					href.indexOf( "ftp://" ) != 0)
+					a.attr( "href", "http://" + href );
+			} );
+	}
+
+	var _encodeContent = function( rawContentString )
+	{
+		return _contentEncoder.encode( rawContentString );
+	}
+
+	var _encodeName = function( rawName )
+	{
+		return rawName.replace( /\|/g, " " );
 	}
 
 	var _updateBlocks = function( )
@@ -143,5 +189,3 @@ return function( container ) {
 	_updateTimer = setInterval( _updateBlocks, 15000 );
 	_buffer.on( "line-culled", _onLineCulled );
 };
-
-} );

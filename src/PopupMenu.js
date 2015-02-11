@@ -1,11 +1,14 @@
-define( ["underscore","jquery.all", "jsfurc/jsfurc", "ModalCover"],
-	function( _, $, jsfurc, ModalCover ) {
+var $ = require( "jquery" );
+var _ = require( "underscore" );
+var util = require( "./util" );
+var Eventful = require( "./jsfurc/Eventful" );
+var ModalCover = require( "./ModalCover" );
 
-return function( sections )
+module.exports = function( sections )
 {
 	var _this = this;
 	var _elem = $("<div class='popup-menu' />" );
-	var _events = new jsfurc.Eventful( this );
+	var _events = new Eventful( this );
 	var _items = {};
 	var _modal;
 
@@ -129,5 +132,3 @@ return function( sections )
 
 	_init( );
 }
-
-} );

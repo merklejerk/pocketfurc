@@ -1,7 +1,7 @@
-define( ["underscore", "./Util"],
-	function( _, Util ) {
+var _ = require( "underscore" );
+var Util = require( "./Util" );
 
-return function( )
+module.exports = function( )
 {
 	/**********************************
 
@@ -280,5 +280,3 @@ return function( )
 		}
 	};
 };
-
-} );

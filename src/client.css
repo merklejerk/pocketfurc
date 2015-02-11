@@ -68,7 +68,6 @@ body
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-	position: relative;
 }
 
 #status
@@ -103,26 +102,42 @@ body
 {
 	font-family: sans-serif;
 	height: 100%;
-	display: flex;
-	flex-direction: column;
+	font-size: 0.95em;
 }
 
 #content .chat-buffer
 {
-	background-color: white;
-	overflow-y: auto;
-	color: black;
-	height: 100%;
-	-webkit-user-select: text;
+	min-height: 1em;
 }
 
-#content .chat-buffer .new-line-alert
+#content .chat-buffer  > .alert-area
 {
 	position: relative;
+	margin: -2.5em 2ex 0 2ex;
+}
+
+#content .chat-buffer  > .alert-area > .new-line-alert
+{
 	width: 2ex;
 	height: 2em;
-	margin-top: -2.5em;
 	display: none;
+	-webkit-animation: NEW-LINE-ALERT-ANIMATION 0.5s infinite alternate ease-in-out;
+	cursor: pointer;
+}
+
+@-webkit-keyframes NEW-LINE-ALERT-ANIMATION
+{
+	0% { transform: scale( 1.0 ); }
+	100% { transform: scale( 1.15 ); }
+}
+
+#content .chat-buffer > .buffer
+{
+	overflow-y: auto;
+	-webkit-user-select: text;
+	background-color: white;
+	color: black;
+	height: 100%;
 }
 
 #content .chat-buffer > .buffer > .line
@@ -142,7 +157,7 @@ body
 
 #content .chat-buffer .raw-chat
 {
-	font-style: sans-serif;
+	font-style: monospace;
 	color: black;
 }
 
@@ -151,7 +166,7 @@ body
 	width: 93%;
 	display: flex;
 	flex-direction: row;
-	margin: 0 auto 0 1ex;
+	margin: 0 auto;
 }
 
 #content .chat-buffer .fancy-block.echo
@@ -161,8 +176,8 @@ body
 
 #content .chat-buffer .fancy-block > .arm
 {
-	align-self: flex-basis;
-	width: 90px;
+	align-self: flex-start;
+	width: 50px;
 	height: 41px;
 	background-repeat: no-repeat;
 	background-size: 100%;
@@ -183,6 +198,7 @@ body
 	color: black;
 	font-family: sans-serif;
 	font-size: 1em;
+	cursor: text;
 }
 
 #content .chat-buffer .fancy-block > .content-container > .content
@@ -309,16 +325,55 @@ body
 #content .chat-input
 {
 	background-color: white;
-	overflow: auto;
-	color: black;
+	overflow: hidden;
 	border-top: 2px solid rgb(198,198,198);
-	min-height: 1.25em;
-	padding: 0.5em 1ex;
+	padding: 0.9em 1ex;
 	word-break: break-word;
+	font-size: 1.1em;
+	cursor: text;
+	min-height: 1em;
+}
+
+#content .chat-input > .text
+{
 	outline: none;
-   resize: none;
-   font-size: 1.0em;
-   font-family: sans-serif;
+	font-size: 1.0em;
+	font-family: sans-serif;
+	color: black;
+	margin: 0 0.5ex;
+}
+
+#content .chat-input > .mode
+{
+	height: 1.5em;
+	float: left;
+	margin: -0.3em 1.25ex 0 0;
+}
+
+#content .chat-input > .send
+{
+	width: 1.5em;
+	height: 1.5em;
+	display: inline-block;
+	background-image: url("img/chat-send.png");
+	cursor: pointer;
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	float: right;
+	margin: -0.3em 0 0 1ex;
+}
+
+#content .chat-input > .send.empty
+{
+	background-image: url("img/chat-send-disabled.png");
+}
+
+#content .chat-input > .placeholder
+{
+	font-style: italic;
+	color: rgb( 200, 200, 200 );
+	font-family: sans-serif;
+	font-size: 1.0em;
 }
 
 .modal-cover

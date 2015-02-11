@@ -1,14 +1,11 @@
-define( [
-	"underscore",
-	"./Constants",
-	"./Util",
-	"./GameServiceEncoder",
-	"./GameServiceDecoder",
-	"./Eventful" ],
-	function( _, Constants, Util, GameServiceEncoder, GameServiceDecoder,
-		Eventful ) {
+var _ = require( "underscore" );
+var Constants = require( "./Constants" );
+var Util = require( "./Util" );
+var GameServiceEncoder = require( "./GameServiceEncoder" );
+var GameServiceDecoder = require( "./GameServiceDecoder" );
+var Eventful = require( "./Eventful" );
 
-return function( connection )
+module.exports = function( connection )
 {
 	var STATE_MAP_LOADED = 0x1;
 
@@ -135,6 +132,3 @@ return function( connection )
 
 	_init( );
 }
-
-
-} );

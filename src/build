@@ -1,0 +1,5 @@
+#!/bin/sh
+echo "Compiling templates..."
+handlebars templates -c handlebars -f templates.compiled.js
+echo "Compiling javascript..."
+browserify client.js --debug -o client.compiled.js

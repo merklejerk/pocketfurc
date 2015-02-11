@@ -1,7 +1,7 @@
-define( ["underscore", "./Util"],
-	function( _, Util ) {
+var _ = require( "underscore" );
+var Util = require( "./Util" );
 
-return function( length )
+module.exports = function( length )
 {
 	length = length || 4096;
 	var _this = this;
@@ -28,5 +28,3 @@ return function( length )
 	}
 
 };
-
-} );

@@ -1,15 +1,11 @@
-require( ["config.js"], function( ) {
-	require( [
-		"jquery.all",
-		"underscore",
-		"util",
-		"jsfurc/jsfurc",
-		"Header",
-		"ChatArea",
-		"LoginPrompt",
-		"templates.compiled"
-		],
-		function( $, _, util, jsfurc, Header, ChatArea, LoginPrompt, templates ) {
+var $ = require( "jquery" );
+var _ = require( "underscore" );
+var util = require( "./util" );
+var jsfurcClient = require( "./jsfurc/Client" );
+var jsfurcConstants = require( "./jsfurc/Constants" );
+var Header = require( "./Header" );
+var ChatArea = require( "./ChatArea" );
+var LoginPrompt = require( "./LoginPrompt" );
 
 var _client = null;
 var _lastStatusMessageTime = 0;
@@ -60,12 +56,27 @@ var _initHeader = function( )
 var _initChatArea = function( )
 {
 	_chatArea = new ChatArea( $("#content") );
-	_chatArea.on( "submit", _onSubmitChat );
+	_chatArea.on( "whisper",
+		function( player, msg ) {
+			_client.whisper( player, msg );
+		} );
+	_chatArea.on( "speech",
+		function( msg ) {
+			_client.speak( msg );
+		} );
+	_chatArea.on( "emote",
+		function( msg ) {
+			_client.emote( msg );
+		} );
+	_chatArea.on( "raw",
+		function( msg ) {
+			_client.sendRawLine( msg );
+		} );
 }
 
 var _createClient = function( )
 {
-	_client = new jsfurc.Client( );
+	_client = new jsfurcClient( );
 	_client.on( "log", _displayStatus );
 	_client.on( "disconnected", _onDisconnected );
 	_client.on( "login-ready", _onLoginReady );
@@ -95,26 +106,6 @@ var _login = function( )
 		_loginInfo.description, _loginInfo.colors );
 }
 
-var _onSubmitChat = function( msg )
-{
-	var initial = msg.charAt( 0 );
-	if (initial == "`")
-		_client.sendRawLine( msg.substr( 1 ) );
-	else if (initial == ":")
-		_client.emote( msg.substr( 1 ) );
-	else if (initial == "/")
-		_handleWhisperCommand( msg );
-	else
-		_client.speak( msg );
-}
-
-var _handleWhisperCommand = function( comm )
-{
-	var m = /^\/(.+) +(.+)$/.exec( comm );
-	if (m)
-		_client.whisper( m[1], m[2] );
-}
-
 var _onDisconnected = function( err )
 {
 	if (_loginPrompt.isOpen( ))
@@ -142,7 +133,7 @@ var _displayStatus = function( level, msg )
 	$("#status > .content")
 		.stop( )
 		.text( msg )
-		.css( "color", level >= jsfurc.LOG_LEVEL_WARNING ? "red" : "white" )
+		.css( "color", level >= jsfurcConstants.LOG_LEVEL_WARNING ? "red" : "white" )
 		.show( );
 	_lastStatusMessageTime = util.time( );
 }
@@ -203,5 +194,3 @@ var _updateStatus = function( )
 }
 
 $("body").ready( _init );
-
-} ) } );

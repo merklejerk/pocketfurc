@@ -1,7 +1,8 @@
-define( "util", ["jquery.all", "underscore", "jsfurc/Util"],
-	function( $, _, jsFurcUtil ) {
+var $ = require( "jquery" );
+var _ = require( "underscore" );
+var jsFurcUtil = require( "./jsfurc/Util" );
 
-return new (function( ) {
+module.exports = new (function( ) {
 
 	var _this = this;
 
@@ -32,20 +33,24 @@ return new (function( ) {
 		if (seconds < 15)
 			return "Just now";
 		if (seconds < 60)
-			return "Less than a minute ago";
+			return "Less than a minute";
 		if (seconds < 2*60)
-			return "A minute ago";
+			return "A minute";
 		if (seconds < 3600)
-			return Math.floor( seconds / 60 ) + " minutes ago";
+			return Math.floor( seconds / 60 ) + " minutes";
 		if (seconds <= 3600*1.25)
-			return "An hour ago";
+			return "An hour";
+		if (seconds <= 3600*1.5)
+			return "Over an hour";
+		if (seconds < 3600*1.6)
+			return "An hour and a half";
 		if (seconds < 3600*2)
-			return "Over an hour ago";
+			return "Over an hour and a half";
 		if (seconds < 3600*24)
-			return Math.floor( seconds / 360 ) + " hours ago";
+			return Math.floor( seconds / 3600 ) + " hours";
 		if (seconds < 3600*24*2)
-			return "A day ago";
-		return Math.floor( seconds / 360 / 24 ) + " days ago";
+			return "A day";
+		return Math.floor( seconds / 3600 / 24 ) + " days";
 	}
 
 	this.padDigits = function( num, width )
@@ -61,5 +66,3 @@ return new (function( ) {
 	}
 
 } )( );
-
-} );

@@ -1,7 +1,9 @@
-define( ["underscore", "./Util", "./Eventful","./SerialLineBuffer"],
-	function( _, Util, Eventful, SerialLineBuffer ) {
+var _ = require( "underscore" );
+var Eventful = require( "./Eventful" );
+var Util = require( "./Util" );
+var SerialLineBuffer = require( "./SerialLineBuffer" );
 
-return function( address, port )
+module.exports = function( address, port )
 {
 	var _this = this;
 	var _socket;
@@ -138,5 +140,3 @@ return function( address, port )
 		}
 	}
 };
-
-} );

@@ -1,14 +1,11 @@
-define( [
-	"underscore",
-	"./Constants",
-	"./Util",
-	"./LoginServiceEncoder",
-	"./LoginServiceDecoder",
-	"./Eventful" ],
-	function( _, Constants, Util, LoginServiceEncoder, LoginServiceDecoder,
-		Eventful ) {
+var _ = require( "underscore" );
+var Constants = require( "./Constants" );
+var Util = require( "./Util" );
+var LoginServiceEncoder = require( "./LoginServiceEncoder" );
+var LoginServiceDecoder = require( "./LoginServiceDecoder" );
+var Eventful = require( "./Eventful" );
 
-return function( connection )
+module.exports = function( connection )
 {
 	var PENDING_LOGIN = 0x1;
 	var PENDING_REGISTER = 0x2;
@@ -101,6 +98,3 @@ return function( connection )
 
 	_init( );
 }
-
-
-} );

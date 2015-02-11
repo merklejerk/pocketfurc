@@ -1,8 +1,11 @@
-define( ["jquery.all","underscore","util","FancyChatBuffer",
-	"ChatBuffer","ChatInput","jsfurc/Eventful"],
-	function( $, _, util, FancyChatBuffer, ChatBuffer, ChatInput, Eventful ) {
+var $ = require( "jquery" );
+var _ = require( "underscore" );
+var util = require( "./util" );
+var FancyChatBuffer = require( "./FancyChatBuffer" );
+var ChatInput = require( "./ChatInput" );
+var Eventful = require( "./jsfurc/Eventful" );
 
-return function( container )
+module.exports = function( container )
 {
 	var _this = this;
 	var _elem = $("<div class='chat-area' />");
@@ -45,15 +48,35 @@ return function( container )
 		return _chatBuffer.appendWhisperEcho( player, msg );
 	}
 
-	this.resized = function( )
+	var _onInputWhisper = function( player, msg )
 	{
-		_chatBuffer.resized( );
+		_events.raise( "whisper", player, msg );
 	}
 
+	var _onInputEmote = function( msg )
+	{
+		_events.raise( "emote", msg );
+	}
+
+	var _onInputSpeech = function( msg )
+	{
+		_events.raise( "speech", msg );
+	}
+
+	var _fit = function( )
+	{
+		var containerHeight = _elem.height( );
+		var bufferHeight = Math.max( 0, containerHeight - _chatInput.getHeight( ) );
+		_chatBuffer.resize( bufferHeight );
+	}
+
+	container.append( _elem );
 	_chatBuffer = new FancyChatBuffer( _elem );
 	_chatInput = new ChatInput( _elem );
-	_chatInput.on( "submit", _.partial( _events.raise, "submit" ) );
-	container.append( _elem );
+	_chatInput.on( "whisper", _onInputWhisper );
+	_chatInput.on( "emote", _onInputEmote );
+	_chatInput.on( "speech", _onInputSpeech );
+	_chatInput.on( "grow shrink", _fit );
+	$(window).on( "resize", _fit );
+	_.defer( _fit );
 }
-
-} );

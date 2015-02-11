@@ -1,7 +1,7 @@
-define( ["underscore","jquery"],
-	function( _, $ ) {
+var _ = require( "underscore" );
+var $ = require( "jquery" );
 
-return new (function( )
+module.exports = new (function( )
 {
 	var SERVICE_URL = "http://www.furcadia.com/services/retrieve/retrieve.php4";
 	var _this = this;
@@ -44,5 +44,3 @@ return new (function( )
 	}
 
 })( );
-
-} );

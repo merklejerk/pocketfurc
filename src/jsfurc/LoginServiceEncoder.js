@@ -1,7 +1,8 @@
-define( ["underscore", "./Util", "./TrafficFormatter"],
-	function( _, Util, TrafficFormatter ) {
+var _ = require( "underscore" );
+var Util = require( "./Util" );
+var TrafficFormatter = require( "./TrafficFormatter" );
 
-return function( )
+module.exports = function( )
 {
 	var _this = this;
 	var _fmt = new TrafficFormatter( );
@@ -19,8 +20,12 @@ return function( )
 	var _format = function( fmt, seq, params, pattern )
 	{
 		var fn = pattern ? _fmt.partial : _fmt.format;
-		return fn( fmt, seq, params );
+		return _stripLineBreaks( fn( fmt, seq, params ) );
 	}
-};
 
-} )
+	var _stripLineBreaks = function( text )
+	{
+		return text.replace( /[\n\r]/, " " );
+	}
+
+};

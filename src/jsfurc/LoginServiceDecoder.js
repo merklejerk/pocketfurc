@@ -1,7 +1,8 @@
-define( ["underscore", "./ListenerHost","./TrafficFormatter"],
-   function( _, ListenerHost, TrafficFormatter ) {
+var _ = require( "underscore" );
+var ListenerHost = require( "./ListenerHost" );
+var TrafficFormatter = require( "./TrafficFormatter" );
 
-return function( )
+module.exports = function( )
 {
    var _this = this;
    var _clearToSend = false;
@@ -30,5 +31,3 @@ return function( )
       }
    }
 };
-
-} );

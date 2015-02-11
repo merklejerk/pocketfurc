@@ -1,16 +1,12 @@
-define(
-	[
-		"underscore",
-		"./Constants",
-		"./Eventful",
-		"./Util",
-		"./Connection",
-		"./LoginService",
-		"./GameService"
-	],
-	function( _, Constants, Eventful, Util, Connection, LoginService, GameService ) {
+var _ = require( "underscore" );
+var Constants = require( "./Constants" );
+var Eventful = require( "./Eventful" );
+var Util = require( "./Util" );
+var Connection = require( "./Connection" );
+var LoginService = require( "./LoginService" );
+var GameService = require( "./GameService" );
 
-return function( )
+module.exports = function( )
 {
 	var STATE_CONNECTED = 0x1;
 	var STATE_LOGIN_READY = 0x3;
@@ -181,5 +177,3 @@ return function( )
 		_events.raise( "log", Constants.LOG_LEVEL_INFO, msg );
 	}
 };
-
-} );

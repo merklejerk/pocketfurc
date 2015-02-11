@@ -1,8 +1,11 @@
-define( ["underscore", "jquery.all", "util",
-	"templates.compiled", "ModalCover", "jsfurc/RetrieveToon"],
-	function( _, $, util, templates, ModalCover, RetrieveToon ) {
+var $ = require( "jquery" );
+var _ = require( "underscore" );
+var util = require( "./util" );
+var templates = require( "./templates" );
+var ModalCover = require( "./ModalCover" );
+var RetrieveToon = require( "./jsfurc/RetrieveToon" );
 
-return function( )
+module.exports = function( )
 {
 	var _this = this;
 	var _modal;
@@ -98,9 +101,14 @@ return function( )
 
 	var _onSubmitClicked = function( e )
 	{
-		if ($(this).hasClass( "enabled" ))
-			_submit( );
 		e.preventDefault( );
+		if (_isSubmitEnabled( ))
+			_submit( );
+	}
+
+	var _isSubmitEnabled = function( )
+	{
+		return _elem.find("> .contents .login-button").hasClass( "enabled" );
 	}
 
 	var _onKeyUp = function( e )
@@ -108,7 +116,8 @@ return function( )
 		if (e.keyCode == 13)
 		{
 			e.preventDefault( );
-			_submit( );
+			if (_isSubmitEnabled( ))
+				_submit( );
 		}
 		else
 			_validateInput( );
@@ -120,5 +129,3 @@ return function( )
 		.on( "change", _validateInput )
 		.on( "keyup", _onKeyUp );
 };
-
-} );

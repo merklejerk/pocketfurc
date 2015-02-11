@@ -1,7 +1,6 @@
-define( ["underscore"],
-   function( _ ) {
+var _ = require( "underscore" );
 
-return function( obj )
+module.exports = function( obj )
 {
 	var _this = this;
 	var _listeners = [];
@@ -32,5 +31,3 @@ return function( obj )
 		obj["removeListener"] = _this.removeListener;
 	}
 }
-
-} );

@@ -1,7 +1,9 @@
-define( ["jquery","underscore", "./TrafficFormatter", "./ListenerHost"],
-	function( $, _, TrafficFormatter, ListenerHost ) {
+var $ = require( "jquery" );
+var _ = require( "underscore" );
+var TrafficFormatter = require( "./TrafficFormatter" );
+var ListenerHost = require( "./ListenerHost" );
 
-return function( )
+module.exports = function( )
 {
 	var _this = this;
 	var _fmt = new TrafficFormatter( );
@@ -34,9 +36,7 @@ return function( )
       if (m = _regexes["chat-whisper-echo"].exec( line ))
          return _listeners.raise( "onChatWhisperEcho", m[2], m[1] );
 
-      var dom = _parser.parseFromString( line, "text/html" );
-      var text = $(dom).find("html:root > body").text( );
-		_listeners.raise( "onChat", text );
+		_listeners.raise( "onChat", line );
 	}
 
    _regexes = {
@@ -47,5 +47,3 @@ return function( )
       "chat-whisper-echo": /^<font color='whisper'>\[ You whisper "(.*)" to <name ?[^>]*>([^<]+)<\/name>. ]<\/font>$/
    };
 };
-
-} );

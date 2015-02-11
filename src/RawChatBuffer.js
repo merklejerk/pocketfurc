@@ -1,8 +1,10 @@
-define( ["jquery.all","underscore","util","templates.compiled",
-	"ChatBuffer"],
-	function( $, _, util, templates ) {
+var $ = require( "jquery" );
+var _ = require( "underscore" );
+var util = require( "./util" );
+var templates = require( "./templates" );
+var ChatBuffer = require( "./ChatBuffer" );
 
-return function( container ) {
+module.exports = function( container ) {
 
 	var _this = this;
 	var _buffer = new ChatBuffer( container );
@@ -22,5 +24,3 @@ return function( container ) {
 	}
 
 };
-
-} );

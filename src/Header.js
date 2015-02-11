@@ -1,12 +1,15 @@
-define( ["underscore","jquery.all","util","templates.compiled","jsfurc/jsfurc",
-	"PopupMenu"],
-	function( _, $, util, templates, jsfurc, PopupMenu ) {
+var $ = require( "jquery" );
+var _ = require( "underscore" );
+var util = require( "./util" );
+var templates = require( "./templates" );
+var Eventful = require( "./jsfurc/Eventful" );
+var PopupMenu = require( "./PopupMenu" );
 
-return function( )
+module.exports = function( )
 {
 	var _this = this;
 	var _elem = $(templates["app-header"]( ));
-	var _events = new jsfurc.Eventful( this );
+	var _events = new Eventful( this );
 	var _menu;
 
 	var _initPopupMenu = function( )
@@ -99,5 +102,3 @@ return function( )
 		} );
 	_initPopupMenu( );
 }
-
-} );
