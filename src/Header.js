@@ -26,9 +26,11 @@ module.exports = function( app )
             },
             {
                "id": "ignores",
-               "label": "Ignores Enabled",
+               "label": "Ignores",
                "checked": app.areIgnoresEnabled( )
-            },
+            }
+         ],
+         [
             {
                "id": "log-out",
                "label": "Log Out",
@@ -61,6 +63,7 @@ module.exports = function( app )
       var settingsButton = _elem.find( ".menu-button" );
       if (toggle && !_menu.isOpen( ))
       {
+         _menu.toggleItemChecked( "ignores", app.areIgnoresEnabled( ) );
          var pos = settingsButton.offset( );
          pos.top += settingsButton.height( );
          _menu.show( pos.left, pos.top );
