@@ -129,6 +129,12 @@ module.exports = function( sections )
 	{
 		return !!_modal;
 	}
+	
+	this.destroy = function( )
+	{
+		_this.hide( );
+		_elem.remove( );
+	}
 
 	_init( );
 }

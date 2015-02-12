@@ -1,545 +1,547 @@
 body
 {
-	font-family: sans-serif;
-	margin: 0 0;
-	font-size: 1em;
-	display: flex;
-	flex-direction: column;
-	width: 100vw;
-	height: 100vh;
+   font-family: sans-serif;
+   margin: 0 0;
+   font-size: 1em;
+   display: flex;
+   flex-direction: column;
+   width: 100vw;
+   height: 100vh;
 }
 
 #header
 {
-	background-color: rgb(160, 129, 202);
-	height: 48px;
-	padding: 8px 18px 12px 8px;
-	display: flex;
-	flex-direction: row;
+   background-color: rgb(160, 129, 202);
+   height: 48px;
+   padding: 8px 18px 12px 8px;
+   display: flex;
+   flex-direction: row;
 }
 
 #header > .left
 {
-	height: 100%;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
+   height: 100%;
+   display: flex;
+   flex-direction: row;
+   align-items: center;
 }
 
 #header > .left > .logo
 {
-	height: 90%;
-	width: auto;
-	margin: 0 1.5ex 0 0 0.5ex;
+   height: 90%;
+   width: auto;
+   margin: 0 1.5ex 0 0 0.5ex;
 }
 
 #header > .left > .logo-text
 {
-	height: 65%;
-	margin-left: 1.5ex;
+   height: 65%;
+   margin-left: 1.5ex;
 }
 
 #header > .right
 {
-	height: 100%;
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-end;
-	align-items: center;
-	flex: 1;
+   height: 100%;
+   display: flex;
+   flex-direction: row;
+   justify-content: flex-end;
+   align-items: center;
+   flex: 1;
 }
 
 #header > .right > .reconnect-button
 {
-	height: 60%;
-	cursor: pointer;
-	margin-right: 2ex;
-	display: none;
+   height: 60%;
+   cursor: pointer;
+   margin-right: 2ex;
+   display: none;
 }
 
 #header > .right > .menu-button
 {
-	height: 60%;
-	cursor: pointer;
+   height: 60%;
+   cursor: pointer;
 }
 
 #content
 {
-	height: 100%;
-	display: flex;
-	flex-direction: column;
+   height: 100%;
+   display: flex;
+   flex-direction: column;
 }
 
 #status
 {
-	background-color: rgb(160, 129, 202);
-	padding: 0.5em 2ex;
-	text-align: right;
-	white-space: nowrap;
-	height: 1em;
-	font-style: italic;
+   background-color: rgb(160, 129, 202);
+   padding: 0.5em 2ex;
+   text-align: right;
+   white-space: nowrap;
+   height: 1em;
+   font-style: italic;
 }
 
 #content .players-list
 {
-	font-size: 1.25em;
-	height: 1em;
-	padding: 0.5em 1ex;
-	color: white;
-	font-weight: bold;
-	background-color: rgb(42,42,42);
+   font-size: 1.25em;
+   height: 1em;
+   padding: 0.5em 1ex;
+   color: white;
+   font-weight: bold;
+   background-color: rgb(42,42,42);
 }
 
 #content .shadow
 {
-	width: 100%;
-	height: 16px;
-	position: absolute;
-	background: linear-gradient( rgba(0,0,0,0.2), rgba(0,0,0,0) );
+   width: 100%;
+   height: 16px;
+   position: absolute;
+   background: linear-gradient( rgba(0,0,0,0.2), rgba(0,0,0,0) );
 }
 
 #content > .chat-area
 {
-	font-family: sans-serif;
-	height: 100%;
-	font-size: 0.95em;
+   font-family: sans-serif;
+   height: 100%;
+   font-size: 0.95em;
 }
 
 #content .chat-buffer
 {
-	min-height: 1em;
+   min-height: 1em;
 }
 
 #content .chat-buffer  > .alert-area
 {
-	position: relative;
-	margin: -2.5em 2ex 0 2ex;
+   position: relative;
+   margin: -2.5em 2ex 0 2ex;
 }
 
 #content .chat-buffer  > .alert-area > .new-line-alert
 {
-	width: 2ex;
-	height: 2em;
-	display: none;
-	-webkit-animation: NEW-LINE-ALERT-ANIMATION 0.5s infinite alternate ease-in-out;
-	cursor: pointer;
+   width: 2ex;
+   height: 2em;
+   display: none;
+   -webkit-animation: NEW-LINE-ALERT-ANIMATION 0.5s infinite alternate ease-in-out;
+   cursor: pointer;
+   box-shadow: 0 0.1em 0.4em rgba(0,0,0,0.5)
 }
 
 @-webkit-keyframes NEW-LINE-ALERT-ANIMATION
 {
-	0% { transform: scale( 1.0 ); }
-	100% { transform: scale( 1.15 ); }
+   0% { transform: scale( 1.0 ); }
+   100% { transform: scale( 1.15 ); }
 }
 
 #content .chat-buffer > .buffer
 {
-	overflow-y: auto;
-	-webkit-user-select: text;
-	background-color: white;
-	color: black;
-	height: 100%;
+   overflow-y: auto;
+   -webkit-user-select: text;
+   background-color: white;
+   color: black;
+   height: 100%;
 }
 
 #content .chat-buffer > .buffer > .line
 {
-	margin: 0.65em 0.5ex;
-	word-break: break-word;
-	line-height: 135%;
+   margin: 0.65em 0.5ex;
+   word-break: break-word;
+   line-height: 135%;
 }
 
 #content .chat-buffer > .line > .timestamp
 {
-	margin-right: 0.25ex;
-	font-family: monospace;
-	font-size: 0.85em;
-	color: #999;
+   margin-right: 0.25ex;
+   font-family: monospace;
+   font-size: 0.85em;
+   color: #999;
 }
 
 #content .chat-buffer .raw-chat
 {
-	font-style: monospace;
-	color: black;
+   font-style: monospace;
+   color: black;
 }
 
 #content .chat-buffer .fancy-block
 {
-	width: 93%;
-	display: flex;
-	flex-direction: row;
-	margin: 0 auto;
+   width: 93%;
+   display: flex;
+   flex-direction: row;
+   margin: 0 auto;
 }
 
 #content .chat-buffer .fancy-block.echo
 {
-	margin: 0 1ex 0 auto;
+   margin: 0 1ex 0 auto;
 }
 
 #content .chat-buffer .fancy-block > .arm
 {
-	align-self: flex-start;
-	width: 50px;
-	height: 41px;
-	background-repeat: no-repeat;
-	background-size: 100%;
-	margin: 0 -1ex 0 0;
+   align-self: flex-start;
+   width: 50px;
+   height: 41px;
+   background-repeat: no-repeat;
+   background-size: 100%;
+   margin: 0 -1ex 0 0;
 }
 
 #content .chat-buffer .fancy-block.echo > .arm
 {
-	align-self: flex-end;
-	transform: scale( -1, -1 );
-	margin: 0 0 0 -1ex;
+   align-self: flex-end;
+   transform: scale( -1, -1 );
+   margin: 0 0 0 -1ex;
 }
 
 #content .chat-buffer .fancy-block > .content-container
 {
-	width: 100%;
-	padding: 0.5em 2ex;
-	color: black;
-	font-family: sans-serif;
-	font-size: 1em;
-	cursor: text;
+   width: 100%;
+   padding: 0.5em 2ex;
+   color: black;
+   font-family: sans-serif;
+   font-size: 1em;
+   cursor: text;
 }
 
 #content .chat-buffer .fancy-block > .content-container > .content
 {
-	margin: 0 1.5ex;
+   margin: 0 1.5ex;
 }
 
 #content .chat-buffer .fancy-block > .content-container > .age
 {
-	text-align: right;
-	font-size: 0.8em;
-	color: rgb(153,153,153);
-	font-style: italic;
-	margin-top: 0.2em;
+   text-align: right;
+   font-size: 0.8em;
+   color: rgb(153,153,153);
+   font-style: italic;
+   margin-top: 0.2em;
 }
 
 #content .chat-buffer .fancy-block > .content-container > .content > .line
 {
-	margin: 0.25em 0;
-	word-break: break-word;
+   margin: 0.25em 0;
+   word-break: break-word;
 }
 
 #content .chat-buffer .fancy-block > .content-container > .content > .line:last-child
 {
-	margin: 0 0;
+   margin: 0 0;
 }
 
 #content .chat-buffer .fancy-block > .content-container > .content > .line:first-child
 {
-	margin: 0 0;
+   margin: 0 0;
 }
 
 #content .chat-buffer .fancy-block > .content-container > .head
 {
-	font-size: 1em;
-	color: black;
-	margin: 0.25ex 0 0.5em 0;
+   font-size: 1em;
+   color: black;
+   margin: 0.25ex 0 0.5em 0;
 }
 
 #content .chat-buffer .fancy-block > .content-container .username
 {
-	font-size: 1.15em;
-	color: rgb(255,127,42);
-	font-weight: bold;
+   font-size: 1.15em;
+   color: rgb(255,127,42);
+   font-weight: bold;
+   cursor: pointer;
 }
 
 #content .chat-buffer .fancy-block.whisper > .arm
 {
-	background-image: url("img/chat-balloon-arm-whisper.svg");
+   background-image: url("img/chat-balloon-arm-whisper.svg");
 }
 
 #content .chat-buffer .fancy-block.whisper > .content-container
 {
-	background-color: rgb(66,66,66);
-	color: white;
+   background-color: rgb(66,66,66);
+   color: white;
 }
 
 #content .chat-buffer .fancy-block.whisper > .content-container > .head
 {
-	color: white;
+   color: white;
 }
 
 #content .chat-buffer .fancy-block.speech > .arm
 {
-	background-image: url("img/chat-balloon-arm-speech.svg");
+   background-image: url("img/chat-balloon-arm-speech.svg");
 }
 
 #content .chat-buffer .fancy-block.speech > .content-container
 {
-	background-color: rgb(255,237,168);
-	color: black;
+   background-color: rgb(255,237,168);
+   color: black;
 }
 
 #content .chat-buffer .fancy-block.emote > .arm
 {
-	background-image: url("img/chat-balloon-arm-emote.svg");
+   background-image: url("img/chat-balloon-arm-emote.svg");
 }
 
 #content .chat-buffer .fancy-block.emote > .content-container
 {
-	background-color: rgb(189, 236, 247);
-	color: black;
-	border-radius: 0.6em;
+   color: black;
+   border-radius: 0.6em;
+   border: 1px solid rgba(128,128,128,0.33);
 }
 
 #content .chat-buffer .fancy-block.emote
 {
-	margin: 0 auto;
+   margin: 0 auto;
 }
 
 #content .chat-buffer .fancy-block.emote > .content-container > .content
 {
-	margin: 0 0;
+   margin: 0 0;
 }
 
 #content .chat-buffer .fancy-block.emote > .content-container > .content > .line
 {
-	text-align: center;
-	font-style: italic;
+   text-align: center;
+   font-style: italic;
 }
 
 #content .chat-buffer .fancy-block.system > .content-container
 {
-	background-color: rgb(255,123,123);
-	color: white;
-	border-radius: 0.6em;
+   background-color: rgb(255,123,123);
+   color: white;
+   border-radius: 0.6em;
 }
 
 #content .chat-buffer .fancy-block.system > .content-container > .age
 {
-	color: rgb(228,228,228);
+   color: rgb(228,228,228);
 }
 
 #content .chat-buffer .fancy-block.system
 {
-	margin: 0 auto;
+   margin: 0 auto;
 }
 
 #content .chat-buffer .fancy-block.system > .content-container > .content
 {
-	margin: 0 0;
+   margin: 0 0;
 }
 
 #content .chat-input
 {
-	background-color: white;
-	overflow: hidden;
-	border-top: 2px solid rgb(198,198,198);
-	padding: 0.9em 1ex;
-	word-break: break-word;
-	font-size: 1.1em;
-	cursor: text;
-	min-height: 1em;
+   background-color: white;
+   overflow: hidden;
+   border-top: 2px solid rgb(198,198,198);
+   padding: 0.9em 1ex;
+   word-break: break-word;
+   font-size: 1.1em;
+   cursor: text;
+   min-height: 1em;
 }
 
 #content .chat-input > .text
 {
-	outline: none;
-	font-size: 1.0em;
-	font-family: sans-serif;
-	color: black;
-	margin: 0 0.5ex;
+   outline: none;
+   font-size: 1.0em;
+   font-family: sans-serif;
+   color: black;
+   margin: 0 0.5ex;
 }
 
 #content .chat-input > .mode
 {
-	height: 1.5em;
-	float: left;
-	margin: -0.3em 1.25ex 0 0;
-	cursor: pointer;
+   height: 1.5em;
+   float: left;
+   margin: -0.3em 1.25ex 0 0;
+   cursor: pointer;
 }
 
 #content .chat-input > .send
 {
-	width: 1.5em;
-	height: 1.5em;
-	display: inline-block;
-	background-image: url("img/chat-send.png");
-	cursor: pointer;
-	background-size: 100% 100%;
-	background-repeat: no-repeat;
-	float: right;
-	margin: -0.3em 0 0 1ex;
+   width: 1.5em;
+   height: 1.5em;
+   display: inline-block;
+   background-image: url("img/chat-send.png");
+   cursor: pointer;
+   background-size: 100% 100%;
+   background-repeat: no-repeat;
+   float: right;
+   margin: -0.3em 0 0 1ex;
 }
 
 #content .chat-input > .send.empty
 {
-	background-image: url("img/chat-send-disabled.png");
+   background-image: url("img/chat-send-disabled.png");
 }
 
 #content .chat-input > .placeholder
 {
-	font-style: italic;
-	color: rgb( 200, 200, 200 );
-	font-family: sans-serif;
-	font-size: 1.0em;
+   font-style: italic;
+   color: rgb( 200, 200, 200 );
+   font-family: sans-serif;
+   font-size: 1.0em;
 }
 
 .modal-cover
 {
-	width: 100%;
-	height: 100%;
-	background-color: rgba( 0, 0, 0, 0.25 );
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	position: absolute;
-	left: 0;
-	top: 0;
+   width: 100%;
+   height: 100%;
+   background-color: rgba( 0, 0, 0, 0.25 );
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   position: absolute;
+   left: 0;
+   top: 0;
 }
 
 .modal-cover.clear
 {
-	background-color: initial;
+   background-color: initial;
 }
 
 body .login-prompt
 {
-	background-color: rgb( 155, 114, 165 );
-	box-shadow: 0 10px 18px rgba(0,0,0,0.6);
-	width: 60%;
-	max-width: 35ex;
-	min-width: 16ex;
-	transform: scale( 0.1, 0.1 );
-	transition: transform 0.5s;
+   background-color: rgb( 155, 114, 165 );
+   box-shadow: 0 10px 18px rgba(0,0,0,0.6);
+   width: 60%;
+   max-width: 35ex;
+   min-width: 16ex;
+   transform: scale( 0.1, 0.1 );
+   transition: transform 0.5s;
 }
 
 body .login-prompt.expanded
 {
-	transform: scale( 1, 1 );
+   transform: scale( 1, 1 );
 }
 
 body .login-prompt > .contents
 {
-	padding: 2ex;
+   padding: 2ex;
 }
 
 body .login-prompt > .contents > input
 {
-	padding: 0.4em;
-	border: 0;
-	border-radius: 0.5em;
-	background-color: white;
-	text-align: center;
-	color: black;
-	margin: 0 auto 1em auto;
-	display: block;
-	width: 90%;
-	font-size: 1.1em;
-	background-repeat: no-repeat;
-	background-position: 50%;
+   padding: 0.4em;
+   border: 0;
+   border-radius: 0.5em;
+   background-color: white;
+   text-align: center;
+   color: black;
+   margin: 0 auto 1em auto;
+   display: block;
+   width: 90%;
+   font-size: 1.1em;
+   background-repeat: no-repeat;
+   background-position: 50%;
 }
 
 body .login-prompt > .contents > input.name.empty:not(:focus)
 {
-	background-image: url( "img/login-name-bg.png" );
-	background-size: auto 35%;
+   background-image: url( "img/login-name-bg.png" );
+   background-size: auto 35%;
 }
 
 body .login-prompt > .contents > input.password.empty:not(:focus)
 {
-	background-image: url( "img/login-pw-bg.png" );
-	background-size: auto 55%;
+   background-image: url( "img/login-pw-bg.png" );
+   background-size: auto 55%;
 }
 
 body .login-prompt > .contents > .login-button
 {
-	cursor: pointer;
-	width: 80%;
-	text-align: center;
-	padding: 0.25em 1.0ex;
-	border-radius: 0.9em;
-	margin: 0 auto;
-	color: #CCC;
-	background-color: #999;
+   cursor: pointer;
+   width: 80%;
+   text-align: center;
+   padding: 0.25em 1.0ex;
+   border-radius: 0.9em;
+   margin: 0 auto;
+   color: #CCC;
+   background-color: #999;
 }
 
 body .login-prompt > .contents > .login-button.enabled
 {
-	color: white;
-	background-color: rgb(255,127,42);
+   color: white;
+   background-color: rgb(255,127,42);
 }
 
 body .login-prompt > .contents > .login-button > .label
 {
-	font-weight: bold;
-	font-size: 1.5em;
-	transform: scale( 1.1, 0.8 );
+   font-weight: bold;
+   font-size: 1.5em;
+   transform: scale( 1.1, 0.8 );
 }
 
 body .login-prompt > .contents > .working
 {
-	display: none;
-	text-align: center;
-	margin: 0 auto;
-	text-align: center;
-	vertical-align: middle;
-	color: white;
+   display: none;
+   text-align: center;
+   margin: 0 auto;
+   text-align: center;
+   vertical-align: middle;
+   color: white;
 }
 
 body .login-prompt > .contents > .error
 {
-	display: none;
-	font-size: 0.9em;
-	color: rgb(111, 44, 44);
-	text-align: center;
-	margin-bottom: 0.8em;
-	font-style: italic;
+   display: none;
+   font-size: 0.9em;
+   color: rgb(111, 44, 44);
+   text-align: center;
+   margin-bottom: 0.8em;
+   font-style: italic;
 }
 
 .modal-cover .popup-menu
 {
-	display: inline-block;
-	padding: 0.6em 2ex;
-	color: white;
-	font-size: 1em;
-	text-align: right;
-	box-shadow: 0 8px 14px rgba(0,0,0,0.5);
-	position: absolute;
-	background-color: rgb(77,77,77);
-	margin: 0.5em 2ex;
+   display: inline-block;
+   padding: 0.6em 2ex;
+   color: white;
+   font-size: 1em;
+   text-align: right;
+   box-shadow: 0 8px 14px rgba(0,0,0,0.5);
+   position: absolute;
+   background-color: rgb(77,77,77);
+   margin: 0.5em 2ex;
 }
 
 .modal-cover .popup-menu > .section:not(:last-child)
 {
-	border-bottom: 1px solid white;
-	margin-bottom: 0.75em;
+   border-bottom: 1px solid white;
+   margin-bottom: 0.75em;
 }
 
 .modal-cover .popup-menu > .section > .item
 {
-	margin: 0.75em 0;
-	white-space: nowrap;
-	cursor: pointer;
+   margin: 0.5em 0;
+   white-space: nowrap;
+   cursor: pointer;
 }
 
 .modal-cover .popup-menu > .section > .item:hover
 {
-	text-decoration: underline;
+   text-decoration: underline;
 }
 
 .modal-cover .popup-menu > .section > .item.disabled
 {
-	margin: 0.4em 0;
-	font-weight: normal;
-	color: #777;
+   margin: 0.4em 0;
+   font-weight: normal;
+   color: #777;
 }
 
 .modal-cover .popup-menu > .section > .item.centered
 {
-	text-align: center;
+   text-align: center;
 }
 
 .modal-cover .popup-menu > .section > .item > .check
 {
-	width: 1em;
-	height: 1em;
-	background-image: url("img/popup-menu-check.png");
-	background-size: 100%;
-	background-repeat: no-repeat;
-	display: inline-block;
-	vertical-align: middle;
-	margin-right: 1ex;
+   width: 1em;
+   height: 1em;
+   background-image: url("img/popup-menu-check.png");
+   background-size: 100%;
+   background-repeat: no-repeat;
+   display: inline-block;
+   vertical-align: middle;
+   margin-right: 1ex;
 }

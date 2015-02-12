@@ -3,91 +3,83 @@ var _ = require( "underscore" );
 var util = require( "./util" );
 var FancyChatBuffer = require( "./FancyChatBuffer" );
 var ChatInput = require( "./ChatInput" );
-var Eventful = require( "./jsfurc/Eventful" );
+var jsfurcUtil = require( "./jsfurc/Util" );
 
-module.exports = function( container )
+module.exports = function( container, app )
 {
-	var _this = this;
-	var _elem = $("<div class='chat-area' />");
-	var _chatBuffer;
-	var _chatInput;
-	var _events = new Eventful( this );
+   var _this = this;
+   var _elem = $("<div class='chat-area' />");
+   var _chatBuffer;
+   var _chatInput;
 
-	this.appendChat = function( msg )
-	{
-		return _chatBuffer.appendSystemMessage( msg );
-	}
+   this.getApp = function( )
+   {
+      return app;
+   }
 
-	this.appendSpeech = function( player, msg )
-	{
-		return _chatBuffer.appendSpeech( player, msg );
-	}
+   this.appendChat = function( msg )
+   {
+      return _chatBuffer.appendSystemMessage( msg );
+   }
 
-	this.appendWhisper = function( player, msg )
-	{
-		return _chatBuffer.appendWhisper( player, msg );
-	}
+   this.appendSpeech = function( player, msg )
+   {
+      return _chatBuffer.appendSpeech( player, msg );
+   }
 
-	this.appendEmote = function( player, msg )
-	{
-		return _chatBuffer.appendEmote( player, msg );
-	}
+   this.appendWhisper = function( player, msg )
+   {
+      return _chatBuffer.appendWhisper( player, msg );
+   }
 
-	this.appendSpeechEcho = function( player, msg )
-	{
-		return _chatBuffer.appendSpeechEcho( player, msg );
-	}
+   this.appendEmote = function( player, msg )
+   {
+      return _chatBuffer.appendEmote( player, msg );
+   }
 
-	this.appendEmoteEcho = function( player, msg )
-	{
-		return _chatBuffer.appendEmoteEcho( player, msg );
-	}
+   this.appendSpeechEcho = function( player, msg )
+   {
+      return _chatBuffer.appendSpeechEcho( player, msg );
+   }
 
-	this.appendWhisperEcho = function( player, msg )
-	{
-		return _chatBuffer.appendWhisperEcho( player, msg );
-	}
+   this.appendEmoteEcho = function( player, msg )
+   {
+      return _chatBuffer.appendEmoteEcho( player, msg );
+   }
 
-	this.focusInput = function( )
-	{
-		_chatInput.focus( );
-	}
+   this.appendWhisperEcho = function( player, msg )
+   {
+      return _chatBuffer.appendWhisperEcho( player, msg );
+   }
 
-	var _onInputWhisper = function( player, msg )
-	{
-		_events.raise( "whisper", player, msg );
-	}
+   this.focusInput = function( )
+   {
+      _chatInput.focus( );
+   }
 
-	var _onInputEmote = function( msg )
-	{
-		_events.raise( "emote", msg );
-	}
+   var _fit = function( )
+   {
+      var containerHeight = _elem.height( );
+      var bufferHeight = Math.max( 0, containerHeight - _chatInput.getHeight( ) );
+      _chatBuffer.resize( bufferHeight );
+   }
 
-	var _onInputSpeech = function( msg )
-	{
-		_events.raise( "speech", msg );
-	}
+   var ChatBufferApp = function( )
+   {
+      _.extend( this, app );
 
-	var _onInputRaw = function( msg )
-	{
-		_events.raise( "raw", msg );
-	}
+      this.initiateWhisper = function( player )
+      {
+         var canonicalName = jsfurcUtil.createCanonicalPlayerName( player );
+         _chatInput.set( "/" + canonicalName + " " );
+         _chatInput.focus( );
+      }
+   }
 
-	var _fit = function( )
-	{
-		var containerHeight = _elem.height( );
-		var bufferHeight = Math.max( 0, containerHeight - _chatInput.getHeight( ) );
-		_chatBuffer.resize( bufferHeight );
-	}
-
-	container.append( _elem );
-	_chatBuffer = new FancyChatBuffer( _elem );
-	_chatInput = new ChatInput( _elem );
-	_chatInput.on( "whisper", _onInputWhisper );
-	_chatInput.on( "emote", _onInputEmote );
-	_chatInput.on( "speech", _onInputSpeech );
-	_chatInput.on( "raw", _onInputRaw );
-	_chatInput.on( "grow shrink", _fit );
-	$(window).on( "resize", _fit );
-	_.defer( _fit );
+   container.append( _elem );
+   _chatBuffer = new FancyChatBuffer( _elem, new ChatBufferApp( ) );
+   _chatInput = new ChatInput( _elem, app );
+   _chatInput.on( "grow shrink", _fit );
+   $(window).on( "resize", _fit );
+   _.defer( _fit );
 }

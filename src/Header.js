@@ -2,103 +2,132 @@ var $ = require( "jquery" );
 var _ = require( "underscore" );
 var util = require( "./util" );
 var templates = require( "./templates" );
-var Eventful = require( "./jsfurc/Eventful" );
 var PopupMenu = require( "./PopupMenu" );
 
-module.exports = function( )
+module.exports = function( app )
 {
-	var _this = this;
-	var _elem = $(templates["app-header"]( ));
-	var _events = new Eventful( this );
-	var _menu;
+   var _this = this;
+   var _elem = $(templates["app-header"]( ));
+   var _menu;
 
-	var _initPopupMenu = function( )
-	{
-		_menu = new PopupMenu( [
-			[
-				{
-					"id": "raw-terminal",
-					"label": "Raw Terminal",
-					"checked": false
-				},
-				{
-					"id": "log-out",
-					"label": "Log Out",
-					"disabled": true
-				},
-				{
-					"id": "close",
-					"label": "Close"
-				}
-			],
-			[
-				{
-					"id": "about",
-					"label": "About...",
-					"centered": true
-				}
-			]
-		] );
-		_menu.on( "pick", _onMenuPick );
-		_menu.on( "out", _onMenuOut );
-	}
+   this.getApp = function( )
+   {
+      return app;
+   }
 
-	this.toggleReconnect = function( toggle )
-	{
-		_elem.find( ".reconnect-button" ).toggle( toggle );
-	}
+   var _initPopupMenu = function( )
+   {
+      _menu = new PopupMenu( [
+         [
+            {
+               "id": "raw-terminal",
+               "label": "Raw Terminal",
+               "checked": app.isRawTerminalEnabled( )
+            },
+            {
+               "id": "ignores",
+               "label": "Ignores Enabled",
+               "checked": app.areIgnoresEnabled( )
+            },
+            {
+               "id": "log-out",
+               "label": "Log Out",
+               "disabled": app.isLoggedIn( )
+            },
+            {
+               "id": "close",
+               "label": "Close"
+            }
+         ],
+         [
+            {
+               "id": "about",
+               "label": "About...",
+               "centered": true
+            }
+         ]
+      ] );
+      _menu.on( "pick", _onMenuPick );
+      _menu.on( "out", _onMenuOut );
+   }
 
-	this.toggleMenu = function( toggle )
-	{
-		var settingsButton = _elem.find( ".menu-button" );
-		if (toggle && !_menu.isOpen( ))
-		{
-			var pos = settingsButton.offset( );
-			pos.top += settingsButton.height( );
-			_menu.show( pos.left, pos.top );
-		}
-		else if (!toggle && _menu.isOpen( ))
-		{
-			_menu.hide( );
-		}
-	}
+   var _toggleReconnect = function( toggle )
+   {
+      _elem.find( ".reconnect-button" ).toggle( toggle );
+   }
 
-	var _onMenuPick = function( item, checked )
-	{
-		if (item == "raw-terminal")
-		{
-			if (!checked)
-				_events.raise( "raw-terminal-on" );
-			else
-				_events.raise( "raw-terminal-off" );
-		}
-		else if (item == "log-out")
-			_events.raise( "log-out" );
-		else if (item == "close")
-			_events.raise( "close" );
-		else if (item == "about")
-			_events.raise( "about" );
-	}
+   this.toggleMenu = function( toggle )
+   {
+      var settingsButton = _elem.find( ".menu-button" );
+      if (toggle && !_menu.isOpen( ))
+      {
+         var pos = settingsButton.offset( );
+         pos.top += settingsButton.height( );
+         _menu.show( pos.left, pos.top );
+      }
+      else if (!toggle && _menu.isOpen( ))
+      {
+         _menu.hide( );
+      }
+   }
 
-	var _onMenuOut = function( )
-	{
-		_this.toggleMenu( false );
-	}
+   var _onMenuPick = function( id, checked )
+   {
+      switch (id)
+      {
+         case "raw-terminal":
+            app.toggleRawTerminal( !checked );
+            break;
+         case "ignores":
+            app.toggleIgnores( !checked );
+            break;
+         case "log-out":
+            app.logOut( );
+            break;
+         case "close":
+            app.close( );n = function( loggedIn )
+   {
+      _menu.toggleItemEnabled( "log-out", loggedIn );
+   }
+            break;
+         case "about":
+            app.about( );
+            break;
+      }
+   }
 
-	this.setLoggedIn = function( loggedIn )
-	{
-		_menu.toggleItemEnabled( "log-out", loggedIn );
-	}
+   var _onMenuOut = function( )
+   {
+      _this.toggleMenu( false );
+   }
 
-	$("body").prepend( _elem );
-	_elem.find( ".reconnect-button" )
-		.on( "click", function( ) {
-			_events.raise( "reconnect" );
-		} );
-	_elem.find( ".menu-button" )
-		.on( "click", function( e ) {
-			_this.toggleMenu( true );
-			e.preventDefault( );
-		} );
-	_initPopupMenu( );
+   var _toggleLoggedIn = function( loggedIn )
+   {
+      _menu.toggleItemEnabled( "log-out", loggedIn );
+   }
+
+   $("body").prepend( _elem );
+   _elem.find( ".reconnect-button" )
+      .on( "click", function( ) {
+         app.reconnect( );
+      } );
+   _elem.find( ".menu-button" )
+      .on( "click", function( e ) {
+         _this.toggleMenu( true );
+         e.preventDefault( );
+      } );
+   _initPopupMenu( );
+   app.on( "disconnect", function( ) {
+      _toggleReconnect( true );
+      _toggleLoggedIn( false );
+      } );
+   app.on( "connect", function( ) {
+      _toggleReconnect( false );
+      } );
+   app.on( "login", function( ) {
+      _toggleReconnect( false );
+      _toggleLoggedIn( true );
+      } );
+   //_toggleReconnect( app.isConnected( ) );
+   //_toggleLoggedIn( app.isLoggedIn( ) );
 }
