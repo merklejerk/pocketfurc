@@ -120,7 +120,10 @@ module.exports = function( container, app )
 
    var _getText = function( )
    {
-      return _elem.children( ".text" ).text( );
+      var text = _elem.children( ".text" ).text( );
+      text = text.replace( / \xAO/g, " " );
+      text = text.replace( /\xA0/g, "" );
+      return text;
    }
 
    this.set = function( text )

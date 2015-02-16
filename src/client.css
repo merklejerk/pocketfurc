@@ -363,7 +363,7 @@ body
    background-size: 100% 100%;
    background-repeat: no-repeat;
    float: right;
-   margin: -0.3em 0 0 1ex;
+   margin: -0.1em 0 0 1ex;
 }
 
 #content .chat-input > .send.empty
