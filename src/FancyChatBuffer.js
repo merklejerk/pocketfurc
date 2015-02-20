@@ -198,6 +198,14 @@ module.exports = function( container, app ) {
                {
                   "id": "whisper",
                   "label": "Whisper"
+               },
+               {
+                  "id": "summon",
+                  "label": "Summon"
+               },
+               {
+                  "id": "join",
+                  "label": "Join"
                }
             ],
             [
@@ -234,6 +242,12 @@ module.exports = function( container, app ) {
             return;
          case "friend":
             app.friend( username, !checked );
+            return;
+         case "summon":
+            app.summon( username );
+            return;
+         case "join":
+            app.join( username );
             return;
       }
    }

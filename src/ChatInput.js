@@ -3,12 +3,15 @@ var _ = require( "underscore" );
 var util = require( "./util" );
 var templates = require( "./templates" );
 var Eventful = require( "./jsfurc/Eventful" );
+var ModalCover = require( "./ModalCover" );
+var ChatInputFloatingTool = require( "./ChatInputFloatingTool" );
 
 module.exports = function( container, app )
 {
    var _this = this;
    var _elem = $(templates["chat-input"]( ));
    var _events = new Eventful( this );
+   var _floatingTool = new ChatInputFloatingTool( _elem.children( ".text" ) );
 
    this.getApp = function( )
    {
@@ -31,16 +34,16 @@ module.exports = function( container, app )
    {
       if (!e.shiftKey)
       {
-          if (e.keyCode == 13)
+          if (e.keyCode == 13) // Enter
           {
              e.preventDefault( );
              if (!_isEmpty( ))
                 _submit( );
           }
-          else if (e.keyCode == 27)
+          else if (e.keyCode == 27) // Escape
           {
               e.preventDefault( );
-              _setText( "" );
+              _setContents( "" );
           }
       }
    }
@@ -63,7 +66,7 @@ module.exports = function( container, app )
    var _submit = function( )
    {
       var input = _parseInput( );
-      _elem.children( ".text" ).html( "" );
+      _setContents( "" );
       if (input.mode == "whisper" && input.player && input.msg)
           app.sendWhisper( input.player, input.msg );
       else if (input.mode == "emote" && input.msg)
@@ -115,31 +118,35 @@ module.exports = function( container, app )
 
    var _isEmpty = function( )
    {
-      return _getText( ).length == 0;
+      return _getContents( ).length == 0;
    }
 
-   var _getText = function( )
+   var _getContents = function( )
    {
-      var text = _elem.children( ".text" ).text( );
-      text = text.replace( / \xAO/g, " " );
-      text = text.replace( /\xA0/g, "" );
-      return text;
+      var contents = _elem.children( ".text" ).html( );
+      contents = contents.replace( / \xAO/g, " " );
+      contents = contents.replace( /\xA0/g, "" );
+      if (contents.match( /^\s+$/ ))
+         return "";
+      return contents;
    }
 
-   this.set = function( text )
+   this.set = function( text, isMarkup )
    {
-       _setText( text );
+       _setContents( text, isMarkup );
    }
 
-   var _setText = function( text )
+   var _setContents = function( text, isMarkup )
    {
-      var container = _elem.children( ".text" );
       // Convert sequences of spaces to &nbsp;
       text = text.replace( /  /g, " \xA0" );
-      text = text.replace( / $/, "\xA0" );
-      container.text( text );
-      _placeCaretAtEnd( );
+      text = text.replace( / $/gm, "\xA0" );
+      if (isMarkup)
+         _elem.children( ".text" ).html( text );
+      else
+         _elem.children( ".text" ).text( text );
       _cleanInput( );
+      _placeCaretAtEnd( );
       _refresh( );
    }
 
@@ -155,7 +162,7 @@ module.exports = function( container, app )
 
    var _parseInput = function ( )
    {
-      var text = _getText( );
+      var text = _getContents( );
       var m;
       if (m = /^\/((\S+)\s+(\S.*))?/.exec( text ))
          return { "mode": "whisper", "player": m[2], "msg": m[3] };
@@ -168,19 +175,43 @@ module.exports = function( container, app )
 
    var _cleanInput = function( )
    {
-      var textNode = _elem.children( ".text" ).get( 0 );
       var selectionRange = _saveSelection( textNode );
-      _.each( _.toArray( textNode.childNodes ),
-         function( child )
+      var textNode = _elem.children( ".text" ).get( 0 );
+      (function( parent ) {
+         while (true)
          {
-            if (child.nodeType != 3)
-            {
-               _extractTextNodes( child, textNode, child );
-               textNode.removeChild( child );
-            }
-         } );
+            var cleanCount = _cleanChildNodes( parent.childNodes );
+            if (!cleanCount)
+               break;
+         }
+         _.each( parent.childNodes, arguments.callee );
+      })( textNode );
       _restoreSelection( selectionRange );
       textNode.normalize( );
+   }
+
+   var _cleanChildNodes = function( node )
+   {
+      var count = 0;
+      _.each( _.toArray( node.childNodes ),
+         function( child ) {
+            if (child.nodeType == Node.ELEMENT_NODE)
+            {
+               switch (child.tagName)
+               {
+                  case "A":
+                  case "B":
+                  case "I":
+                  case "U":
+                  case "IMG":
+                     break;
+                  default:
+                     ++count;
+                     $(child).unwrap( );
+               }
+            }
+         } );
+      return count;
    }
 
    var _saveSelection = function( )
@@ -202,20 +233,6 @@ module.exports = function( container, app )
          selection.addRange( range );
       }
    }
-
-   var _extractTextNodes = function( node, root, before )
-   {
-      _.each( _.toArray( node.childNodes ),
-         function( child )
-         {
-            node.removeChild( child );
-            if (child.nodeType == 3)
-               root.insertBefore( child, before );
-            else
-               _extractTextNodes( child, root, before );
-         } );
-   }
-
    var _onSubmitClicked = function( e )
    {
       e.preventDefault( );
@@ -244,7 +261,7 @@ module.exports = function( container, app )
       var input = _parseInput( );
       var order = ["speech","emote","whisper","raw"];
       var mode = order[(_.indexOf( order, input.mode ) + 1) % order.length];
-      var contents = _getText( );
+      var contents = _getContents( );
       if (input.mode != "speech")
       {
          // Consume the first letter.
@@ -260,7 +277,17 @@ module.exports = function( container, app )
             };
          contents = prefixMap[mode] + contents;
       }
-      _setText( contents );
+      _setContents( contents );
+   }
+
+   var _onContextMenu = function( )
+   {
+      var pos = _getCaretPosition( );
+      var popup = new ChatInputContextMenu( pos.x, pos.y );
+      popup.on( "bold", _onBold );
+      popup.on( "italic", _onItalic );
+      popup.on( "underline", _onUnderline );
+      popup.on( "link", _onLink );
    }
 
    container.append( _elem );

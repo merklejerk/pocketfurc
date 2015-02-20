@@ -545,3 +545,122 @@ body .login-prompt > .contents > .error
    vertical-align: middle;
    margin-right: 1ex;
 }
+
+.chat-input-floating-tool
+{
+   position: absolute;
+   display: inline-block;
+   padding-bottom: 0.85em;
+   opacity: 0.5;
+}
+
+.chat-input-floating-tool:hover
+{
+   opacity: 1.0;
+}
+
+.chat-input-floating-tool > .content
+{
+   background-color: rgb(160,129,202);
+   border-radius: 0.5em;
+   margin: auto;
+}
+
+.chat-input-floating-tool > .content.minimized
+{
+   text-align: center;
+   border-bottom-left-radius: 0;
+   border-bottom-right-radius: 0;
+   width: 24px;
+   padding: 4px 4px 0 4px;
+   cursor: pointer;
+}
+
+.chat-input-floating-tool > .content.minimized > .icon
+{
+   background-image: url("img/input-tool-icon.png");
+   background-repeat: no-repeat;
+   background-size: 100%;
+   width: 16px;
+   height: 27px;
+   margin: auto;
+}
+
+.chat-input-floating-tool > .tail
+{
+   margin: auto;
+   text-align: center;
+   pointer-events: none;
+}
+
+.chat-input-floating-tool > .tail > img
+{
+   width: 32px;
+   height: 23px;
+}
+
+.chat-input-floating-tool > .content.maximized
+{
+   max-width: 16ex;
+   padding: 12px;
+}
+
+.chat-input-floating-tool > .content.maximized > .styles
+{
+   display: flex;
+   flex-direction: row;
+   justify-content: center;
+}
+
+.chat-input-floating-tool > .content.maximized > .styles > .button
+{
+   margin: 0 auto;
+   cursor: pointer;
+   height: 1.1em;
+   padding: 0 1.25ex;
+}
+
+.chat-input-floating-tool > .content.maximized > .styles > .button.bold
+{
+   margin-top: 0.05em;
+}
+
+.chat-input-floating-tool > .content.maximized > .styles > .button.underline
+{
+   margin-top: 0.2em;
+}
+
+.chat-input-floating-tool > .content.maximized > .link
+{
+   margin-top: 12px;
+}
+
+.chat-input-floating-tool > .content.maximized > .link .url
+{
+   display: block;
+   font-size: 1em;
+   color: black;
+   background-color: white;
+   font-family: sans-serif;
+   padding: 0.25em;
+   border: 0;
+   margin: 0 auto;
+   box-sizing: border-box;
+   width: 100%;
+}
+
+.chat-input-floating-tool > .content.maximized > .link .overlay
+{
+   margin: -1.25em auto 0 auto;
+   color: rgb(128,128,128);
+   font-size: 1em;
+   font-style: italic;
+   font-family: sans-serif;
+   pointer-events: none;
+   text-align: center;
+}
+
+.content .chat-input > .text .input-selection-wrapper
+{
+   background-color: 1px solid rgba(0,0,0,0.25);
+}
