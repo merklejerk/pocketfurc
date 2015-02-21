@@ -217,7 +217,7 @@ var ChatAreaApp = function( )
       _client.speak( msg );
    }
 
-   this.semdEmote = function( msg )
+   this.sendEmote = function( msg )
    {
       _client.emote( msg );
    }

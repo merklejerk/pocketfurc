@@ -1,4 +1,2 @@
-- HTML is being escaped when input mode is toggled.
-
 - Input tool doesn't respect tags outside of selection.
 

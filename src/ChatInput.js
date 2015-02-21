@@ -279,7 +279,7 @@ module.exports = function( container, app )
             };
          contents = prefixMap[mode] + contents;
       }
-      _setContents( contents );
+      _setContents( contents, true );
    }
 
    var _onContextMenu = function( )
