@@ -18,11 +18,25 @@ module.exports = function( )
    var _service;
    var _states = 0x0;
    var _loginInfo = null;
+   var _rawLog = false;
 
    this.destroy = function( )
    {
       _service.destroy( );
       _connection.close( );
+   }
+
+   this.isRawLogOn = function( )
+   {
+      return _rawLog;
+   }
+
+   this.toggleRawLog = function( toggle )
+   {
+      _rawLog = toggle;
+      if (_connection)
+         _connection.logging( _rawLog );
+      _info( "Raw logging " + (_rawLog ? "enabled" : "disabled") + "." );
    }
 
    this.connect = function( )
@@ -32,6 +46,7 @@ module.exports = function( )
       _connection.on( "connect-fail", _onConnectFail );
       _connection.on( "connected", _onConnected );
       _connection.on( "disconnected", _onDisconnected );
+      _connection.logging( _rawLog );
       _connection.connect( );
    }
 

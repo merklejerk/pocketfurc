@@ -224,7 +224,10 @@ var ChatAreaApp = function( )
 
    this.sendRaw = function( msg )
    {
-      _client.sendRawLine( msg );
+      if (msg == "rawlog")
+         _client.toggleRawLog( !_client.isRawLogOn( ) );
+      else
+         _client.sendRawLine( msg );
    }
 }
 
@@ -246,12 +249,6 @@ var HeaderApp = function( )
          return _client.isLoggedIn( );
    }
 
-   this.isRawTerminalEnabled = function( )
-   {
-      console.log( "TODO" );
-      return false;
-   }
-
    this.areIgnoresEnabled = function( )
    {
       console.log( "TODO" );
@@ -259,11 +256,6 @@ var HeaderApp = function( )
    }
 
    this.toggleIgnores = function( toggle )
-   {
-      console.log( "TODO" );
-   }
-
-   this.toggleRawTerminal = function( toggle )
    {
       console.log( "TODO" );
    }

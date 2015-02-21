@@ -12,12 +12,18 @@ module.exports = function( address, port )
    var _linesReceived = [];
    var _events = new Eventful( this );
    var _connected = false;
+   var _logging = false;
 
    this.close = function( )
    {
       _closeSocket( );
       chrome.sockets.tcp.onReceive.removeListener( _onReceive );
       chrome.sockets.tcp.onReceiveError.removeListener( _onReceiveError );
+   }
+
+   this.logging = function( toggle )
+   {
+      _logging = toggle;
    }
 
    this.isConnected = function( )
@@ -125,6 +131,8 @@ module.exports = function( address, port )
             var line = _recvBuffer.put( data[i] );
             if (line)
             {
+               if (_logging)
+                  console.log( line );
                _linesReceived.push( line );
                _events.raise( "received", line );
             }

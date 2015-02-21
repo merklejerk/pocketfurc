@@ -243,6 +243,11 @@ body
    cursor: pointer;
 }
 
+#content .chat-buffer .fancy-block.echo > .content-container .username
+{
+   color: rgb(34, 170, 240);
+}
+
 #content .chat-buffer .fancy-block.whisper > .arm
 {
    background-image: url("img/chat-balloon-arm-whisper.svg");

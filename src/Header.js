@@ -20,11 +20,6 @@ module.exports = function( app )
       _menu = new PopupMenu( [
          [
             {
-               "id": "raw-terminal",
-               "label": "Raw Terminal",
-               "checked": app.isRawTerminalEnabled( )
-            },
-            {
                "id": "ignores",
                "label": "Ignores",
                "checked": app.areIgnoresEnabled( )
@@ -78,9 +73,6 @@ module.exports = function( app )
    {
       switch (id)
       {
-         case "raw-terminal":
-            app.toggleRawTerminal( !checked );
-            break;
          case "ignores":
             app.toggleIgnores( !checked );
             break;
