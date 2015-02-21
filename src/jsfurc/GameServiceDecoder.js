@@ -5,24 +5,36 @@ var ListenerHost = require( "./ListenerHost" );
 
 module.exports = function( )
 {
-	var _this = this;
-	var _fmt = new TrafficFormatter( );
-	var _listeners = new ListenerHost( this );
-	var _parser = new DOMParser( );
+   var _this = this;
+   var _fmt = new TrafficFormatter( );
+   var _listeners = new ListenerHost( this );
+   var _parser = new DOMParser( );
    var _regexes = {};
 
-	this.decode = function( line )
-	{
-		if (!line.length)
-			return;
+   this.decode = function( line )
+   {
+      if (!line.length)
+         return;
 
-		var initial = line.charAt( 0 );
-		if ("(" == initial)
-			return _decodeChat( line );
-	}
+      var params;
+      var initial = line.charAt( 0 );
+      switch (initial)
+      {
+      case "(":
+         return _decodeChat( line );
+      case "]":
+         if (params = _fmt.parse( "]q %s %d", line, ["dreamID1","dreamID2"] ))
+            return _listeners.raise( "onLoadDream", params.dreamID1, params.dreamID2 );
+         if (params = _fmt.parse( "]o%s", line, ["mapName"] ))
+            return _listeners.raise( "onLoadMap", params.mapName );
+         break;
+      default:
+         break;
+      }
+   }
 
-	var _decodeChat = function( line )
-	{
+   var _decodeChat = function( line )
+   {
       line = line.substr( 1 );
       var m;
       if (m = _regexes["chat-speech"].exec( line ))
@@ -31,13 +43,13 @@ module.exports = function( )
          return _listeners.raise( "onChatWhisper", m[1], m[2] );
       if (m = _regexes["chat-emote"].exec( line ))
          return _listeners.raise( "onChatEmote", m[1], m[2] );
-		if (m = _regexes["chat-speech-echo"].exec( line ))
+      if (m = _regexes["chat-speech-echo"].exec( line ))
          return _listeners.raise( "onChatSpeechEcho", m[1] );
       if (m = _regexes["chat-whisper-echo"].exec( line ))
          return _listeners.raise( "onChatWhisperEcho", m[2], m[1] );
 
-		_listeners.raise( "onChat", line );
-	}
+      _listeners.raise( "onChat", line );
+   }
 
    _regexes = {
       "chat-speech": /^<name ?[^>]*>([^<]+)<\/name>: (.*)$/,

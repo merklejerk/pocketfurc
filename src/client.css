@@ -68,26 +68,21 @@ body
    height: 100%;
    display: flex;
    flex-direction: column;
+   position: relative;
 }
 
-#status
+#content .status
 {
-   background-color: rgb(160, 129, 202);
-   padding: 0.5em 2ex;
-   text-align: right;
+   background: linear-gradient( rgba(0, 0, 0, 0.53), rgba(0, 0, 0, 0.32) );
+   padding: 0.5em 1ex;
+   position: absolute;
+   top: 0;
+   width: 100%;
+   text-align: center;
    white-space: nowrap;
-   height: 1em;
-   font-style: italic;
-}
-
-#content .players-list
-{
    font-size: 1.25em;
    height: 1em;
-   padding: 0.5em 1ex;
    color: white;
-   font-weight: bold;
-   background-color: rgb(42,42,42);
 }
 
 #content .shadow
@@ -95,6 +90,7 @@ body
    width: 100%;
    height: 16px;
    position: absolute;
+   top: 0;
    background: linear-gradient( rgba(0,0,0,0.2), rgba(0,0,0,0) );
 }
 
@@ -612,22 +608,40 @@ body .login-prompt > .contents > .error
    justify-content: center;
 }
 
-.chat-input-floating-tool > .content.maximized > .styles > .button
+.chat-input-floating-tool > .content.maximized > .styles > .container
 {
    margin: 0 auto;
+}
+
+.chat-input-floating-tool > .content.maximized > .styles .button
+{
    cursor: pointer;
-   height: 1.1em;
-   padding: 0 1.25ex;
+   background-size: 95%;
+   background-repeat: no-repeat;
+   background-position: center;
+   width: 1.75em;
+   height: 1.75em;
+   border-radius: 0.334em;
 }
 
-.chat-input-floating-tool > .content.maximized > .styles > .button.bold
+.chat-input-floating-tool > .content.maximized > .styles .button.on
 {
-   margin-top: 0.05em;
+   background-color: rgba(255,255,255,0.25);
 }
 
-.chat-input-floating-tool > .content.maximized > .styles > .button.underline
+.chat-input-floating-tool > .content.maximized > .styles .button.bold
 {
-   margin-top: 0.2em;
+   background-image: url("img/input-bold.png");
+}
+
+.chat-input-floating-tool > .content.maximized > .styles .button.italic
+{
+   background-image: url("img/input-italic.png");
+}
+
+.chat-input-floating-tool > .content.maximized > .styles .button.underline
+{
+   background-image: url("img/input-underline.png");
 }
 
 .chat-input-floating-tool > .content.maximized > .link
@@ -647,6 +661,7 @@ body .login-prompt > .contents > .error
    margin: 0 auto;
    box-sizing: border-box;
    width: 100%;
+   border-radius: 0.334em;
 }
 
 .chat-input-floating-tool > .content.maximized > .link .overlay
@@ -660,7 +675,29 @@ body .login-prompt > .contents > .error
    text-align: center;
 }
 
-.content .chat-input > .text .input-selection-wrapper
+#content .chat-input > .text .input-selection-wrapper
 {
-   background-color: 1px solid rgba(0,0,0,0.25);
+   border-left: 1px solid red;
+   border-right: 1px solid red;
+}
+
+#content .chat-input > .text .input-selection-wrapper.bold
+{
+   font-weight: bold;
+}
+
+#content .chat-input > .text .input-selection-wrapper.italic
+{
+   font-style: italic;
+}
+
+#content .chat-input > .text .input-selection-wrapper.underline
+{
+   text-decoration: underline;
+}
+
+#content .chat-input > .text .input-selection-wrapper.link
+{
+   font-weight: bold;
+   color: blue;
 }

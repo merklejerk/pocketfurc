@@ -21,6 +21,7 @@ var _init = function( )
    _initHeader( );
    _initChatArea( );
    _createClient( );
+   _loginPrompt.on( "log", _displayStatus );
    setInterval( _onHeartbeat, 500 );
 }
 
@@ -109,9 +110,9 @@ var _onLoginReady = function( )
       _login( );
 }
 
-var _displayStatus = function( level, msg )
+var _displayStatus = function( msg, level )
 {
-   $("#status > .content")
+   $("#content > .status")
       .stop( )
       .text( msg )
       .css( "color", level >= jsfurcConstants.LOG_LEVEL_WARNING ? "red" : "white" )
@@ -167,11 +168,11 @@ var _onChatEmoteEcho = function( player, msg )
 
 var _updateStatus = function( )
 {
-   if (util.time( ) - _lastStatusMessageTime > 180.0)
+   if (util.time( ) - _lastStatusMessageTime > 10.0)
    {
-      var content = $("#status > .content");
-      if (content.is( ":visible" ))
-         content.fadeOut( 2000 );
+      var status = $("#content > .status");
+      if (status.is( ":visible" ))
+         status.fadeOut( 2000 );
    }
 }
 

@@ -2,7 +2,7 @@ var $ = require( "jquery" );
 var _ = require( "underscore" );
 var util = require( "./util" );
 
-module.exports = function( parent, child, clear, onClickOut )
+module.exports = function( container, child, clear, onClickOut )
 {
    var _this = this;
    var _elem = $("<div class=modal-cover />");
@@ -15,7 +15,7 @@ module.exports = function( parent, child, clear, onClickOut )
       _elem.toggleClass( "clear", !!clear );
       _elem.on( "click", _.bind( _onClick, _this ) );
       _elem.append( child );
-      parent.append( _elem );
+      $("body").append( _elem );
    }
 
    this.destroy = function( )
@@ -38,9 +38,9 @@ module.exports = function( parent, child, clear, onClickOut )
 
    var _fit = function( )
    {
-      var bounds = parent.offset( );
-      bounds.width = parent.width( );
-      bounds.height = parent.height( );
+      var bounds = container.offset( );
+      bounds.width = container.width( );
+      bounds.height = container.height( );
       _elem.css( bounds );
    }
 

@@ -134,6 +134,16 @@ module.exports = function( connection )
       {
          _events.raise( "chat-whisper-echo", player, msg );
       }
+
+      this.onLoadMap = function( mapName )
+      {
+         _events.raise( "load-map", mapName );
+      }
+
+      this.onLoadDream = function( dreamID1, dreamID2 )
+      {
+         _events.raise( "load-dream", dreamID1, dreamID2 );
+      }
    }
 
    _init( );

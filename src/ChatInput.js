@@ -180,7 +180,7 @@ module.exports = function( container, app )
       (function( parent ) {
          while (true)
          {
-            var cleanCount = _cleanChildNodes( parent.childNodes );
+            var cleanCount = _cleanChildNodes( parent );
             if (!cleanCount)
                break;
          }
@@ -204,10 +204,12 @@ module.exports = function( container, app )
                   case "I":
                   case "U":
                   case "IMG":
+                     child.removeAttribute( "style" );
+                     child.removeAttribute( "title" );
                      break;
                   default:
                      ++count;
-                     $(child).unwrap( );
+                     $(child).before( $(child).contents( ) ).remove( );
                }
             }
          } );

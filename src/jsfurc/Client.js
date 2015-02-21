@@ -64,6 +64,7 @@ module.exports = function( )
 
    var _login = function( )
    {
+      _info( "Logging in..." );
       _service.login( _loginInfo.name, _loginInfo.password );
    }
 
@@ -148,7 +149,7 @@ module.exports = function( )
       _service.destroy( );
       _initGameService( );
       _service.initPlayer( _loginInfo.colors, _loginInfo.description );
-      _service.mapReady( );
+      //_service.mapReady( );
       _events.raise( "logged-in" );
    }
 
@@ -161,6 +162,20 @@ module.exports = function( )
       _service.on( "chat-speech-echo", _.partial( _events.raise, "chat-speech-echo", _loginInfo.name ) );
       _service.on( "chat-whisper-echo", _.partial( _events.raise, "chat-whisper-echo" ) );
       _service.on( "chat-emote", _onChatEmote );
+      _service.on( "load-map", _onLoadMap );
+      _service.on( "load-dream", _onLoadDream );
+   }
+
+   var _onLoadMap = function( mapName )
+   {
+      _service.mapReady( );
+      _info( "Entered map." );
+   }
+
+   var _onLoadDream = function( dreamID1, dreamID2 )
+   {
+      _service.mapReady( );
+      _info( "Entered map." );
    }
 
    var _onChatEmote = function( player, msg )
@@ -174,16 +189,16 @@ module.exports = function( )
 
    var _error = function( msg )
    {
-      _events.raise( "log", Constants.LOG_LEVEL_ERROR, msg );
+      _events.raise( "log", msg, Constants.LOG_LEVEL_ERROR );
    }
 
    var _warning = function( msg )
    {
-      _events.raise( "log", Constants.LOG_LEVEL_WARNING, msg );
+      _events.raise( "log", msg, Constants.LOG_LEVEL_WARNING );
    }
 
    var _info = function( msg )
    {
-      _events.raise( "log", Constants.LOG_LEVEL_INFO, msg );
+      _events.raise( "log", msg, Constants.LOG_LEVEL_INFO );
    }
 };
