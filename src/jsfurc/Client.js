@@ -149,7 +149,6 @@ module.exports = function( )
       _service.destroy( );
       _initGameService( );
       _service.initPlayer( _loginInfo.colors, _loginInfo.description );
-      //_service.mapReady( );
       _events.raise( "logged-in" );
    }
 

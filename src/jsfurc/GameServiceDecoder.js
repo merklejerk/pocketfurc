@@ -23,6 +23,7 @@ module.exports = function( )
       case "(":
          return _decodeChat( line );
       case "]":
+            console.log( line );
          if (params = _fmt.parse( "]q %s %d", line, ["dreamID1","dreamID2"] ))
             return _listeners.raise( "onLoadDream", params.dreamID1, params.dreamID2 );
          if (params = _fmt.parse( "]o%s", line, ["mapName"] ))
