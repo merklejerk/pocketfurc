@@ -135,22 +135,9 @@ module.exports = function( container, app ) {
             } );
    }
 
-   var _fixContentLinks = function( contentElem )
-   {
-      contentElem.find( "a[href]" ).each(
-         function( ) {
-            var a = $(this);
-            var href = a.attr( "href" );
-            if (href.indexOf( "http://" ) != 0 &&
-               href.indexOf( "https://" ) != 0 &&
-               href.indexOf( "ftp://" ) != 0)
-               a.attr( "href", "http://" + href );
-         } );
-   }
-
    var _encodeContent = function( rawContentString )
    {
-      return _contentEncoder.encode( rawContentString ).replace( /\|/g, " " );
+      return _contentEncoder.encode( rawContentString );
    }
 
    var _encodeName = function( rawName )
@@ -221,7 +208,8 @@ module.exports = function( container, app ) {
                }
             ]
          ] );
-      menu.on( "pick", _.partial( _onPlayerMenuPick, username ) );
+      menu.on( "pick", _.partial( _onPlayerMenuPick,
+         triggerElem.attr( "data-username") ) );
       menu.on( "out", function( ) { menu.destroy( ); } );
       var pos = triggerElem.offset( );
       menu.show( pos.left, pos.top );

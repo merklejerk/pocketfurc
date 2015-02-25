@@ -84,7 +84,7 @@ body
    height: 1em;
    border-radius: 2em;
    padding: 0.334em;
-   background-color: rgba(0,0,0,0.66);
+   background-color: rgba(0,0,0,0.45);
    color: white;
    font-family: sans-serif;
    font-weight: bold;
@@ -284,6 +284,11 @@ body
    color: rgb(34, 170, 240);
 }
 
+#content .chat-buffer .fancy-block.whisper.echo > .content-container .username
+{
+   color: rgb(255,127,42);
+}
+
 #content .chat-buffer .fancy-block.whisper > .arm
 {
    background-image: url("img/chat-balloon-arm-whisper.svg");
@@ -349,6 +354,11 @@ body
 #content .chat-buffer .fancy-block.system > .content-container > .age
 {
    color: rgb(228,228,228);
+}
+
+#content .chat-buffer .fancy-block.system > .content-container > .content .username
+{
+   color: rgb(108, 55, 184);
 }
 
 #content .chat-buffer .fancy-block.system
