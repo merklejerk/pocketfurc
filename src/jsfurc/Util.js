@@ -1,8 +1,5 @@
 var _ = require( "underscore" );
 
-var _utf8Encoder = new TextEncoder( "utf-8" );
-var _utf8Decoder = new TextDecoder( "utf-8" );
-
 var BASE_95_START_ORD = 0x20;
 var BASE_220_START_ORD = 0x23;
 
@@ -16,12 +13,18 @@ module.exports = new (function( ){
 
    this.stringToBuffer = function( str )
    {
-      return _utf8Encoder.encode( str );
+      var buf = new Uint8Array( str.length );
+      for (var i = 0; i < str.length; ++i)
+         buf[i] = str.charCodeAt( i );
+      return buf;
    }
 
-   this.bufferToString = function( buf )
+   this.bufferToString = function( buf, start, end )
    {
-      return _utf8Decoder.decode( buf );
+      var str = "";
+      for (var i = start; i < end; ++i)
+         str += String.fromCharCode( buf[i] );
+      return str;
    }
 
    this.createCanonicalPlayerName = function( name )
@@ -65,22 +68,24 @@ module.exports = new (function( ){
 
    this.decodeBase95 = function( str )
    {
-      return _decodeBaseX ( str, 95, BASE_95_START_ORD );
-   }
-
-   this.decodeBase220 = function( str )
-   {
-      return _decodeBaseX ( str, 220, BASE_220_START_ORD );
-   }
-
-   var _decodeBaseX = function( str, base, baseStart )
-   {
       var num = 0;
       var m = 1;
       for (var i = str.length - 1; i >= 0; --i)
       {
-         num += (str.charCodetA( i ) - baseStart) * m;
-         m *= base;
+         num += (str.charCodeAt( i ) - BASE_95_START_ORD) * m;
+         m *= 95;
+      }
+      return num;
+   }
+
+   this.decodeBase220 = function( str )
+   {
+      var num = 0;
+      var m = 1;
+      for (var i = 0; i < str.length; ++i)
+      {
+         num += (str.charCodeAt( i ) - BASE_220_START_ORD) * m;
+         m *= 220;
       }
       return num;
    }

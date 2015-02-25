@@ -8,6 +8,7 @@ module.exports = function( )
    FORMAT SPEC:
    -   %%         : Percent character. (No input)
    -   %s         : Raw string. (String)
+   -   %S         : Byte-string, prepended with base-220 length. (String)
    -   %w         : Word. (String)
    -   %d         : Digits. (Integer)
    -   %p         : Player name. (String)
@@ -197,7 +198,7 @@ module.exports = function( )
          var s = m[0];
          if (len > 0)
             s = m[0].substr( 0, len );
-         return { "consumed": m[0].length, "value": fn( s ) };
+         return { "consumed": s.length, "value": fn( s ) };
       }
    }
 
@@ -205,6 +206,12 @@ module.exports = function( )
       "s": function( len ) {
             return function( input ) {
                return input;
+            };
+      },
+      "S": function( len ) {
+            return function( input ) {
+               len = Math.min( input.length, len );
+               return Util.encodeBase220( len ) + input.substr( 0, len );
             };
       },
       "w": function( len ) {
@@ -251,31 +258,42 @@ module.exports = function( )
                   if (count >= len)
                      count = Math.max( count, len );
                }
-               if (count != len)
-               return { "consumed": count,
-                  "value": subj.substr( pos, count ) };
+               if (!len || count == len)
+                  return { "consumed": count,
+                     "value": subj.substr( pos, count ) };
+            };
+      },
+      "S": function( len ) {
+            return function( subj, pos ) {
+               var encodedLength = _createDecoder( "%1N" )( subj, pos );
+               pos += encodedLength.consumed;
+               if (!len)
+                  len = encodedLength.value;
+               len = Math.min( subj.length - pos, Math.min( encodedLength.value, len ) );
+               return { "consumed": encodedLength.consumed + len,
+                  "value": subj.substr( pos, len ) };
             };
       },
       "w": function( len ) {
-            var re = _.partial( _matchRegex, /^[^ ]+/ );
+            var re = /^[^ ]+/;
             return _.partial( _decodeWithSimpleRegex, re, len, function( str ) {
                return str;
             } );
       },
       "d": function( len ) {
-            var re = _.partial( _matchRegex, /^\d+/ );
+            var re = /^\d+/;
             return _.partial( _decodeWithSimpleRegex, re, len, parseInt );
       },
       "p": function( len ) {
-            var re = _.partial( _matchRegex, /^\S+/ );
+            var re = /^\S+/;
             return _.partial( _decodeWithSimpleRegex, re, len, Util.expandPlayerName );
       },
       "n": function( len ) {
-            var re = _.partial( _matchRegex, /^[\x20-x7E]+/ );
+            var re = /^[\x20-\x7E]+/;
             return _.partial( _decodeWithSimpleRegex, re, len, Util.decodeBase95 );
       },
       "N": function( len ) {
-            var re = _.partial( _matchRegex, /^[\x23-x254]+/ );
+            var re = /^[\x23-\xFE]+/;
             return _.partial( _decodeWithSimpleRegex, re, len, Util.decodeBase220 );
       }
    };
