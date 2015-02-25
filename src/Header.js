@@ -7,7 +7,7 @@ var PopupMenu = require( "./PopupMenu" );
 module.exports = function( app )
 {
    var _this = this;
-   var _elem = $(templates["app-header"]( ));
+   var _root = $(templates["app-header"]( ));
    var _menu;
 
    this.getApp = function( )
@@ -50,12 +50,12 @@ module.exports = function( app )
 
    var _toggleReconnect = function( toggle )
    {
-      _elem.find( ".reconnect-button" ).toggle( toggle );
+      _root.find( ".reconnect-button" ).toggle( toggle );
    }
 
    this.toggleMenu = function( toggle )
    {
-      var settingsButton = _elem.find( ".menu-button" );
+      var settingsButton = _root.find( ".menu-button" );
       if (toggle && !_menu.isOpen( ))
       {
          _menu.toggleItemChecked( "ignores", app.areIgnoresEnabled( ) );
@@ -80,10 +80,7 @@ module.exports = function( app )
             app.logOut( );
             break;
          case "close":
-            app.close( );n = function( loggedIn )
-   {
-      _menu.toggleItemEnabled( "log-out", loggedIn );
-   }
+            app.close( );
             break;
          case "about":
             app.about( );
@@ -101,12 +98,26 @@ module.exports = function( app )
       _menu.toggleItemEnabled( "log-out", loggedIn );
    }
 
-   $("body").prepend( _elem );
-   _elem.find( ".reconnect-button" )
+   this.setPlayersVisible = function( count )
+   {
+      var button = _root.find( ".players-visible-button" );
+      if (count == 0)
+         button.hide( );
+      else
+         button.show( );
+      button.find( ".count" ).text( "" + count );
+   }
+
+   $("body").prepend( _root );
+   _root.find( ".reconnect-button" )
       .on( "click", function( ) {
          app.reconnect( );
       } );
-   _elem.find( ".menu-button" )
+   _root.find( ".players-visible-button" )
+      .on( "click", function( ) {
+         app.showPlayersVisible( );
+      } );
+   _root.find( ".menu-button" )
       .on( "click", function( e ) {
          _this.toggleMenu( true );
          e.preventDefault( );
@@ -123,6 +134,4 @@ module.exports = function( app )
       _toggleReconnect( false );
       _toggleLoggedIn( true );
       } );
-   //_toggleReconnect( app.isConnected( ) );
-   //_toggleLoggedIn( app.isLoggedIn( ) );
 }

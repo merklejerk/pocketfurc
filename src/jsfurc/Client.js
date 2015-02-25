@@ -125,6 +125,21 @@ module.exports = function( )
       return _loginInfo.name;
    }
 
+   this.getMapPlayers = function( )
+   {
+      return _service.getMapPlayers( );
+   }
+
+   this.addMapListener = function( listener )
+   {
+      _service.addMapListener( listener );
+   }
+
+   this.removeMapListener = function( listener )
+   {
+      _service.removeMapListener( listener );
+   }
+
    var _onConnectFail = function( err )
    {
       _error( "Connection error: " + err );
@@ -177,19 +192,18 @@ module.exports = function( )
       _service.on( "chat-whisper-echo", _.partial( _events.raise, "chat-whisper-echo" ) );
       _service.on( "chat-emote", _onChatEmote );
       _service.on( "load-map", _onLoadMap );
-      _service.on( "load-dream", _onLoadDream );
+      _service.on( "enter-map", _onEnterMap );
    }
 
    var _onLoadMap = function( mapName )
    {
       _service.mapReady( );
-      _info( "Entered map." );
    }
 
-   var _onLoadDream = function( dreamID1, dreamID2 )
+   var _onEnterMap = function( mapName )
    {
-      _service.mapReady( );
       _info( "Entered map." );
+      _events.raise( "enter-map", mapName );
    }
 
    var _onChatEmote = function( player, msg )

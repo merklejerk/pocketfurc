@@ -57,6 +57,42 @@ body
    display: none;
 }
 
+#header > .right > .players-visible-button
+{
+   height: 60%;
+   cursor: pointer;
+   margin-right: 2ex;
+   display: none;
+}
+
+#header > .right > .players-visible-button > .icon
+{
+   height: 72%;
+   margin-top: 10%;
+}
+
+#header > .right > .players-visible-button .count-container
+{
+   display: block;
+   margin-top: -50%;
+   margin-left: -38%;
+}
+
+#header > .right > .players-visible-button .count
+{
+   width: 1em;
+   height: 1em;
+   border-radius: 2em;
+   padding: 0.334em;
+   background-color: rgba(0,0,0,0.66);
+   color: white;
+   font-family: sans-serif;
+   font-weight: bold;
+   text-align: center;
+   font-size: 1em;
+   display: inline-block;
+}
+
 #header > .right > .menu-button
 {
    height: 60%;

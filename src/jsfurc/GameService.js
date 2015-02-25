@@ -4,6 +4,7 @@ var Util = require( "./Util" );
 var GameServiceEncoder = require( "./GameServiceEncoder" );
 var GameServiceDecoder = require( "./GameServiceDecoder" );
 var Eventful = require( "./Eventful" );
+var GameMap = require( "./GameMap" );
 
 module.exports = function( connection )
 {
@@ -16,6 +17,7 @@ module.exports = function( connection )
    var _decoder = new GameServiceDecoder( );
    var _events = new Eventful( this );
    var _keepAliveTimer;
+   var _map;
 
    var _init = function( )
    {
@@ -100,6 +102,32 @@ module.exports = function( connection )
       connection.sendLine( _encoder.quit( ) );
    }
 
+   var _resetMap = function( )
+   {
+      if (_map)
+         _map.destroy( );
+      _map = new GameMap( _decoder );
+   }
+
+   this.getMapPlayers = function( )
+   {
+      if (_map)
+         return _map.getAllPlayerInfos( );
+      return [];
+   }
+
+   this.addMapListener = function( listener )
+   {
+      if (_map)
+         _map.addListener( listener );
+   }
+
+   this.removeMapListener = function( listener )
+   {
+      if (_map)
+         _map.removeListener( listener );
+   }
+
    var _DecoderListener = function( )
    {
       var _service = _this;
@@ -140,9 +168,15 @@ module.exports = function( connection )
          _events.raise( "load-map", mapName );
       }
 
-      this.onLoadDream = function( dreamID1, dreamID2 )
+      this.onUsePatch  = function( patchID, patchNum )
       {
-         _events.raise( "load-dream", dreamID1, dreamID2 );
+         _events.raise( "use-patch", patchID, patchNum );
+      }
+
+      this.onEnterMap = function( mapName )
+      {
+         _resetMap( );
+         _events.raise( "enter-map", mapName );
       }
    }
 

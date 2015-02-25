@@ -23,10 +23,37 @@ module.exports = function( )
       case "(":
          return _decodeChat( line );
       case "]":
-         if (params = _fmt.parse( "]q %s %d", line, ["dreamID1","dreamID2"] ))
-            return _listeners.raise( "onLoadDream", params.dreamID1, params.dreamID2 );
+         if (params = _fmt.parse( "]q %w %d", line, ["patchID","patchNum"] ))
+            return _listeners.raise( "onUsePatch", params.patchID, params.patchNum );
          if (params = _fmt.parse( "]o%s", line, ["mapName"] ))
             return _listeners.raise( "onLoadMap", params.mapName );
+         if (params = _fmt.parse( "]J%s", line, ["mapName"] ))
+            return _listeners.raise( "onEnterMap", params.mapName );
+         break;
+      case "<":
+         if (params = _fmt.parse( "<%4N%2N%2N%2N%S%s", line,
+            ["uid","x","y", "frame", "name", "colors"] ))
+            return _listeners.raise( "onCreatePlayer",
+               params.uid, params.name, params.x, params.y, params.frame );
+         break;
+      case "/":
+         if (params = _fmt.parse( "<%4N%2N%2N%2N", line,
+            ["uid","x","y", "frame"] ))
+            return _listeners.raise( "onMovePlayer",
+               params.uid, params.x, params.y, params.frame );
+         break;
+      case ")":
+         if (params = _fmt.parse( ")%4N", line, ["uid"] ))
+            return _listeners.raise( "onRemovePlayer",
+               params.uid );
+         break;
+      case "@":
+         if (params = _fmt.parse( "@%2n%2n", line, ["x","y"] ))
+            return _listeners.raise( "onSetCamera",
+               params.x, params.y );
+         if (params = _fmt.parse( "@%2n%2n%2n%2n", line, ["fromX","fromY","toX","toY"] ))
+            return _listeners.raise( "onMoveCamera",
+               params.fromX, params.fromY, params.toX, params.toY );
          break;
       default:
          break;

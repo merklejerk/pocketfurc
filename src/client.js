@@ -7,12 +7,14 @@ var Eventful = require( "./jsfurc/Eventful" );
 var Header = require( "./Header" );
 var ChatArea = require( "./ChatArea" );
 var LoginPrompt = require( "./LoginPrompt" );
+var templates = require( "./templates" );
 
 var _client = null;
 var _lastStatusMessageTime = 0;
 var _chatArea;
 var _loginInfo;
 var _loginPrompt = new LoginPrompt( );
+var _rawLog = false;
 var _header;
 
 var _init = function( )
@@ -66,6 +68,8 @@ var _createClient = function( )
    _client.on( "chat-speech-echo", _onChatSpeechEcho );
    _client.on( "chat-whisper-echo", _onChatWhisperEcho );
    _client.on( "chat-emote-echo", _onChatEmoteEcho );
+   _client.on( "enter-map", _onEnterMap );
+   _client.toggleRawLog( _rawLog );
    _client.connect( );
 }
 
@@ -126,6 +130,11 @@ var _onLoggedIn = function( )
    _chatArea.focusInput( );
 }
 
+var _onEnterMap = function( mapName )
+{
+   _client.addMapListener( new MapListener( ) );
+}
+
 var _onHeartbeat = function( )
 {
    _updateStatus( );
@@ -174,6 +183,14 @@ var _updateStatus = function( )
       if (status.is( ":visible" ))
          status.fadeOut( 2000 );
    }
+}
+
+var _getVisiblePlayers = function( )
+{
+   return _.filter( _client.getMapPlayers( ),
+      function( player ) {
+         return player.visible;
+   } );
 }
 
 var ChatAreaApp = function( )
@@ -225,7 +242,10 @@ var ChatAreaApp = function( )
    this.sendRaw = function( msg )
    {
       if (msg == "rawlog")
+      {
          _client.toggleRawLog( !_client.isRawLogOn( ) );
+         _rawLog = _client.isRawLogOn( );
+      }
       else
          _client.sendRawLine( msg );
    }
@@ -283,6 +303,52 @@ var HeaderApp = function( )
    this.reconnect = function( )
    {
       _reconnect( );
+   }
+
+   this.showPlayersVisible = function( )
+   {
+      if (_client)
+      {
+         var players = _getVisiblePlayers( );
+         players.sort( function( a, b ) { return a.name.localeCompare( b.name ); } );
+         var msg = templates["chat-message-nearby-players"]( { "players": players } );
+         _chatArea.appendChat( msg );
+      }
+   }
+}
+
+var MapListener = function( )
+{
+   var _this = this;
+
+   this.onPlayerCreated = function( )
+   {
+      _updateHeader( );
+   }
+
+   this.onPlayerVisible = function( )
+   {
+      _updateHeader( );
+   }
+
+   this.onPlayerNotVisible = function( )
+   {
+      _updateHeader( );
+   }
+
+   this.onPlayerRemoved = function( )
+   {
+      _updateHeader( );
+   }
+
+   var _updateHeader = function( )
+   {
+      _header.setPlayersVisible( _countPlayers( ) );
+   }
+
+   var _countPlayers = function( )
+   {
+      return _getVisiblePlayers( ).length;
    }
 }
 
