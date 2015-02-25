@@ -2,8 +2,8 @@ var _ = require( "underscore" );
 
 module.exports = function( obj )
 {
-	var _this = this;
-	var _listeners = [];
+   var _this = this;
+   var _listeners = [];
 
    this.raise = function( event /*, *args */ )
    {
@@ -18,16 +18,18 @@ module.exports = function( obj )
    this.addListener = function( listener )
    {
       _listeners.push( listener );
+      return _this;
    }
 
    this.removeListener = function( listener )
    {
       _listeners = _.without( listeners, listener );
+      return _this;
    }
 
-	if (obj)
-	{
-		obj["addListener"] = _this.addListener;
-		obj["removeListener"] = _this.removeListener;
-	}
+   if (obj)
+   {
+      obj["addListener"] = _this.addListener;
+      obj["removeListener"] = _this.removeListener;
+   }
 }
