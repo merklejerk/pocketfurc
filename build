@@ -1,16 +1,25 @@
 #!/bin/bash
 
-pushd src
+SRC_DIR="./src"
+CHROME_BUILD_CMD="./build"
+CHROME_BUILD_FLAGS="-r"
+OUTPUT_FILE="./app.zip"
 
-echo "Compiling templates..."
-handlebars templates -c handlebars -f templates.compiled.js
-echo "Compiling javascript..."
-browserify client.js -o client.compiled.js
+while getopts "o:" OPT; do
+   case $OPT in
+      o)
+         OUTPUT_FILE="../$OPTARG"
+         ;;
+   esac
+done
 
-if [ -f ../app.zip ]; then
-   rm ../app.zip
+pushd $SRC_DIR
+
+$CHROME_BUILD_CMD $CHROME_BUILD_FLAGS
+
+if [ -f "$OUTPUT_FILE" ]; then
+   rm "$OUTPUT_FILE"
 fi
-
-zip ../app.zip *.compiled.js *.css *.html *.png manifest.json background.js img/*
+zip "$OUTPUT_FILE" *.compiled.js *.css *.html *.png manifest.json background.js img/*
 
 popd

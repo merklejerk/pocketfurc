@@ -1,5 +1,19 @@
-#!/bin/sh
+#!/bin/bash
+
+BROWSERIFY_FLAGS="--debug"
+MODE="debug"
+
+while getopts "r" OPT; do
+   case $OPT in
+      r)
+         echo "Building for release mode."
+         BROWSERIFY_FLAGS=""
+         MODE="release"
+         ;;
+   esac
+done
+
 echo "Compiling templates..."
 handlebars templates -c handlebars -f templates.compiled.js
-echo "Compiling javascript..."
-browserify client.js --debug -o client.compiled.js
+echo "Compiling javascript for $MODE mode..."
+browserify client.js $BROWSERIFY_FLAGS -o client.compiled.js
