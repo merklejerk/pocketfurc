@@ -1,7 +1,7 @@
 # pocketfurc
 PocketFurc is a discreet, light-weight chat client for the MMOSG Furcadia (http://www.furcadia.com).
 
-![screenshot](http://i.imgur.com/G43f6Gp.png)
+![screenshot](http://i.imgur.com/VQh22qi.png)
 
 You must have a character already registered with the game in order to log in.
 You will appear wherever you last logged off with whatever colors and description you last had in-game.
