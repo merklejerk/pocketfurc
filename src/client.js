@@ -338,7 +338,7 @@ var _HeaderApp = function( )
 
    this.about = function( )
    {
-      console.log( "TODO" );
+      window.open( "https://github.com/cluracan/pocketfurc" );
    }
 
    this.reconnect = function( )
