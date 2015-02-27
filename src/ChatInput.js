@@ -124,8 +124,8 @@ module.exports = function( container, app )
    var _getContents = function( )
    {
       var contents = _elem.children( ".text" ).html( );
-      contents = contents.replace( / \xAO/g, " " );
-      contents = contents.replace( /\xA0/g, "" );
+      contents = contents.replace( / &nbsp;/g, "  " );
+      contents = contents.replace( /&nbsp;/g, " " );
       if (contents.match( /^\s+$/ ))
          return "";
       return contents;
@@ -138,9 +138,6 @@ module.exports = function( container, app )
 
    var _setContents = function( text, isMarkup )
    {
-      // Convert sequences of spaces to &nbsp;
-      text = text.replace( /  /g, " \xA0" );
-      text = text.replace( / $/gm, "\xA0" );
       if (isMarkup)
          _elem.children( ".text" ).html( text );
       else
@@ -211,6 +208,14 @@ module.exports = function( container, app )
                      ++count;
                      $(child).before( $(child).contents( ) ).remove( );
                }
+            }
+            else if (child.nodeType == Node.TEXT_NODE)
+            {
+               var content = "" + child.nodeValue;
+               // Convert sequences of spaces to &nbsp;
+               child.nodeValue = content
+                  .replace( /  /g, " \xA0" )
+                  .replace( / $/gm, "\xA0" );
             }
          } );
       return count;

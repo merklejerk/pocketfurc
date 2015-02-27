@@ -80,9 +80,20 @@ var _promptForLogin = function( )
 {
    _loginPrompt.show( $("#content"), function( loginInfo ) {
       _loginInfo = _.extend( {}, loginInfo );
+      _amendLoginInfo( );
       if (_client.isReadyToLogin( ))
          _login( );
    } );
+}
+
+var _amendLoginInfo = function( )
+{
+   if (_loginInfo)
+   {
+      var stamp = "[<a href=\"https://github.com/cluracan/pocketfurc\">pocketfurc</a>]";
+      if (_loginInfo.description.indexOf( stamp ) == -1)
+         _loginInfo.description += " " + stamp;
+   }
 }
 
 var _login = function( )

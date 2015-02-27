@@ -1,8 +1,14 @@
 {
    "name": "PocketFurc",
    "description": "A rudimentary Furcadia client.",
-   "version": "0.1",
+   "version": "0.2",
    "manifest_version": 2,
+   "icons": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png",
+      "256": "icon256.png"
+   },
    "app": {
       "background": {
       "scripts": ["background.js"]

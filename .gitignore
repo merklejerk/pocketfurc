@@ -1,0 +1,5 @@
+*.crx
+*.pem
+*.zip
+src/*.compiled.js
+

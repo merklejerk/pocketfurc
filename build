@@ -1,0 +1,16 @@
+#!/bin/bash
+
+pushd src
+
+echo "Compiling templates..."
+handlebars templates -c handlebars -f templates.compiled.js
+echo "Compiling javascript..."
+browserify client.js -o client.compiled.js
+
+if [ -f ../app.zip ]; then
+   rm ../app.zip
+fi
+
+zip ../app.zip *.compiled.js *.css *.html *.png manifest.json background.js img/*
+
+popd
