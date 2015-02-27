@@ -366,7 +366,7 @@ body
 #content .chat-input
 {
    background-color: white;
-   overflow: hidden;
+   /*overflow: hidden;*/
    border-top: 2px solid rgb(198,198,198);
    padding: 0.9em 1ex;
    word-break: break-word;
@@ -390,6 +390,11 @@ body
    float: left;
    margin: -0.3em 1.25ex 0 0;
    cursor: pointer;
+}
+
+#content .chat-input > .clear
+{
+   clear: both;
 }
 
 #content .chat-input > .send

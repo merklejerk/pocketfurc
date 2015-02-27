@@ -13,6 +13,8 @@ while getopts "o:" OPT; do
    esac
 done
 
+set -e
+
 pushd $SRC_DIR
 
 $CHROME_BUILD_CMD $CHROME_BUILD_FLAGS

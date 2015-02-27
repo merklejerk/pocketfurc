@@ -13,6 +13,8 @@ while getopts "r" OPT; do
    esac
 done
 
+set -e
+
 echo "Compiling templates..."
 handlebars templates -c handlebars -f templates.compiled.js
 echo "Compiling javascript for $MODE mode..."
