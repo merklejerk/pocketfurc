@@ -1,5 +1,6 @@
 # pocketfurc
-PocketFurc is a discreet, light-weight chat client for the MMOSG Furcadia (http://www.furcadia.com).
+PocketFurc is a discreet, light-weight Furcadia (http://www.furcadia.com) chat client written for Chrome.
+As such, it runs anywhere Chrome runs.
 
 ![screenshot](http://i.imgur.com/VQh22qi.png)
 
