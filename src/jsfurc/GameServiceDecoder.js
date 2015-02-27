@@ -29,6 +29,10 @@ module.exports = function( )
             return _listeners.raise( "onLoadMap", params.mapName );
          if (params = _fmt.parse( "]J%s", line, ["mapName"] ))
             return _listeners.raise( "onEnterMap", params.mapName );
+         if (params = _fmt.parse( "]%%0%s", line, ["player"]))
+            return _listeners.raise( "onOnlineCheckResult", params.player, false );
+         if (params = _fmt.parse( "]%%1%s", line, ["player"]))
+            return _listeners.raise( "onOnlineCheckResult", params.player, true );
          break;
       case "<":
          if (params = _fmt.parse( "<%4N%2N%2N%2N%S%s", line,

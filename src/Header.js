@@ -18,13 +18,14 @@ module.exports = function( app )
    var _initPopupMenu = function( )
    {
       _menu = new PopupMenu( [
+         /*
          [
             {
                "id": "ignores",
                "label": "Ignores",
                "checked": app.areIgnoresEnabled( )
             }
-         ],
+         ],*/
          [
             {
                "id": "log-out",
@@ -100,12 +101,21 @@ module.exports = function( app )
 
    this.setPlayersVisible = function( count )
    {
-      var button = _root.find( ".players-visible-button" );
+      _setButtonCount( _root.find( ".players-visible-button" ), count );
+   }
+
+   this.setFriendsOnline = function( count )
+   {
+      _setButtonCount( _root.find( ".friends-online-button" ), count );
+   }
+
+   var _setButtonCount = function( $button, count )
+   {
       if (count == 0)
-         button.hide( );
+         $button.hide( );
       else
-         button.show( );
-      button.find( ".count" ).text( "" + count );
+         $button.show( );
+      $button.find( ".count" ).text( "" + count );
    }
 
    $("body").prepend( _root );
@@ -117,6 +127,10 @@ module.exports = function( app )
       .on( "click", function( ) {
          app.showPlayersVisible( );
       } );
+   _root.find( ".friends-online-button" )
+      .on( "click", function( ) {
+         app.showFriendsOnline( );
+      } );
    _root.find( ".menu-button" )
       .on( "click", function( e ) {
          _this.toggleMenu( true );
@@ -126,6 +140,8 @@ module.exports = function( app )
    app.on( "disconnect", function( ) {
       _toggleReconnect( true );
       _toggleLoggedIn( false );
+      _this.setFriendsOnline( 0 );
+      _this.setPlayersVisible( 0 );
       } );
    app.on( "connect", function( ) {
       _toggleReconnect( false );

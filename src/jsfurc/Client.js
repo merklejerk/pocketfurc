@@ -1,6 +1,7 @@
 var _ = require( "underscore" );
 var Constants = require( "./Constants" );
 var Eventful = require( "./Eventful" );
+var ListenerHost = require( "./ListenerHost" );
 var Util = require( "./Util" );
 var Connection = require( "./Connection" );
 var LoginService = require( "./LoginService" );
@@ -14,6 +15,7 @@ module.exports = function( )
 
    var _this = this;
    var _events = new Eventful( this );
+   var _chatListeners = new ListenerHost( );
    var _connection;
    var _service;
    var _states = 0x0;
@@ -22,8 +24,19 @@ module.exports = function( )
 
    this.destroy = function( )
    {
-      _service.destroy( );
+      if (_service)
+         _service.destroy( );
       _connection.close( );
+   }
+
+   this.addChatListener = function( listener )
+   {
+      _chatListeners.add( listener );
+   }
+
+   this.removeChatListener = function( listener )
+   {
+      _chatListeners.remove( listener );
    }
 
    this.isRawLogOn = function( )
@@ -67,14 +80,16 @@ module.exports = function( )
 
    this.login = function( name, password, description, colors )
    {
-      _loginInfo = {
-         "name": name,
-         "password": password,
-         "description": description || "",
-         "colors": colors || "t$$$$$$$$$$$$#"
-      };
       if (_states & STATE_LOGIN_READY)
+      {
+         _loginInfo = {
+            "name": name,
+            "password": password,
+            "description": description || "",
+            "colors": colors || "t$$$$$$$$$$$$#"
+         };
          _login( );
+      }
    }
 
    var _login = function( )
@@ -85,27 +100,32 @@ module.exports = function( )
 
    this.speak = function( msg )
    {
-      _service.speak( msg );
+      if (_this.isLoggedIn( ))
+         _service.speak( msg );
    }
 
    this.emote = function( msg )
    {
-      _service.emote( msg );
+      if (_this.isLoggedIn( ))
+         _service.emote( msg );
    }
 
    this.whisper = function( player, msg )
    {
-      _service.whisper( player, msg );
+      if (_this.isLoggedIn( ))
+         _service.whisper( player, msg );
    }
 
    this.lookAtPlayer = function( player)
    {
-      _service.lookAtPlayer( player );
+      if (_this.isLoggedIn( ))
+         _service.lookAtPlayer( player );
    }
 
    this.sendRawLine = function( msg )
    {
-      _service.raw( msg );
+      if (_service)
+         _service.raw( msg );
    }
 
    this.quit = function( forceDisconnect )
@@ -127,17 +147,28 @@ module.exports = function( )
 
    this.getMapPlayers = function( )
    {
-      return _service.getMapPlayers( );
+      if (_this.isLoggedIn( ))
+         return _service.getMapPlayers( );
+      return [];
+   }
+
+   this.getMapPlayerByUID = function( uid )
+   {
+      if (_this.isLoggedIn( ))
+         return _service.getMapPlayerByUID( uid );
+      return null;
    }
 
    this.addMapListener = function( listener )
    {
-      _service.addMapListener( listener );
+      if (_this.isLoggedIn( ))
+         _service.addMapListener( listener );
    }
 
    this.removeMapListener = function( listener )
    {
-      _service.removeMapListener( listener );
+      if (_this.isLoggedIn( ))
+         _service.removeMapListener( listener );
    }
 
    var _onConnectFail = function( err )
@@ -159,6 +190,9 @@ module.exports = function( )
    var _onDisconnected = function( err )
    {
       _states = 0x0;
+      if (_service)
+         _service.destroy( );
+      _service = null;
       _info( "Disconnected: " + err );
       _events.raise( "disconnected", err );
    }
@@ -168,8 +202,6 @@ module.exports = function( )
       _states = STATE_LOGIN_READY;
       _info( "Ready to log in." );
       _events.raise( "login-ready" );
-      if (_loginInfo)
-         _login( );
    }
 
    var _onLoggedIn = function( )
@@ -185,11 +217,11 @@ module.exports = function( )
    var _initGameService = function( )
    {
       _service = new GameService( _connection );
-      _service.on( "chat", _.partial( _events.raise, "chat" ) );
-      _service.on( "chat-speech", _.partial( _events.raise, "chat-speech" ) );
-      _service.on( "chat-whisper", _.partial( _events.raise, "chat-whisper" ) );
-      _service.on( "chat-speech-echo", _.partial( _events.raise, "chat-speech-echo", _loginInfo.name ) );
-      _service.on( "chat-whisper-echo", _.partial( _events.raise, "chat-whisper-echo" ) );
+      _service.on( "chat", _.partial( _chatListeners.raise, "onChat" ) );
+      _service.on( "chat-speech", _.partial( _chatListeners.raise, "onSpeech" ) );
+      _service.on( "chat-whisper", _.partial( _chatListeners.raise, "onWhisper" ) );
+      _service.on( "chat-speech-echo", _.partial( _chatListeners.raise, "onSpeechEcho", _loginInfo.name ) );
+      _service.on( "chat-whisper-echo", _.partial( _chatListeners.raise, "onWhisperEcho" ) );
       _service.on( "chat-emote", _onChatEmote );
       _service.on( "load-map", _onLoadMap );
       _service.on( "enter-map", _onEnterMap );
@@ -210,9 +242,17 @@ module.exports = function( )
    {
       // Need to do additional work to find out if an emote is an echo.
       if (player == _loginInfo.name)
-         _events.raise( "chat-emote-echo", _loginInfo.name, msg );
+         _chatListeners.raise( "onEmoteEcho", _loginInfo.name, msg );
       else
-         _events.raise( "chat-emote", player, msg );
+         _chatListeners.raise( "onEmote", player, msg );
+   }
+
+   this.checkOnline = function( name, callback )
+   {
+      if (_this.isLoggedIn( ))
+         _service.checkOnline( name, callback );
+      else
+         callback( name, false );
    }
 
    var _error = function( msg )

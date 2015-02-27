@@ -1,19 +1,20 @@
 {
-	"name": "PocketFurc",
-	"description": "A rudimentary Furcadia client.",
-	"version": "0.1",
-	"manifest_version": 2,
-	"app": {
-		"background": {
-		"scripts": ["background.js"]
-		}
-	},
-	"sockets": {
-		"tcp": {
-			"connect": ""
-		}
-	},
-	"permissions": [
-		"http://www.furcadia.com/"
-	]
+   "name": "PocketFurc",
+   "description": "A rudimentary Furcadia client.",
+   "version": "0.1",
+   "manifest_version": 2,
+   "app": {
+      "background": {
+      "scripts": ["background.js"]
+      }
+   },
+   "sockets": {
+      "tcp": {
+         "connect": ""
+      }
+   },
+   "permissions": [
+      "storage",
+      "http://www.furcadia.com/"
+   ]
 }

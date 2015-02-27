@@ -7,6 +7,7 @@ var Eventful = require( "./jsfurc/Eventful" );
 var Header = require( "./Header" );
 var ChatArea = require( "./ChatArea" );
 var LoginPrompt = require( "./LoginPrompt" );
+var FriendsList = require( "./FriendsList" );
 var templates = require( "./templates" );
 
 var _client = null;
@@ -16,6 +17,7 @@ var _loginInfo;
 var _loginPrompt = new LoginPrompt( );
 var _rawLog = false;
 var _header;
+var _friends;
 
 var _init = function( )
 {
@@ -23,6 +25,7 @@ var _init = function( )
    _initHeader( );
    _initChatArea( );
    _createClient( );
+   _initFriendsList( );
    _loginPrompt.on( "log", _displayStatus );
    setInterval( _onHeartbeat, 500 );
 }
@@ -35,7 +38,7 @@ var _initWindow = function( )
          if (_client)
             _client.quit( true );
       } );
-   // Chromes apps don't always respect vh vw changes.
+   // Chrome apps don't always respect vh vw changes.
    $(window).on( "resize", function( ) {
          $("body").css( {
             "width": $(window).width( ),
@@ -45,12 +48,18 @@ var _initWindow = function( )
 
 var _initHeader = function( )
 {
-   _header = new Header( new HeaderApp( ) );
+   _header = new Header( new _HeaderApp( ) );
 }
 
 var _initChatArea = function( )
 {
-   _chatArea = new ChatArea( $("#content"), new ChatAreaApp( ) );
+   _chatArea = new ChatArea( $("#content"), new _ChatAreaApp( ) );
+}
+
+var _initFriendsList = function( )
+{
+   _friends = new FriendsList( new _FriendsListClient( ) );
+   _friends.addListener( new _FriendsListListener( ) );
 }
 
 var _createClient = function( )
@@ -61,13 +70,7 @@ var _createClient = function( )
    _client.on( "connected", _onConnected );
    _client.on( "login-ready", _onLoginReady );
    _client.on( "logged-in", _onLoggedIn );
-   _client.on( "chat", _onChat );
-   _client.on( "chat-speech", _onChatSpeech );
-   _client.on( "chat-whisper", _onChatWhisper );
-   _client.on( "chat-emote", _onChatEmote );
-   _client.on( "chat-speech-echo", _onChatSpeechEcho );
-   _client.on( "chat-whisper-echo", _onChatWhisperEcho );
-   _client.on( "chat-emote-echo", _onChatEmoteEcho );
+   _client.addChatListener( new _ChatListener( ) );
    _client.on( "enter-map", _onEnterMap );
    _client.toggleRawLog( _rawLog );
    _client.connect( );
@@ -93,6 +96,7 @@ var _onDisconnected = function( err )
    if (_loginPrompt.isOpen( ))
       _loginPrompt.close( );
    _header.getApp( ).events.raise( "disconnect" );
+   _friends.reset( );
 }
 
 var _onConnected = function( err )
@@ -132,7 +136,7 @@ var _onLoggedIn = function( )
 
 var _onEnterMap = function( mapName )
 {
-   _client.addMapListener( new MapListener( ) );
+   _client.addMapListener( new _MapListener( ) );
 }
 
 var _onHeartbeat = function( )
@@ -140,49 +144,20 @@ var _onHeartbeat = function( )
    _updateStatus( );
 }
 
-var _onChat = function( msg )
-{
-   _chatArea.appendChat( msg );
-}
-
-var _onChatSpeech = function( player, msg )
-{
-   _chatArea.appendSpeech( player, msg );
-}
-
-var _onChatWhisper = function( player, msg )
-{
-   _chatArea.appendWhisper( player, msg );
-}
-
-var _onChatEmote = function( player, msg )
-{
-   _chatArea.appendEmote( player, msg );
-}
-
-var _onChatSpeechEcho = function( player, msg )
-{
-   _chatArea.appendSpeechEcho( player, msg );
-}
-
-var _onChatWhisperEcho = function( player, msg )
-{
-   _chatArea.appendWhisperEcho( player, msg );
-}
-
-var _onChatEmoteEcho = function( player, msg )
-{
-   _chatArea.appendEmoteEcho( player, msg );
-}
-
 var _updateStatus = function( )
 {
    if (util.time( ) - _lastStatusMessageTime > 10.0)
    {
       var status = $("#content > .status");
-      if (status.is( ":visible" ))
+      if (status.css( "display" ) != "none")
          status.fadeOut( 2000 );
    }
+}
+
+var _updateHeaderCounts = function( )
+{
+   _header.setPlayersVisible( _getVisiblePlayers( ).length );
+   _header.setFriendsOnline( _getFriendsOnline( ).length );
 }
 
 var _getVisiblePlayers = function( )
@@ -193,14 +168,62 @@ var _getVisiblePlayers = function( )
    } );
 }
 
-var ChatAreaApp = function( )
+var _getFriendsOnline = function( )
+{
+   return _.filter( _.values( _friends.getFriends( ) ),
+         function( friend ) {
+            return friend.online;
+   } );
+}
+
+var _ChatListener = function( )
+{
+   this.onChat = function( msg )
+   {
+      _chatArea.appendChat( msg );
+   }
+
+   this.onSpeech = function( player, msg )
+   {
+      _friends.setStatus( player, true );
+      _chatArea.appendSpeech( player, msg );
+   }
+
+   this.onWhisper = function( player, msg )
+   {
+      _friends.setStatus( player, true );
+      _chatArea.appendWhisper( player, msg );
+   }
+
+   this.onEmote = function( player, msg )
+   {
+      _friends.setStatus( player, true );
+      _chatArea.appendEmote( player, msg );
+   }
+
+   this.onSpeechEcho = function( player, msg )
+   {
+      _chatArea.appendSpeechEcho( player, msg );
+   }
+
+   this.onWhisperEcho = function( player, msg )
+   {
+      _chatArea.appendWhisperEcho( player, msg );
+   }
+
+   this.onEmoteEcho = function( player, msg )
+   {
+      _chatArea.appendEmoteEcho( player, msg );
+   }
+}
+
+var _ChatAreaApp = function( )
 {
    var _this = this;
 
    this.isFriend = function( username )
    {
-      console.log( "TODO" );
-      return false;
+      return _friends.isFriend( username );
    }
 
    this.isIgnored = function( username )
@@ -221,7 +244,17 @@ var ChatAreaApp = function( )
 
    this.friend = function( username, toggle )
    {
-      console.log( "TODO" );
+      if (toggle)
+      {
+         _friends.addFriend( username );
+         _displayStatus( username.replace( /\|/g, " " ) + " added to friends." );
+      }
+      else
+      {
+         _friends.removeFriend( username );
+         _displayStatus( username.replace( /\|/g, " " ) + " removed from friends." );
+      }
+      _updateHeaderCounts( );
    }
 
    this.sendWhisper = function( player, msg )
@@ -246,12 +279,20 @@ var ChatAreaApp = function( )
          _client.toggleRawLog( !_client.isRawLogOn( ) );
          _rawLog = _client.isRawLogOn( );
       }
+      else if (msg == "purge")
+      {
+         chrome.storage.sync.clear( );
+      }
+      else if (msg == "reload")
+      {
+         _friends.reload( );
+      }
       else
          _client.sendRawLine( msg );
    }
 }
 
-var HeaderApp = function( )
+var _HeaderApp = function( )
 {
    var _this = this;
 
@@ -315,40 +356,74 @@ var HeaderApp = function( )
          _chatArea.appendChat( msg );
       }
    }
+
+   this.showFriendsOnline = function( )
+   {
+      var friends = _.filter( _friends.getFriends( ),
+         function( friend ) {
+            return friend.online;
+         } )
+         .sort( function( a, b ) {
+            return a.name.localeCompare( b.name );
+         } );
+      var msg = templates["chat-message-friends-online"]( { "players": friends } );
+      _chatArea.appendChat( msg );
+   }
 }
 
-var MapListener = function( )
+var _MapListener = function( )
 {
    var _this = this;
 
-   this.onPlayerCreated = function( )
+   this.onPlayerCreated = function( uid )
    {
-      _updateHeader( );
+      var player = _client.getMapPlayerByUID( uid );
+      _friends.setStatus( player.name, true );
+      _updateHeaderCounts( );
    }
 
    this.onPlayerVisible = function( )
    {
-      _updateHeader( );
+      _updateHeaderCounts( );
    }
 
    this.onPlayerNotVisible = function( )
    {
-      _updateHeader( );
+      _updateHeaderCounts( );
    }
 
    this.onPlayerRemoved = function( )
    {
-      _updateHeader( );
+      _updateHeaderCounts( );
+   }
+}
+
+var _FriendsListClient = function( )
+{
+   this.addChatListener = function( listener )
+   {
+      if (_client)
+         _client.addChatListener( listener );
    }
 
-   var _updateHeader = function( )
+   this.checkOnline = function( name, callback )
    {
-      _header.setPlayersVisible( _countPlayers( ) );
+      if (_client)
+         _client.checkOnline( name, callback );
+      else
+         callback( name, false );
    }
+}
 
-   var _countPlayers = function( )
+var _FriendsListListener = function( )
+{
+   var _this = this;
+
+   this.onFriendStatus = function( name, online )
    {
-      return _getVisiblePlayers( ).length;
+      name = name.replace( /\|/g, " " );
+      _displayStatus( name + " is " + (online ? "online." : "offline.") );
+      _updateHeaderCounts( );
    }
 }
 

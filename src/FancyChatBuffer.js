@@ -200,12 +200,12 @@ module.exports = function( container, app ) {
                   "id": "friend",
                   "label": "Friend",
                   "checked": app.isFriend( username )
-               },
+               }/*,
                {
                   "id": "ignore",
                   "label": "Ignore",
                   "checked": app.isIgnored( username )
-               }
+               }*/
             ]
          ] );
       menu.on( "pick", _.partial( _onPlayerMenuPick,

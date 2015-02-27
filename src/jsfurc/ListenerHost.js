@@ -15,21 +15,21 @@ module.exports = function( obj )
          } );
    }
 
-   this.addListener = function( listener )
+   this.add = function( listener )
    {
       _listeners.push( listener );
       return _this;
    }
 
-   this.removeListener = function( listener )
+   this.remove = function( listener )
    {
-      _listeners = _.without( listeners, listener );
+      _listeners = _.without( _listeners, listener );
       return _this;
    }
 
    if (obj)
    {
-      obj["addListener"] = _this.addListener;
-      obj["removeListener"] = _this.removeListener;
+      obj["addListener"] = _this.add;
+      obj["removeListener"] = _this.remove;
    }
 }

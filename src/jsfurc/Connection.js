@@ -104,6 +104,8 @@ module.exports = function( address, port )
    {
       _.each( _sendBuffer,
          function( line ) {
+            if (_logging)
+               console.log( ">>> " + line );
             var data = Util.stringToBuffer( line + "\n" );
             chrome.sockets.tcp.send( _socket, data.buffer,
                 function( resultCode ) {
@@ -132,11 +134,12 @@ module.exports = function( address, port )
             if (line)
             {
                if (_logging)
-                  console.log( line );
+                  console.log( "<<< " + line );
                _linesReceived.push( line );
-               _events.raise( "received", line );
             }
          }
+         if (_linesReceived.length)
+            _events.raise( "received", line );
       }
    }
 

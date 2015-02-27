@@ -18,6 +18,7 @@ module.exports = function( connection )
    var _events = new Eventful( this );
    var _keepAliveTimer;
    var _map;
+   var _outstandingOnlineChecks = {};
 
    var _init = function( )
    {
@@ -31,6 +32,8 @@ module.exports = function( connection )
    {
       clearInterval( _keepAliveTimer );
       connection.unsubscribe( "received", _onReceived );
+      if (_map)
+         _map.destroy( );
       _destroyed = true;
    }
 
@@ -116,6 +119,13 @@ module.exports = function( connection )
       return [];
    }
 
+   this.getMapPlayerByUID = function( uid )
+   {
+      if (_map)
+         return _map.getPlayerInfoByUID( uid );
+      return null;
+   }
+
    this.addMapListener = function( listener )
    {
       if (_map)
@@ -126,6 +136,15 @@ module.exports = function( connection )
    {
       if (_map)
          _map.removeListener( listener );
+   }
+
+   this.checkOnline = function( name, callback )
+   {
+      var key = Util.createCanonicalPlayerName( name );
+      if (!(key in _outstandingOnlineChecks))
+         _outstandingOnlineChecks[key] = [];
+      _outstandingOnlineChecks[key].push( callback );
+      connection.sendLine( _encoder.checkOnline( { "player": name } ) );
    }
 
    var _DecoderListener = function( )
@@ -177,6 +196,20 @@ module.exports = function( connection )
       {
          _resetMap( );
          _events.raise( "enter-map", mapName );
+      }
+
+      this.onOnlineCheckResult = function( player, online )
+      {
+         var key = Util.createCanonicalPlayerName( player );
+         if (key in _outstandingOnlineChecks)
+         {
+            var callbacks = _outstandingOnlineChecks[key];
+            delete _outstandingOnlineChecks[key];
+            _.each( callbacks,
+                  function( callback ) {
+               callback( player, online );
+            } );
+         }
       }
    }
 

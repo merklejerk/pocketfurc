@@ -1,6 +1,6 @@
 var Handlebars = require("handlebars");  var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
 templates['app-header'] = template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  return "<div id=\"header\">\n   <span class=\"left\">\n      <img class=\"logo\" src=\"img/logo.png\" />\n      <img class=\"logo-text\" src=\"img/logo-text.png\" />\n   </span>\n   <span class=\"right\">\n      <div class=\"players-visible-button\" title=\"Nearby players\">\n         <img class=\"icon\" src=\"/img/players-visible-icon.png\" />\n         <div class=\"count-container\">\n            <div class=\"count\"></div>\n         </div>\n      </div>\n      <img class=\"reconnect-button\" title=\"Reconnect\" src=\"/img/reconnect-button.png\" />\n      <img class=\"menu-button\" src=\"img/settings-button.png\" />\n   </span>\n</div>\n";
+  return "<div id=\"header\">\n   <span class=\"left\">\n      <img class=\"logo\" src=\"img/logo.png\" />\n      <img class=\"logo-text\" src=\"img/logo-text.png\" />\n   </span>\n   <span class=\"right\">\n      <div class=\"players-visible-button button\" title=\"Nearby players\">\n         <img class=\"icon\" src=\"/img/players-visible-icon.png\" />\n         <div class=\"count-container\">\n            <div class=\"count\"></div>\n         </div>\n      </div>\n      <div class=\"friends-online-button button\" title=\"Friends online\">\n         <img class=\"icon\" src=\"/img/buddies-online-icon.png\" />\n         <div class=\"count-container\">\n            <div class=\"count\"></div>\n         </div>\n      </div>\n      <img class=\"reconnect-button button\" title=\"Reconnect\" src=\"/img/reconnect-button.png\" />\n      <img class=\"menu-button\" src=\"img/settings-button.png\" />\n   </span>\n</div>\n";
   },"useData":true});
 templates['chat-buffer-line'] = template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
   var helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
@@ -17,6 +17,25 @@ templates['chat-input-floating-tool'] = template({"compiler":[6,">= 2.0.0-beta.1
 templates['chat-input'] = template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
   return "<div class=\"chat-input\">\n	<img class=\"mode\" />\n	<span class=\"placeholder\">...</span>\n	<span class=\"text\" contentEditable=\"true\" tabIndex=\"0\"></span>\n	<span class=\"send\"></span>\n</div>\n";
   },"useData":true});
+templates['chat-message-friends-online'] = template({"1":function(depth0,helpers,partials,data) {
+  var stack1, lambda=this.lambda, escapeExpression=this.escapeExpression, buffer = "   <name>"
+    + escapeExpression(lambda((depth0 != null ? depth0.name : depth0), depth0))
+    + "</name>";
+  stack1 = helpers['if'].call(depth0, (data && data.last), {"name":"if","hash":{},"fn":this.program(2, data),"inverse":this.program(4, data),"data":data});
+  if (stack1 != null) { buffer += stack1; }
+  return buffer + "\n";
+},"2":function(depth0,helpers,partials,data) {
+  return ".";
+  },"4":function(depth0,helpers,partials,data) {
+  return ", ";
+  },"6":function(depth0,helpers,partials,data) {
+  return "   No friends online.\n";
+  },"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var stack1, buffer = "Friends online:\n";
+  stack1 = helpers.each.call(depth0, (depth0 != null ? depth0.players : depth0), {"name":"each","hash":{},"fn":this.program(1, data),"inverse":this.program(6, data),"data":data});
+  if (stack1 != null) { buffer += stack1; }
+  return buffer;
+},"useData":true});
 templates['chat-message-nearby-players'] = template({"1":function(depth0,helpers,partials,data) {
   var stack1, lambda=this.lambda, escapeExpression=this.escapeExpression, buffer = "   <name>"
     + escapeExpression(lambda((depth0 != null ? depth0.name : depth0), depth0))

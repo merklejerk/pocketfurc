@@ -1,0 +1,6 @@
+Friends online:
+{{#each players}}
+   <name>{{this.name}}</name>{{#if @last}}.{{else}}, {{/if}}
+{{else}}
+   No friends online.
+{{/each}}

@@ -134,7 +134,7 @@ module.exports = function( decoder ) {
 
       this.onRemovePlayer = function( uid )
       {
-         _this.destroyPlayer( uid );
+         _this.removePlayer( uid );
       }
 
       this.onMovePlayer = function( uid, x, y )

@@ -119,7 +119,7 @@ module.exports = function( )
             var results = decoder( subject, subjPos );
             if (!results)
                return false;
-            if (results.value)
+            if (typeof( results.value ) != "undefined")
             {
                if (tagIndex >= sequence.length)
                   throw "Missing sequence entry for tag "
@@ -247,7 +247,7 @@ module.exports = function( )
       "%": function( ) {
             return function( subj, pos ) {
                if (pos < subj.length && subj[pos] == "%")
-                  return { "consumed": 2 };
+                  return { "consumed": 1 };
             };
          },
       "s": function( len ) {

@@ -57,6 +57,11 @@ module.exports = function( )
       return "quit";
    }
 
+   this.checkOnline = function( params, pattern )
+   {
+      return _format( "onln %p", ["player"], params, pattern );
+   }
+
    var _format = function( fmt, seq, params, pattern )
    {
       var fn = pattern ? _fmt.partial : _fmt.format;
