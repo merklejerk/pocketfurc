@@ -1,0 +1,40 @@
+#!/bin/bash
+
+SRC_DIR="../src"
+CHROME_BUILD_CMD="./build"
+CHROME_BUILD_FLAGS=""
+CCA_CMD="cca"
+CCA_ACTION="run"
+CCA_TARGET=""
+
+while getopts "rdet:p" OPT; do
+   case $OPT in
+      r)
+         CHROME_BUILD_FLAGS="-r"
+         ;;
+      d)
+         TARGET="--device"
+         ;;
+      e)
+         TARGET="--emulator"
+         ;;
+      t)
+         TARGET="--target=$OPTARG"
+         ;;
+      p)
+         CCA_ACTION="prepare"
+         ;;
+   esac
+done
+
+pushd $SRC_DIR
+$CHROME_BUILD_CMD $CHROME_BUILD_FLAGS
+popd
+
+if [ "$CCA_ACTION"="run" ]; then
+   $CCA_CMD $CCA_ACTION $CCA_TARGET
+else
+   $CCA_CMD $CCA_ACTION
+fi
+
+exit 1

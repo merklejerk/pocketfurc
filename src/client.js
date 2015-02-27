@@ -344,7 +344,7 @@ var _HeaderApp = function( )
    {
       if (_client)
          _client.quit( true );
-      chrome.app.window.current( ).close( ).close( );
+      chrome.app.window.current( ).close( );
    }
 
    this.about = function( )

@@ -30,7 +30,7 @@ module.exports = function( app )
             {
                "id": "log-out",
                "label": "Log Out",
-               "disabled": app.isLoggedIn( )
+               "disabled": app.isConnected( )
             },
             {
                "id": "close",
@@ -145,9 +145,11 @@ module.exports = function( app )
       } );
    app.on( "connect", function( ) {
       _toggleReconnect( false );
+      _toggleLoggedIn( true );
       } );
+   /*
    app.on( "login", function( ) {
       _toggleReconnect( false );
       _toggleLoggedIn( true );
-      } );
+      } );*/
 }

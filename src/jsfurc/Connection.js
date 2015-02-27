@@ -33,7 +33,7 @@ module.exports = function( address, port )
 
    this.connect = function( )
    {
-      chrome.sockets.tcp.create( null,
+      chrome.sockets.tcp.create(
          function( createInfo ) {
             _socket = createInfo.socketId;
             chrome.sockets.tcp.onReceive.addListener( _onReceive );
@@ -59,7 +59,10 @@ module.exports = function( address, port )
 
    this.disconnect = function( )
    {
-      chrome.sockets.tcp.disconnect( _socket, _onDisconnected );
+      if (_socket)
+         chrome.sockets.tcp.disconnect( _socket, _onDisconnected );
+      else
+         _onDisconnected( );
    }
 
    var _onConnected = function( resultCode )

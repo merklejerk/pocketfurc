@@ -1,5 +1,4 @@
-*.crx
-*.pem
-*.zip
-src/*.compiled.js
-
+/*.crx
+/*.pem
+/*.zip
+/src/*.compiled.js

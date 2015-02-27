@@ -1,3 +1,6 @@
 - Input tool doesn't respect tags outside of selection.
 - Programmatic inconsistencies between use of canonical and noncanonical names.
-- Close button doesn't work
+- Close button doesn't work. Just remove it. (Android/iOS)
+- Pocketfurc header logo doesn't fit on mobile devices. Needs to flex. (Android/iOS)
+- ChatInput is not redrawing and may be causing an eventual crash. (Android)
+- Input tool steals keyboard focus on click.
