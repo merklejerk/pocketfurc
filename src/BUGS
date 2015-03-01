@@ -1,5 +1,5 @@
 - Input tool doesn't respect tags outside of selection.
 - Programmatic inconsistencies between use of canonical and noncanonical names.
-- Close button doesn't work. Just remove it. (Android/iOS)
-- Pocketfurc header logo doesn't fit on mobile devices. Needs to flex. (Android/iOS)
 - Input tool steals keyboard focus on click.
+- Header buttons get partially obscured when status message fades.
+- Buddy (offline) notifications occur on disconnect.

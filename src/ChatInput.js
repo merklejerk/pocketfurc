@@ -249,8 +249,9 @@ module.exports = function( container, app )
 
    var _onClick = function( e )
    {
+      e.preventDefault( );
       var text = $(this).children( ".text" )
-      if (e.target == _elem.get( 0 ) && !text.is(":focus"))
+      if (e.target.isSameNode( _elem.get( 0 ) ) && !text.is(":focus"))
       {
          text.focus( );
          var sel = window.getSelection( );

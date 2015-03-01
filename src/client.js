@@ -2,7 +2,6 @@ var $ = require( "jquery" );
 var _ = require( "underscore" );
 var util = require( "./util" );
 var jsfurcClient = require( "./jsfurc/Client" );
-var jsfurcConstants = require( "./jsfurc/Constants" );
 var Eventful = require( "./jsfurc/Eventful" );
 var Header = require( "./Header" );
 var ChatArea = require( "./ChatArea" );
@@ -11,7 +10,6 @@ var FriendsList = require( "./FriendsList" );
 var templates = require( "./templates" );
 
 var _client = null;
-var _lastStatusMessageTime = 0;
 var _chatArea;
 var _loginInfo;
 var _loginPrompt = new LoginPrompt( );
@@ -27,7 +25,6 @@ var _init = function( )
    _createClient( );
    _initFriendsList( );
    _loginPrompt.on( "log", _displayStatus );
-   setInterval( _onHeartbeat, 500 );
 }
 
 var _initWindow = function( )
@@ -38,7 +35,6 @@ var _initWindow = function( )
          if (_client)
             _client.quit( true );
       } );
-   // Chrome apps don't always respect vh vw changes.
    $(window).on( "resize", function( ) {
          $("body").css( {
             "width": $(window).width( ),
@@ -48,7 +44,7 @@ var _initWindow = function( )
 
 var _initHeader = function( )
 {
-   _header = new Header( new _HeaderApp( ) );
+   _header = new Header( new _HeaderApp( ), $("#header") );
 }
 
 var _initChatArea = function( )
@@ -60,6 +56,11 @@ var _initFriendsList = function( )
 {
    _friends = new FriendsList( new _FriendsListClient( ) );
    _friends.addListener( new _FriendsListListener( ) );
+}
+
+var _displayStatus = function( msg, lvl )
+{
+   _header.pushStatus( msg, lvl );
 }
 
 var _createClient = function( )
@@ -128,17 +129,6 @@ var _onLoginReady = function( )
    else
       _login( );
 }
-
-var _displayStatus = function( msg, level )
-{
-   $("#content > .status")
-      .stop( )
-      .text( msg )
-      .css( "color", level >= jsfurcConstants.LOG_LEVEL_WARNING ? "red" : "white" )
-      .show( );
-   _lastStatusMessageTime = util.time( );
-}
-
 var _onLoggedIn = function( )
 {
    _header.getApp( ).events.raise( "login" );
@@ -148,21 +138,6 @@ var _onLoggedIn = function( )
 var _onEnterMap = function( mapName )
 {
    _client.addMapListener( new _MapListener( ) );
-}
-
-var _onHeartbeat = function( )
-{
-   _updateStatus( );
-}
-
-var _updateStatus = function( )
-{
-   if (util.time( ) - _lastStatusMessageTime > 10.0)
-   {
-      var status = $("#content > .status");
-      if (status.css( "display" ) != "none")
-         status.fadeOut( 2000 );
-   }
 }
 
 var _updateHeaderCounts = function( )
@@ -338,13 +313,6 @@ var _HeaderApp = function( )
       _loginPrompt.clear( );
       if (_client)
          _client.quit( true );
-   }
-
-   this.close = function( )
-   {
-      if (_client)
-         _client.quit( true );
-      chrome.app.window.current( ).close( );
    }
 
    this.about = function( )

@@ -11,84 +11,116 @@ body
 
 #header
 {
+   display: table;
+   width: 100%;
+   position: relative;
+}
+
+#header > .header
+{
    background-color: rgb(160, 129, 202);
-   height: 48px;
-   padding: 8px 18px 12px 8px;
+   font-size: 2em;
+   padding: 0.25em 0.5ex;
    display: flex;
    flex-direction: row;
 }
 
-#header > .left
+#header > .header > .left
 {
-   height: 100%;
    display: flex;
    flex-direction: row;
    align-items: center;
+   width: 100%;
 }
 
-#header > .left > .logo
+#header > .header > .left > .logo
 {
-   height: 90%;
    width: auto;
-   margin: 0 1.5ex 0 0 0.5ex;
+   height: 1.25em;
 }
 
-#header > .left > .logo-text
+#header > .header > .left > .logo-text
 {
-   height: 65%;
-   margin-left: 1.5ex;
+   width: auto;
+   height: 1em;
+   margin: auto 1ex;
 }
 
-#header > .right
+#header > .header > .right
 {
    height: 100%;
    display: flex;
    flex-direction: row;
    justify-content: flex-end;
    align-items: center;
-   flex: 1;
+   margin-left: auto;
 }
 
-#header > .right > .button
+#header > .header > .right > *
 {
-   height: 60%;
+   flex-shrink: 0;
+   flex-grow: 0;
+}
+
+#header > .header > .right > .button
+{
+   height: 1em;
    cursor: pointer;
-   margin-right: 2ex;
+   margin-top: 0.25em;
+   margin-right: 1ex;
    display: none;
+   position: relative;
 }
 
-#header > .right > .button .icon
+#header > .header > .right > .button .icon
 {
-   height: 72%;
-   margin-top: 10%;
+   height: 0.8em;
 }
 
-#header > .right > .button .count-container
+#header > .header > .right > .button .count-container
 {
-   display: block;
-   margin-top: -50%;
-   margin-left: -38%;
+   margin-top: -0.85em;
+   margin-left: -28%;
 }
 
-#header > .right > .button .count
+#header > .header > .right > .button .count
 {
    width: 1em;
    height: 1em;
    border-radius: 2em;
    padding: 0.334em;
-   background-color: rgba(0,0,0,0.45);
+   background-color: rgba(255,0,0,1);
    color: white;
    font-family: sans-serif;
    font-weight: bold;
    text-align: center;
-   font-size: 1em;
+   font-size: 0.5em;
    display: inline-block;
 }
 
-#header > .right > .menu-button
+#header > .header > .right > .menu-button
 {
-   height: 60%;
+   height: 1em;
    cursor: pointer;
+}
+
+#header > .shadow
+{
+   height: 1.25em;
+   margin-bottom: -1.25em;
+   background: linear-gradient( rgba(0,0,0,0.2), rgba(0,0,0,0) );
+}
+
+#header > .status
+{
+   background: linear-gradient( rgba(0, 0, 0, 0.53), rgba(0, 0, 0, 0.32) );
+   height: 1.25em;
+   padding: 0.5em 1ex;
+   margin-bottom: -2.25em;
+   font-size: 1.25em;
+   text-align: center;
+   white-space: nowrap;
+   color: white;
 }
 
 #content
@@ -96,30 +128,6 @@ body
    height: 100%;
    display: flex;
    flex-direction: column;
-   position: relative;
-}
-
-#content .status
-{
-   background: linear-gradient( rgba(0, 0, 0, 0.53), rgba(0, 0, 0, 0.32) );
-   padding: 0.5em 1ex;
-   position: absolute;
-   top: 0;
-   width: 100%;
-   text-align: center;
-   white-space: nowrap;
-   font-size: 1.25em;
-   height: 1em;
-   color: white;
-}
-
-#content .shadow
-{
-   width: 100%;
-   height: 16px;
-   position: absolute;
-   top: 0;
-   background: linear-gradient( rgba(0,0,0,0.2), rgba(0,0,0,0) );
 }
 
 #content > .chat-area

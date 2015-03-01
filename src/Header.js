@@ -3,11 +3,12 @@ var _ = require( "underscore" );
 var util = require( "./util" );
 var templates = require( "./templates" );
 var PopupMenu = require( "./PopupMenu" );
+var jsfurcConstants = require( "./jsfurc/Constants" );
 
-module.exports = function( app )
+module.exports = function( app, $container )
 {
    var _this = this;
-   var _root = $(templates["app-header"]( ));
+   var _lastStatusMessageTime = 0;
    var _menu;
 
    this.getApp = function( )
@@ -23,7 +24,6 @@ module.exports = function( app )
             {
                "id": "ignores",
                "label": "Ignores",
-               "checked": app.areIgnoresEnabled( )
             }
          ],*/
          [
@@ -31,10 +31,6 @@ module.exports = function( app )
                "id": "log-out",
                "label": "Log Out",
                "disabled": app.isConnected( )
-            },
-            {
-               "id": "close",
-               "label": "Close"
             }
          ],
          [
@@ -49,17 +45,17 @@ module.exports = function( app )
       _menu.on( "out", _onMenuOut );
    }
 
-   var _toggleReconnect = function( toggle )
+   var _toggleReconnectButton = function( toggle )
    {
-      _root.find( ".reconnect-button" ).toggle( toggle );
+      $container.find( ".reconnect-button" ).toggle( toggle );
+      _fit( );
    }
 
-   this.toggleMenu = function( toggle )
+   var _toggleMenu = function( toggle )
    {
-      var settingsButton = _root.find( ".menu-button" );
+      var settingsButton = $container.find( ".menu-button" );
       if (toggle && !_menu.isOpen( ))
       {
-         _menu.toggleItemChecked( "ignores", app.areIgnoresEnabled( ) );
          var pos = settingsButton.offset( );
          pos.top += settingsButton.height( );
          _menu.show( pos.left, pos.top );
@@ -80,9 +76,6 @@ module.exports = function( app )
          case "log-out":
             app.logOut( );
             break;
-         case "close":
-            app.close( );
-            break;
          case "about":
             app.about( );
             break;
@@ -91,7 +84,7 @@ module.exports = function( app )
 
    var _onMenuOut = function( )
    {
-      _this.toggleMenu( false );
+      _toggleMenu( false );
    }
 
    var _toggleLoggedIn = function( loggedIn )
@@ -101,12 +94,12 @@ module.exports = function( app )
 
    this.setPlayersVisible = function( count )
    {
-      _setButtonCount( _root.find( ".players-visible-button" ), count );
+      _setButtonCount( $container.find( ".players-visible-button" ), count );
    }
 
    this.setFriendsOnline = function( count )
    {
-      _setButtonCount( _root.find( ".friends-online-button" ), count );
+      _setButtonCount( $container.find( ".friends-online-button" ), count );
    }
 
    var _setButtonCount = function( $button, count )
@@ -116,40 +109,75 @@ module.exports = function( app )
       else
          $button.show( );
       $button.find( ".count" ).text( "" + count );
+      _fit( );
    }
 
-   $("body").prepend( _root );
-   _root.find( ".reconnect-button" )
+   this.pushStatus = function( msg, level )
+   {
+      $container.find( "> .status" )
+         .stop( )
+         .text( msg )
+         .css( "color", level >= jsfurcConstants.LOG_LEVEL_WARNING ? "red" : "white" )
+         .show( );
+      _lastStatusMessageTime = util.time( );
+   }
+
+   var _updateStatus = function( )
+   {
+      if (util.time( ) - _lastStatusMessageTime > 10.0)
+      {
+         var status = $container.find( "> .status" );
+         if (status.css( "display" ) != "none")
+            status.fadeOut( 2000 );
+      }
+   }
+
+   var _fit = function( )
+   {
+      var $header = $container.find( "> .header" );
+      var $logoText = $header.find( "> .left > .logo-text" );
+      $logoText.show( );
+      var widthWithText = $header.width( );
+      $logoText.hide( );
+      var widthWithoutText = $header.width( );
+      $logoText.toggle( widthWithText <= widthWithoutText );
+   }
+
+   $container.prepend( templates["app-header"]( ) );
+   $container.find( ".reconnect-button" )
       .on( "click", function( ) {
          app.reconnect( );
       } );
-   _root.find( ".players-visible-button" )
+   $container.find( ".players-visible-button" )
       .on( "click", function( ) {
          app.showPlayersVisible( );
       } );
-   _root.find( ".friends-online-button" )
+   $container.find( ".friends-online-button" )
       .on( "click", function( ) {
          app.showFriendsOnline( );
       } );
-   _root.find( ".menu-button" )
+   $container.find( ".menu-button" )
       .on( "click", function( e ) {
-         _this.toggleMenu( true );
+         _toggleMenu( true );
          e.preventDefault( );
       } );
    _initPopupMenu( );
    app.on( "disconnect", function( ) {
-      _toggleReconnect( true );
+      _toggleReconnectButton( true );
       _toggleLoggedIn( false );
       _this.setFriendsOnline( 0 );
       _this.setPlayersVisible( 0 );
       } );
    app.on( "connect", function( ) {
-      _toggleReconnect( false );
+      _toggleReconnectButton( false );
       _toggleLoggedIn( true );
       } );
    /*
    app.on( "login", function( ) {
-      _toggleReconnect( false );
+      _toggleReconnectButton( false );
       _toggleLoggedIn( true );
       } );*/
+   setInterval( _updateStatus, 500 );
+   $(window).on( "resize", _fit );
+   _fit( );
 }

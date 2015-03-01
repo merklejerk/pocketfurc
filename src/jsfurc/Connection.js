@@ -17,8 +17,6 @@ module.exports = function( address, port )
    this.close = function( )
    {
       _closeSocket( );
-      chrome.sockets.tcp.onReceive.removeListener( _onReceive );
-      chrome.sockets.tcp.onReceiveError.removeListener( _onReceiveError );
    }
 
    this.logging = function( toggle )
@@ -85,6 +83,8 @@ module.exports = function( address, port )
          chrome.sockets.tcp.close( _socket );
       _socket = null;
       _connected = false;
+      chrome.sockets.tcp.onReceive.removeListener( _onReceive );
+      chrome.sockets.tcp.onReceiveError.removeListener( _onReceiveError );
    }
 
    this.sendLine = function( line )

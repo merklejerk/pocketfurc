@@ -263,6 +263,7 @@ module.exports = function( container )
 
    var _onStyleButtonClicked = function( e )
    {
+      e.preventDefault( );
       var style = "bold";
       if ($(this).hasClass( "italic" ))
          style = "italic";
