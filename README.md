@@ -4,7 +4,7 @@ As such, it runs anywhere Chrome runs.
 
 You can install it from the Chrome Web Store at https://chrome.google.com/webstore/detail/pocketfurc/iomohjfkcfobogchbemlalanocaiedel
 
-It also available for Android 4.4+ devices: https://play.google.com/store/apps/details?id=com.pocketfurc.client
+It's also available for Android 4.4+ devices: https://play.google.com/store/apps/details?id=com.pocketfurc.client
 
 ![screenshot](http://i.imgur.com/VQh22qi.png)
 
