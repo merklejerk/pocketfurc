@@ -3,7 +3,7 @@
 SRC_DIR="./src"
 CHROME_BUILD_CMD="./build"
 CHROME_BUILD_FLAGS="-r"
-OUTPUT_FILE="./app.zip"
+OUTPUT_FILE="../app.zip"
 
 while getopts "o:" OPT; do
    case $OPT in

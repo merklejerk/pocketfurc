@@ -19,3 +19,5 @@ echo "Compiling templates..."
 handlebars templates -c handlebars -f templates.compiled.js
 echo "Compiling javascript for $MODE mode..."
 browserify client.js $BROWSERIFY_FLAGS -o client.compiled.js
+
+exit 0

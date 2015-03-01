@@ -1,42 +1,31 @@
 #!/bin/bash
 
-SRC_DIR="../src"
-CHROME_BUILD_CMD="./build"
-CHROME_BUILD_FLAGS=""
-CCA_CMD="cca"
-CCA_ACTION="run"
+BUILD_CMD="./build"
+BUILD_FLAGS=""
+CCA_FLAGS="--debug"
 CCA_TARGET=""
 
-while getopts "rdet:p" OPT; do
+while getopts "rdet:" OPT; do
    case $OPT in
       r)
-         CHROME_BUILD_FLAGS="-r"
+         BUILD_FLAGS="$BUILD_FLAGS -r"
+         CCA_FLAGS="--release"
          ;;
       d)
-         TARGET="--device"
+         CCA_TARGET="--device"
          ;;
       e)
-         TARGET="--emulator"
+         CCA_TARGET="--emulator"
          ;;
       t)
-         TARGET="--target=$OPTARG"
-         ;;
-      p)
-         CCA_ACTION="prepare"
+         CCA_TARGET="--target=$OPTARG"
          ;;
    esac
 done
 
 set -e
+$BUILD_CMD $BUILD_FLAGS
+echo "Deploying..."
+cca run --nobuild $CCA_FLAGS $CCA_TARGET
 
-pushd $SRC_DIR
-$CHROME_BUILD_CMD $CHROME_BUILD_FLAGS
-popd
-
-if [ "$CCA_ACTION"="run" ]; then
-   $CCA_CMD $CCA_ACTION $CCA_TARGET
-else
-   $CCA_CMD $CCA_ACTION
-fi
-
-exit 1
+exit 0
