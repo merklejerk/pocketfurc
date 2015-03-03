@@ -1,0 +1,34 @@
+#!/bin/bash
+
+SRC_DIR="../src"
+CHROME_BUILD_CMD="./build"
+CHROME_BUILD_FLAGS=""
+CCA_FLAGS="--debug"
+
+while getopts "r" OPT; do
+   case $OPT in
+      r)
+         CHROME_BUILD_FLAGS="-r"
+         CCA_FLAGS="--release"
+         ;;
+   esac
+done
+
+set -e
+
+pushd $SRC_DIR
+$CHROME_BUILD_CMD $CHROME_BUILD_FLAGS
+popd
+cca build $CCA_FLAGS
+
+if [ CCA_FLAGS="--release" ]; then
+   echo "Running zipalign"
+   RELEASE_APKS="platforms/android/build/outputs/apk/android-*-release-unsigned.apk"
+   for INFILE in $RELEASE_APKS; do
+      OUTFILE=`echo "$INFILE" | sed -e 's~^\(.\+\).apk$~\1-aligned.apk~g'`
+      zipalign -f 4 "$INFILE" "$OUTFILE"
+      echo "Aligned $OUTFILE"
+   done
+fi
+
+exit 0
