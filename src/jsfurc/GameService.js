@@ -95,6 +95,18 @@ module.exports = function( connection )
          { "player": player } ) );
    }
 
+   this.summon = function( player )
+   {
+      connection.sendLine( _encoder.summon(
+         { "player": player } ) );
+   }
+
+   this.join = function( player )
+   {
+      connection.sendLine( _encoder.join(
+         { "player": player } ) );
+   }
+
    this.raw = function( msg )
    {
       connection.sendLine( msg );

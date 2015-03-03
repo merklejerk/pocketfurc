@@ -52,6 +52,16 @@ module.exports = function( )
       return _format( "\"l %p", ["player"], params, pattern );
    }
 
+   this.summon = function( params, pattern )
+   {
+      return _format( "summon %p", ["player"], params, pattern );
+   }
+
+   this.join = function( params, pattern )
+   {
+      return _format( "join %p", ["player"], params, pattern );
+   }
+
    this.quit = function( params, pattern )
    {
       return "quit";

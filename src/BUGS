@@ -3,3 +3,5 @@
 - Input tool steals keyboard focus on click.
 - Header buttons get partially obscured when status message fades.
 - Buddy (offline) notifications occur on disconnect.
+- Sending chat with text selected sends nothing.
+- Summon/Join don't work

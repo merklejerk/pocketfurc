@@ -122,6 +122,18 @@ module.exports = function( )
          _service.lookAtPlayer( player );
    }
 
+   this.summon = function( player )
+   {
+      if (_this.isLoggedIn( ))
+         _service.summon( player );
+   }
+
+   this.join = function( player )
+   {
+      if (_this.isLoggedIn( ))
+         _service.join( player );
+   }
+
    this.sendRawLine = function( msg )
    {
       if (_service)

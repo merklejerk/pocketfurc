@@ -276,6 +276,16 @@ var _ChatAreaApp = function( )
       else
          _client.sendRawLine( msg );
    }
+
+   this.summon = function( player )
+   {
+      _client.summon( player );
+   }
+
+   this.join = function( player )
+   {
+      _client.join( player );
+   }
 }
 
 var _HeaderApp = function( )
