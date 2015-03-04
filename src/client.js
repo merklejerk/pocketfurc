@@ -19,401 +19,401 @@ var _friends;
 
 var _init = function( )
 {
-   _initWindow( );
-   _initHeader( );
-   _initChatArea( );
-   _createClient( );
-   _initFriendsList( );
-   _loginPrompt.on( "log", _displayStatus );
+	_initWindow( );
+	_initHeader( );
+	_initChatArea( );
+	_createClient( );
+	_initFriendsList( );
+	_loginPrompt.on( "log", _displayStatus );
 }
 
 var _initWindow = function( )
 {
-   // Don't rely on this ever getting fired.
-   chrome.app.window.current( ).onClosed.addListener( function( ) {
-         // Attempt graceful shutdown. happening
-         if (_client)
-            _client.quit( true );
-      } );
-   $(window).on( "resize", function( ) {
-         $("body").css( {
-            "width": $(window).width( ),
-            "height": $(window).height( ) } );
-      } );
+	// Don't rely on this ever getting fired.
+	chrome.app.window.current( ).onClosed.addListener( function( ) {
+			// Attempt graceful shutdown. happening
+			if (_client)
+				_client.quit( true );
+		} );
+	$(window).on( "resize", function( ) {
+			$("body").css( {
+				"width": $(window).width( ),
+				"height": $(window).height( ) } );
+		} );
 }
 
 var _initHeader = function( )
 {
-   _header = new Header( new _HeaderApp( ), $("#header") );
+	_header = new Header( new _HeaderApp( ), $("#header") );
 }
 
 var _initChatArea = function( )
 {
-   _chatArea = new ChatArea( $("#content"), new _ChatAreaApp( ) );
+	_chatArea = new ChatArea( $("#content"), new _ChatAreaApp( ) );
 }
 
 var _initFriendsList = function( )
 {
-   _friends = new FriendsList( new _FriendsListClient( ) );
-   _friends.addListener( new _FriendsListListener( ) );
+	_friends = new FriendsList( new _FriendsListClient( ) );
+	_friends.addListener( new _FriendsListListener( ) );
 }
 
 var _displayStatus = function( msg, lvl )
 {
-   _header.pushStatus( msg, lvl );
+	_header.pushStatus( msg, lvl );
 }
 
 var _createClient = function( )
 {
-   _client = new jsfurcClient( );
-   _client.on( "log", _displayStatus );
-   _client.on( "disconnected", _onDisconnected );
-   _client.on( "connected", _onConnected );
-   _client.on( "login-ready", _onLoginReady );
-   _client.on( "logged-in", _onLoggedIn );
-   _client.addChatListener( new _ChatListener( ) );
-   _client.on( "enter-map", _onEnterMap );
-   _client.toggleRawLog( _rawLog );
-   _client.connect( );
+	_client = new jsfurcClient( );
+	_client.on( "log", _displayStatus );
+	_client.on( "disconnected", _onDisconnected );
+	_client.on( "connected", _onConnected );
+	_client.on( "login-ready", _onLoginReady );
+	_client.on( "logged-in", _onLoggedIn );
+	_client.addChatListener( new _ChatListener( ) );
+	_client.on( "enter-map", _onEnterMap );
+	_client.toggleRawLog( _rawLog );
+	_client.connect( );
 }
 
 var _promptForLogin = function( )
 {
-   _loginPrompt.show( $("#content"), function( loginInfo ) {
-      _loginInfo = _.extend( {}, loginInfo );
-      _amendLoginInfo( );
-      if (_client.isReadyToLogin( ))
-         _login( );
-   } );
+	_loginPrompt.show( $("#content"), function( loginInfo ) {
+		_loginInfo = _.extend( {}, loginInfo );
+		_amendLoginInfo( );
+		if (_client.isReadyToLogin( ))
+			_login( );
+	} );
 }
 
 var _amendLoginInfo = function( )
 {
-   if (_loginInfo)
-   {
-      var stamp = "[<a href=\"https://github.com/cluracan/pocketfurc\">pocketfurc</a>]";
-      if (_loginInfo.description.indexOf( stamp ) == -1)
-         _loginInfo.description += " " + stamp;
-   }
+	if (_loginInfo)
+	{
+		var stamp = "[<a href=\"https://github.com/cluracan/pocketfurc\">pocketfurc</a>]";
+		if (_loginInfo.description.indexOf( stamp ) == -1)
+			_loginInfo.description += " " + stamp;
+	}
 }
 
 var _login = function( )
 {
-   _client.login( _loginInfo.name, _loginInfo.password,
-      _loginInfo.description, _loginInfo.colors );
+	_client.login( _loginInfo.name, _loginInfo.password,
+		_loginInfo.description, _loginInfo.colors );
 }
 
 var _onDisconnected = function( err )
 {
-   if (_loginPrompt.isOpen( ))
-      _loginPrompt.close( );
-   _header.getApp( ).events.raise( "disconnect" );
-   _friends.reset( );
+	if (_loginPrompt.isOpen( ))
+		_loginPrompt.close( );
+	_header.getApp( ).events.raise( "disconnect" );
+	_friends.reset( );
 }
 
 var _onConnected = function( err )
 {
-   _header.getApp( ).events.raise( "connect" );
+	_header.getApp( ).events.raise( "connect" );
 }
 
 var _reconnect = function( )
 {
-   _client.destroy( );
-   _createClient( );
+	_client.destroy( );
+	_createClient( );
 }
 
 var _onLoginReady = function( )
 {
-   if (!_loginInfo)
-      _promptForLogin( );
-   else
-      _login( );
+	if (!_loginInfo)
+		_promptForLogin( );
+	else
+		_login( );
 }
 var _onLoggedIn = function( )
 {
-   _header.getApp( ).events.raise( "login" );
-   _chatArea.focusInput( );
+	_header.getApp( ).events.raise( "login" );
+	_chatArea.focusInput( );
 }
 
 var _onEnterMap = function( mapName )
 {
-   _client.addMapListener( new _MapListener( ) );
+	_client.addMapListener( new _MapListener( ) );
 }
 
 var _updateHeaderCounts = function( )
 {
-   _header.setPlayersVisible( _getVisiblePlayers( ).length );
-   _header.setFriendsOnline( _getFriendsOnline( ).length );
+	_header.setPlayersVisible( _getVisiblePlayers( ).length );
+	_header.setFriendsOnline( _getFriendsOnline( ).length );
 }
 
 var _getVisiblePlayers = function( )
 {
-   return _.filter( _client.getMapPlayers( ),
-      function( player ) {
-         return player.visible;
-   } );
+	return _.filter( _client.getMapPlayers( ),
+		function( player ) {
+			return player.visible;
+	} );
 }
 
 var _getFriendsOnline = function( )
 {
-   return _.filter( _.values( _friends.getFriends( ) ),
-         function( friend ) {
-            return friend.online;
-   } );
+	return _.filter( _.values( _friends.getFriends( ) ),
+			function( friend ) {
+				return friend.online;
+	} );
 }
 
 var _ChatListener = function( )
 {
-   this.onChat = function( msg )
-   {
-      _chatArea.appendChat( msg );
-   }
+	this.onChat = function( msg )
+	{
+		_chatArea.appendChat( msg );
+	}
 
-   this.onSpeech = function( player, msg )
-   {
-      _friends.setStatus( player, true );
-      _chatArea.appendSpeech( player, msg );
-   }
+	this.onSpeech = function( player, msg )
+	{
+		_friends.setStatus( player, true );
+		_chatArea.appendSpeech( player, msg );
+	}
 
-   this.onWhisper = function( player, msg )
-   {
-      _friends.setStatus( player, true );
-      _chatArea.appendWhisper( player, msg );
-   }
+	this.onWhisper = function( player, msg )
+	{
+		_friends.setStatus( player, true );
+		_chatArea.appendWhisper( player, msg );
+	}
 
-   this.onEmote = function( player, msg )
-   {
-      _friends.setStatus( player, true );
-      _chatArea.appendEmote( player, msg );
-   }
+	this.onEmote = function( player, msg )
+	{
+		_friends.setStatus( player, true );
+		_chatArea.appendEmote( player, msg );
+	}
 
-   this.onSpeechEcho = function( player, msg )
-   {
-      _chatArea.appendSpeechEcho( player, msg );
-   }
+	this.onSpeechEcho = function( player, msg )
+	{
+		_chatArea.appendSpeechEcho( player, msg );
+	}
 
-   this.onWhisperEcho = function( player, msg )
-   {
-      _chatArea.appendWhisperEcho( player, msg );
-   }
+	this.onWhisperEcho = function( player, msg )
+	{
+		_chatArea.appendWhisperEcho( player, msg );
+	}
 
-   this.onEmoteEcho = function( player, msg )
-   {
-      _chatArea.appendEmoteEcho( player, msg );
-   }
+	this.onEmoteEcho = function( player, msg )
+	{
+		_chatArea.appendEmoteEcho( player, msg );
+	}
 }
 
 var _ChatAreaApp = function( )
 {
-   var _this = this;
+	var _this = this;
 
-   this.isFriend = function( username )
-   {
-      return _friends.isFriend( username );
-   }
+	this.isFriend = function( username )
+	{
+		return _friends.isFriend( username );
+	}
 
-   this.isIgnored = function( username )
-   {
-      console.log( "TODO" );
-      return false;
-   }
+	this.isIgnored = function( username )
+	{
+		console.log( "TODO" );
+		return false;
+	}
 
-   this.lookAt = function( username )
-   {
-      _client.lookAtPlayer( username );
-   }
+	this.lookAt = function( username )
+	{
+		_client.lookAtPlayer( username );
+	}
 
-   this.ignore = function( username, toggle )
-   {
-      console.log( "TODO" );
-   }
+	this.ignore = function( username, toggle )
+	{
+		console.log( "TODO" );
+	}
 
-   this.friend = function( username, toggle )
-   {
-      if (toggle)
-      {
-         _friends.addFriend( username );
-         _displayStatus( username.replace( /\|/g, " " ) + " added to friends." );
-      }
-      else
-      {
-         _friends.removeFriend( username );
-         _displayStatus( username.replace( /\|/g, " " ) + " removed from friends." );
-      }
-      _updateHeaderCounts( );
-   }
+	this.friend = function( username, toggle )
+	{
+		if (toggle)
+		{
+			_friends.addFriend( username );
+			_displayStatus( username.replace( /\|/g, " " ) + " added to friends." );
+		}
+		else
+		{
+			_friends.removeFriend( username );
+			_displayStatus( username.replace( /\|/g, " " ) + " removed from friends." );
+		}
+		_updateHeaderCounts( );
+	}
 
-   this.sendWhisper = function( player, msg )
-   {
-      _client.whisper( player, msg );
-   }
+	this.sendWhisper = function( player, msg )
+	{
+		_client.whisper( player, msg );
+	}
 
-   this.sendSpeech = function( msg )
-   {
-      _client.speak( msg );
-   }
+	this.sendSpeech = function( msg )
+	{
+		_client.speak( msg );
+	}
 
-   this.sendEmote = function( msg )
-   {
-      _client.emote( msg );
-   }
+	this.sendEmote = function( msg )
+	{
+		_client.emote( msg );
+	}
 
-   this.sendRaw = function( msg )
-   {
-      if (msg == "rawlog")
-      {
-         _client.toggleRawLog( !_client.isRawLogOn( ) );
-         _rawLog = _client.isRawLogOn( );
-      }
-      else if (msg == "purge")
-      {
-         chrome.storage.sync.clear( );
-      }
-      else if (msg == "reload")
-      {
-         _friends.reload( );
-      }
-      else
-         _client.sendRawLine( msg );
-   }
+	this.sendRaw = function( msg )
+	{
+		if (msg == "rawlog")
+		{
+			_client.toggleRawLog( !_client.isRawLogOn( ) );
+			_rawLog = _client.isRawLogOn( );
+		}
+		else if (msg == "purge")
+		{
+			chrome.storage.sync.clear( );
+		}
+		else if (msg == "reload")
+		{
+			_friends.reload( );
+		}
+		else
+			_client.sendRawLine( msg );
+	}
 
-   this.summon = function( player )
-   {
-      _client.summon( player );
-   }
+	this.summon = function( player )
+	{
+		_client.summon( player );
+	}
 
-   this.join = function( player )
-   {
-      _client.join( player );
-   }
+	this.join = function( player )
+	{
+		_client.join( player );
+	}
 }
 
 var _HeaderApp = function( )
 {
-   var _this = this;
+	var _this = this;
 
-   this.events = new Eventful( this );
+	this.events = new Eventful( this );
 
-   this.isConnected = function( )
-   {
-      if (_client)
-         return _client.isConnected( );
-   }
+	this.isConnected = function( )
+	{
+		if (_client)
+			return _client.isConnected( );
+	}
 
-   this.isLoggedIn = function( )
-   {
-      if (_client)
-         return _client.isLoggedIn( );
-   }
+	this.isLoggedIn = function( )
+	{
+		if (_client)
+			return _client.isLoggedIn( );
+	}
 
-   this.areIgnoresEnabled = function( )
-   {
-      console.log( "TODO" );
-      return false;
-   }
+	this.areIgnoresEnabled = function( )
+	{
+		console.log( "TODO" );
+		return false;
+	}
 
-   this.toggleIgnores = function( toggle )
-   {
-      console.log( "TODO" );
-   }
+	this.toggleIgnores = function( toggle )
+	{
+		console.log( "TODO" );
+	}
 
-   this.logOut = function( )
-   {
-      _loginInfo = null;
-      _loginPrompt.clear( );
-      if (_client)
-         _client.quit( true );
-   }
+	this.logOut = function( )
+	{
+		_loginInfo = null;
+		_loginPrompt.clear( );
+		if (_client)
+			_client.quit( true );
+	}
 
-   this.about = function( )
-   {
-      window.open( "https://github.com/cluracan/pocketfurc" );
-   }
+	this.about = function( )
+	{
+		window.open( "https://github.com/cluracan/pocketfurc" );
+	}
 
-   this.reconnect = function( )
-   {
-      _reconnect( );
-   }
+	this.reconnect = function( )
+	{
+		_reconnect( );
+	}
 
-   this.showPlayersVisible = function( )
-   {
-      if (_client)
-      {
-         var players = _getVisiblePlayers( );
-         players.sort( function( a, b ) { return a.name.localeCompare( b.name ); } );
-         var msg = templates["chat-message-nearby-players"]( { "players": players } );
-         _chatArea.appendChat( msg );
-      }
-   }
+	this.showPlayersVisible = function( )
+	{
+		if (_client)
+		{
+			var players = _getVisiblePlayers( );
+			players.sort( function( a, b ) { return a.name.localeCompare( b.name ); } );
+			var msg = templates["chat-message-nearby-players"]( { "players": players } );
+			_chatArea.appendChat( msg );
+		}
+	}
 
-   this.showFriendsOnline = function( )
-   {
-      var friends = _.filter( _friends.getFriends( ),
-         function( friend ) {
-            return friend.online;
-         } )
-         .sort( function( a, b ) {
-            return a.name.localeCompare( b.name );
-         } );
-      var msg = templates["chat-message-friends-online"]( { "players": friends } );
-      _chatArea.appendChat( msg );
-   }
+	this.showFriendsOnline = function( )
+	{
+		var friends = _.filter( _friends.getFriends( ),
+			function( friend ) {
+				return friend.online;
+			} )
+			.sort( function( a, b ) {
+				return a.name.localeCompare( b.name );
+			} );
+		var msg = templates["chat-message-friends-online"]( { "players": friends } );
+		_chatArea.appendChat( msg );
+	}
 }
 
 var _MapListener = function( )
 {
-   var _this = this;
+	var _this = this;
 
-   this.onPlayerCreated = function( uid )
-   {
-      var player = _client.getMapPlayerByUID( uid );
-      _friends.setStatus( player.name, true );
-      _updateHeaderCounts( );
-   }
+	this.onPlayerCreated = function( uid )
+	{
+		var player = _client.getMapPlayerByUID( uid );
+		_friends.setStatus( player.name, true );
+		_updateHeaderCounts( );
+	}
 
-   this.onPlayerVisible = function( )
-   {
-      _updateHeaderCounts( );
-   }
+	this.onPlayerVisible = function( )
+	{
+		_updateHeaderCounts( );
+	}
 
-   this.onPlayerNotVisible = function( )
-   {
-      _updateHeaderCounts( );
-   }
+	this.onPlayerNotVisible = function( )
+	{
+		_updateHeaderCounts( );
+	}
 
-   this.onPlayerRemoved = function( )
-   {
-      _updateHeaderCounts( );
-   }
+	this.onPlayerRemoved = function( )
+	{
+		_updateHeaderCounts( );
+	}
 }
 
 var _FriendsListClient = function( )
 {
-   this.addChatListener = function( listener )
-   {
-      if (_client)
-         _client.addChatListener( listener );
-   }
+	this.addChatListener = function( listener )
+	{
+		if (_client)
+			_client.addChatListener( listener );
+	}
 
-   this.checkOnline = function( name, callback )
-   {
-      if (_client)
-         _client.checkOnline( name, callback );
-      else
-         callback( name, false );
-   }
+	this.checkOnline = function( name, callback )
+	{
+		if (_client)
+			_client.checkOnline( name, callback );
+		else
+			callback( name, false );
+	}
 }
 
 var _FriendsListListener = function( )
 {
-   var _this = this;
+	var _this = this;
 
-   this.onFriendStatus = function( name, online )
-   {
-      name = name.replace( /\|/g, " " );
-      _displayStatus( name + " is " + (online ? "online." : "offline.") );
-      _updateHeaderCounts( );
-   }
+	this.onFriendStatus = function( name, online )
+	{
+		name = name.replace( /\|/g, " " );
+		_displayStatus( name + " is " + (online ? "online." : "offline.") );
+		_updateHeaderCounts( );
+	}
 }
 
 $("body").ready( _init );

@@ -405,6 +405,12 @@ body
    clear: both;
 }
 
+#content .chat-input > .spacer
+{
+	float: right;
+	height: 0;
+}
+
 #content .chat-input > .send
 {
    width: 1.5em;
@@ -415,7 +421,8 @@ body
    background-size: 100% 100%;
    background-repeat: no-repeat;
    float: right;
-   margin: -0.1em 0 0 1ex;
+	clear: right;
+   margin: -0.25em 0 0 1ex;
 }
 
 #content .chat-input > .send.empty
@@ -429,6 +436,7 @@ body
    color: rgb( 200, 200, 200 );
    font-family: sans-serif;
    font-size: 1.0em;
+	float: left;
 }
 
 .modal-cover
@@ -733,8 +741,7 @@ body .login-prompt > .contents > .error
 
 #content .chat-input > .text .input-selection-wrapper
 {
-   border-left: 1px solid red;
-   border-right: 1px solid red;
+	background-color: rgba( 255, 0, 0, 0.2 );
 }
 
 #content .chat-input > .text .input-selection-wrapper.bold
