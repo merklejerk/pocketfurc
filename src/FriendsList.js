@@ -46,7 +46,7 @@ module.exports = function( client )
    this.getFriends = function( )
    {
       return _.map( _friends, function( friend ) {
-         return _.extend( friend, {} );
+         return _.extend( {}, friend );
       } );
    }
 
@@ -139,9 +139,9 @@ module.exports = function( client )
       {
          var list = {};
          _.each( serialized, function( friend, key ) {
-            list[key] = _.extend( friend, {
+            list[key] = _.extend( {
                "online": _this.isOnline( key )
-            } );
+            }, friend );
          } );
          _friends = list;
       }

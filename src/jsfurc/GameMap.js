@@ -96,13 +96,13 @@ module.exports = function( decoder ) {
 
    this.getCameraPosition = function( )
    {
-      return _.extend( _camera, {} );
+      return _.extend( {}, _camera );
    }
 
    this.getPlayerInfoByUID = function( uid )
    {
       if (uid in _players)
-         return _.extend( _players[uid], {} );
+         return _.extend( {}, _players[uid] );
    }
 
    this.getPlayerInfoByName = function( name )
@@ -110,7 +110,7 @@ module.exports = function( decoder ) {
       var player =_.find( _players,
             function( player ) { return player.name == name; } );
       if (player)
-         return _.extend( _players, {} );
+         return _.extend( {}, player );
    }
 
    this.getAllPlayerInfos = function( )
