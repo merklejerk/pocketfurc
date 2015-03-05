@@ -21,6 +21,7 @@ module.exports = function( )
    var _states = 0x0;
    var _loginInfo = null;
    var _rawLog = false;
+	var _wasKicked = false;
 
    this.destroy = function( )
    {
@@ -38,6 +39,11 @@ module.exports = function( )
    {
       _chatListeners.remove( listener );
    }
+
+	this.wasKicked = function( )
+	{
+		return _wasKicked;
+	}
 
    this.isRawLogOn = function( )
    {
@@ -186,7 +192,7 @@ module.exports = function( )
    var _onConnectFail = function( err )
    {
       _error( "Connection error: " + err );
-      _events.raise( "disconnected", err );
+      _events.raise( "disconnected" );
    }
 
    var _onConnected = function( )
@@ -205,8 +211,8 @@ module.exports = function( )
       if (_service)
          _service.destroy( );
       _service = null;
-      _info( "Disconnected: " + err );
-      _events.raise( "disconnected", err );
+      _info( "Disconnected" );
+      _events.raise( "disconnected" );
    }
 
    var _onLoginReady = function( )
@@ -237,6 +243,7 @@ module.exports = function( )
       _service.on( "chat-emote", _onChatEmote );
       _service.on( "load-map", _onLoadMap );
       _service.on( "enter-map", _onEnterMap );
+		_service.on( "kicked", _onKicked );
    }
 
    var _onLoadMap = function( mapName )
@@ -249,6 +256,11 @@ module.exports = function( )
       _info( "Entered map." );
       _events.raise( "enter-map", mapName );
    }
+
+	var _onKicked = function( )
+	{
+		_wasKicked = true;
+	}
 
    var _onChatEmote = function( player, msg )
    {
