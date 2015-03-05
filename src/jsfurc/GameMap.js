@@ -3,8 +3,8 @@ var ListenerHost = require( "./ListenerHost" );
 
 module.exports = function( decoder ) {
 
-   var VIEW_WIDTH = 12;
-   var VIEW_HEIGHT = 10;
+   var VIEW_WIDTH = 17;
+   var VIEW_HEIGHT = 16;
 
    var _this = this;
    var _events = new ListenerHost( this );
@@ -20,10 +20,12 @@ module.exports = function( decoder ) {
          "x": x,
          "y": y,
          "frame": frame,
-         visible: _this.isPointVisible( x, y )
+			// Inherit past visibility.
+         "visible": uid in _players ? _players[uid].visible : false
       };
       _players[uid] = player;
       _events.raise( "onPlayerCreated", player.uid );
+		_toggleVisible( player, _this.isPointVisible( x, y ) );
    }
 
    this.removePlayer = function( uid )
@@ -31,6 +33,8 @@ module.exports = function( decoder ) {
       if (uid in _players)
       {
          var player = _players[uid];
+			if (player.visible)
+				_toggleVisible( player, false );
          delete _players[uid];
          _events.raise( "onPlayerRemoved", player.uid );
       }
