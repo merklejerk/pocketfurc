@@ -10,9 +10,10 @@ var InputHelper = require( "./ChatInputHelper" );
 module.exports = function( container, app )
 {
 	var _this = this;
-	var _elem = $(templates["chat-input"]( ));
+	var $root = $(templates["chat-input"]( ));
+	var $content = $root.children( ".text ");
 	var _events = new Eventful( this );
-	var _floatingTool = new ChatInputFloatingTool( _elem.children( ".text" ) );
+	var _floatingTool = new ChatInputFloatingTool( $content );
 	var _lastSelection = null;
 
 	this.getApp = function( )
@@ -22,13 +23,8 @@ module.exports = function( container, app )
 
 	this.focus = function( )
 	{
-		_elem.children( ".text" ).focus( );
-	}
-
-	var _onInput = function( e )
-	{
-		_cleanInput( );
-		_refresh( );
+		$root.children( ".text" ).focus( );
+		_restoreSelection( );
 	}
 
 	var _onKeyDown = function( e )
@@ -66,7 +62,6 @@ module.exports = function( container, app )
 	var _onFocus = function( e )
 	{
 		_togglePlaceholder( false );
-		_restoreSelection( );
 	}
 
 	var _onBlur = function( e )
@@ -77,12 +72,11 @@ module.exports = function( container, app )
 
 	var _togglePlaceholder = function( toggle )
 	{
-		_elem.children( ".placeholder" ).toggle( toggle );
+		$root.children( ".placeholder" ).toggle( toggle );
 	}
 
 	var _submit = function( )
 	{
-		_floatingTool.apply( );
 		var input = _parseInput( );
 		_setContents( "" );
 		if (input.mode == "whisper" && input.player && input.msg)
@@ -98,26 +92,46 @@ module.exports = function( container, app )
 
 	var _refresh = function( )
 	{
-		_toggleEmpty( _isEmpty( ) );
-		_setChatMode( _parseInput( ).mode );
+		var empty = _isEmpty( );
+		_toggleEmpty( empty );
+		_togglePlaceholder( empty && !$content.is( ":focus" ) );
+		_setChatMode( _parseInputMode( ) );
 		_fit( );
+	}
+
+	var _parseInputMode = function( )
+	{
+		var firstChild = $content.get( 0 ).firstChild;
+		if (!firstChild || firstChild.nodeType != Node.TEXT_NODE
+			 || firstChild.length == 0)
+			return "speech";
+		switch (firstChild.nodeValue.charAt( 0 ))
+		{
+			case "/":
+				return "whisper";
+			case ":":
+				return "emote";
+			case "`":
+				return "raw";
+		}
+		return "speech";
 	}
 
 	var _toggleEmpty = function( empty )
 	{
-		_elem.children( ".send" ).toggleClass( "empty", empty );
+		$root.children( ".send" ).toggleClass( "empty", empty );
 	}
 
 	var _fit = function( )
 	{
 		_fitSendButton( );
-		var prevHeight = _elem.height( );
-		_elem.css( "height", "" );
-		var newHeight = _elem.height( );
-		_elem.css( "height", prevHeight + "px" );
+		var prevHeight = $root.height( );
+		$root.css( "height", "" );
+		var newHeight = $root.height( );
+		$root.css( "height", prevHeight + "px" );
 		if (prevHeight != newHeight)
 		{
-			_elem.css( "height", newHeight + "px" );
+			$root.css( "height", newHeight + "px" );
 			_events.raise( newHeight > prevHeight ? "grow" : "shrink",
 				_this.getHeight( ) );
 		}
@@ -126,9 +140,8 @@ module.exports = function( container, app )
 	var _fitSendButton = function( )
 	{
 		// There is no precise way to do this, so relax it.
-		var $content = _elem.children( ".text" );
-		var $button = _elem.children( ".send" );
-		var $spacer = _elem.children( ".spacer" );
+		var $button = $root.children( ".send" );
+		var $spacer = $root.children( ".spacer" );
 		var buttonHeight = $button.outerHeight( );
 		var contentTop = $content.offset( ).top;
 
@@ -140,7 +153,12 @@ module.exports = function( container, app )
 			var buttonBottom = $button.offset( ).top + buttonHeight;
 			var dy = contentBottom - buttonBottom;
 			if (dy < 4)
-				break;
+			{
+				if (dy >= 0)
+					break;
+				else
+					spacerHeight -= 0.33;
+			}
 			spacerHeight += 0.25;
 			$spacer.css( "height", spacerHeight + "em" );
 		}
@@ -155,43 +173,42 @@ module.exports = function( container, app )
 			"raw": "img/chat-mode-raw.png"
 		};
 		var img = modeImages[mode] || modeImages["speech"];
-		_elem.children( ".mode" ).attr( "src", img );
+		$root.children( ".mode" ).attr( "src", img );
 	}
 
 	var _isEmpty = function( )
 	{
-		return _getContents( ).length == 0;
+		var contentNode = $content.get( 0 );
+		if (contentNode.childNodes.length == 0)
+			return true;
+		return !!$content.text( ).match( /^\s*$/ );
 	}
 
 	var _getContents = function( )
 	{
-		var contents = _elem.children( ".text" ).html( );
-		contents = contents.replace( /^&nbsp;/, "" );
-		contents = contents.replace( / &nbsp;/g, "  " );
-		contents = contents.replace( /&nbsp;/g, " " );
-		if (contents.match( /^\s+$/ ))
-			return "";
-		return contents;
+		var $fragment = $("<div></div>").html( $root.children( ".text" ).html( ) );
+		return InputHelper.prepareContent( $fragment.get( 0 ) ).innerHTML;
 	}
 
 	this.set = function( text, isMarkup )
 	{
 		 _setContents( text, isMarkup );
+		_placeCaretAtEnd( );
 	}
 
 	var _setContents = function( text, isMarkup )
 	{
 		if (isMarkup)
-			_elem.children( ".text" ).html( text );
+			$content.html( text );
 		else
-			_elem.children( ".text" ).text( text );
+			$content.text( text );
 		_cleanInput( );
 		_refresh( );
 	}
 
 	var _saveSelection = function( )
 	{
-		var contentNode = _elem.children( ".text" ).get( 0 );
+		var contentNode = $content.get( 0 );
 		if (InputHelper.isSelectionInContainer( contentNode ))
 			_lastSelection = InputHelper.getSelectionOffsets( contentNode );
 		else
@@ -200,78 +217,36 @@ module.exports = function( container, app )
 
 	var _restoreSelection = function( )
 	{
-		var contentNode = _elem.children( ".text" ).get( 0 );
+		var contentNode = $content.get( 0 );
 		if (_lastSelection)
 			InputHelper.selectOffsets( _lastSelection, contentNode );
 	}
 
 	var _parseInput = function ( )
 	{
-		var text = _getContents( );
+		var html = _getContents( );
 		var m;
-		if (m = /^\/((\S+)\s+(\S.*))?/.exec( text ))
+		if (m = /^\/((\S+)\s+(\S.*))?/.exec( html ))
 			return { "mode": "whisper", "player": m[2], "msg": m[3] };
-		if (m = /^:(\s*(.+))?/.exec( text ))
+		if (m = /^:(\s*(.+))?/.exec( html ))
 			return { "mode": "emote", "msg": m[2] };
-		if (m = /^`((.+)?)/.exec( text ))
+		if (m = /^`((.+)?)/.exec( html ))
 			return { "mode": "raw", "msg": m[2] };
-		return { "mode": "speech", "msg": text };
+		return { "mode": "speech", "msg": html };
+	}
+
+	var _onInput = function( e )
+	{
+		_cleanInput( );
+		_refresh( );
 	}
 
 	var _cleanInput = function( )
 	{
-		var contentNode = _elem.children( ".text" ).get( 0 );
-		var sel = InputHelper.getSelectionOffsets( contentNode );
-		(function( parent ) {
-			while (true)
-			{
-				var cleanCount = _cleanChildNodes( parent );
-				if (!cleanCount)
-					break;
-			}
-			_.each( parent.childNodes, arguments.callee );
-		})( contentNode );
-		InputHelper.selectOffsets( sel, contentNode );
-		contentNode.normalize( );
-		if (contentNode.childNodes.length == 0)
-			$(contentNode).text( "\xA0" );
-	}
-
-	var _cleanChildNodes = function( node )
-	{
-		var count = 0;
-		_.each( _.toArray( node.childNodes ),
-			function( child ) {
-				if (child.nodeType == Node.ELEMENT_NODE)
-				{
-					switch (child.tagName)
-					{
-						case "A":
-						case "B":
-						case "I":
-						case "U":
-						case "IMG":
-							child.removeAttribute( "style" );
-							child.removeAttribute( "title" );
-							break;
-						default:
-							++count;
-							if (child.childNodes.length > 0)
-								$(child).contents( ).unwrap( );
-							else
-								$(child).remove( );
-					}
-				}
-				else if (child.nodeType == Node.TEXT_NODE)
-				{
-					var content = "" + child.nodeValue;
-					// Convert sequences of spaces to &nbsp;
-					child.nodeValue = content
-						.replace( /  /g, " \xA0" )
-						.replace( / $/gm, "\xA0" );
-				}
-			} );
-		return count;
+		// Stick a <br> in there so the cursor appears
+		// in the right place when empty.
+		if (_isEmpty( ))
+			$content.html( "<br />" );
 	}
 
 	var _onSubmitClicked = function( e )
@@ -281,38 +256,22 @@ module.exports = function( container, app )
 			_submit( );
 	}
 
-	var _onClick = function( e )
-	{
-		e.preventDefault( );
-		var content = $(this).children( ".text" )
-		if (e.target.isSameNode( _elem.get( 0 ) ) && !content.is(":focus"))
-		{
-			var contentLength = InputHelper.getContainerLength( content.get( 0 ) );
-			_lastSelection = {
-				"start": contentLength,
-				"end": contentLength
-			};
-			content.focus( );
-		}
-	}
-
 	this.getHeight = function( )
 	{
-		return _elem.outerHeight( );
+		return $root.outerHeight( );
 	}
 
 	var _cycleChatMode = function( )
 	{
-		var input = _parseInput( );
+		var mode = _parseInputMode( );
 		var order = ["speech","emote","whisper","raw"];
-		var mode = order[(_.indexOf( order, input.mode ) + 1) % order.length];
-		var contents = _getContents( );
-		if (input.mode != "speech")
-		{
-			// Consume the first letter.
-			contents = contents.substr( 1 );
-		}
+		var nextMode = order[(_.indexOf( order, mode ) + 1) % order.length];
+		var html = $content.html( );
 		if (mode != "speech")
+		{
+			html = html.substr( 1 );
+		}
+		if (nextMode != "speech")
 		{
 			// Add a prefix.
 			var prefixMap = {
@@ -320,21 +279,32 @@ module.exports = function( container, app )
 					"whisper": "/",
 					"raw": "`"
 				};
-			contents = prefixMap[mode] + contents;
+			html = prefixMap[nextMode] + html;
 		}
-		_setContents( contents, true );
+		_setContents( html, true );
+		_placeCaretAtEnd( );
 	}
 
-	container.append( _elem );
-	_elem.children( ".text" )
+	var _placeCaretAtEnd = function( )
+	{
+		$content.focus( );
+		var len = InputHelper.getContainerLength( $content.get( 0 ) );
+		InputHelper.selectOffsets( { "start": len, "end": len }, $content.get( 0 ) );
+		_saveSelection( );
+	}
+
+	container.append( $root );
+	$root.children( ".text" )
 		.on( "keyup", _onKeyUp )
 		.on( "keydown", _onKeyUp )
 		.on( "input", _onInput )
 		.on( "focus", _onFocus )
 		.on( "blur", _onBlur );
-	_elem.on( "click", _onClick );
-	_elem.children( ".send" ).on( "click", _onSubmitClicked );
-	_elem.children( ".mode" ).on( "click", _cycleChatMode );
+	$root.children( ".send" ).on( "click", _onSubmitClicked );
+	$root.children( ".mode" ).on( "click", function( e ) {
+		e.preventDefault( );
+		_cycleChatMode( );
+	} );
 	$(window).on( "resize", _fit );
 	_cleanInput( );
 	_refresh( );

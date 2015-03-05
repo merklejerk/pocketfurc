@@ -145,4 +145,85 @@ module.exports = new (function( ) {
 		}
 	}
 
+	this.prepareContent = function( container )
+	{
+		var result = document.createElement( "DIV" );
+		_.each( container.childNodes,
+			function( child ) {
+			_prepareNode( child, result );
+		} );
+		return result;
+	}
+
+	var _prepareNode = function( node, preparedParent )
+	{
+		if (node.nodeType == Node.TEXT_NODE)
+			_prepareTextNode( node, preparedParent );
+		else if (node.nodeType == Node.ELEMENT_NODE)
+			_prepareElementNode( node, preparedParent );
+	}
+
+	var _prepareElementNode = function( node, preparedParent )
+	{
+		// Skip elements that are effectively empty.
+		if (!$(node).text( ).length)
+			return;
+		switch (node.tagName)
+		{
+			case "SPAN":
+				if (node.classList.contains( "bold" ))
+				{
+					preparedParent.appendChild( document.createElement( "B" ) );
+					preparedParent = preparedParent.lastChild;
+				}
+				if (node.classList.contains( "underline" ))
+				{
+					preparedParent.appendChild( document.createElement( "U" ) );
+					preparedParent = preparedParent.lastChild;
+				}
+				if (node.classList.contains( "italic" ))
+				{
+					preparedParent.appendChild( document.createElement( "I" ) );
+					preparedParent = preparedParent.lastChild;
+				}
+				if (node.classList.contains( "link" ))
+				{
+					preparedParent.appendChild( document.createElement( "A" ) );
+					preparedParent = preparedParent.lastChild;
+					preparedParent.setAttribute( "href", node.getAttribute( "data-href" ) );
+				}
+				break;
+			case "B":
+				preparedParent.appendChild( document.createElement( "B" ) );
+				preparedParent = preparedParent.lastChild;
+				break;
+			case "I":
+				preparedParent.appendChild( document.createElement( "I" ) );
+				preparedParent = preparedParent.lastChild;
+				break;
+			case "U":
+				preparedParent.appendChild( document.createElement( "U" ) );
+				preparedParent = preparedParent.lastChild;
+				break;
+			case "A":
+				preparedParent.appendChild( document.createElement( "A" ) );
+				preparedParent = preparedParent.lastChild;
+				preparedParent.setAttribute( "href", node.getAttribute( "href" ) );
+				break;
+			default:
+				break;
+		}
+		_.each( node.childNodes,
+			function( child ) {
+				_prepareNode( child, preparedParent );
+		} );
+	}
+
+	var _prepareTextNode = function( node, preparedParent )
+	{
+		var value = node.nodeValue.replace( "\xA0", " " );
+		if (value.length > 0)
+			preparedParent.appendChild( new Text( value ) );
+	}
+
 })( );

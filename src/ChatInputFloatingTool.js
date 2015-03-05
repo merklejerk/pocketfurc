@@ -4,7 +4,7 @@ var ToolHelper = require( "./ChatInputFloatingToolHelper" );
 var InputHelper = require( "./ChatInputHelper" );
 var templates = require( "./templates" );
 
-module.exports = function( container )
+module.exports = function( $container )
 {
 	var _this = this;
 	var _startMeasure = $("<span style='display: inline-block' />");
@@ -14,6 +14,7 @@ module.exports = function( container )
 	var _selStyles = {};
 	var _toolExpanded = false;
 	var _tool = $(templates["chat-input-floating-tool"]( ));
+	var _wrapperNode = $("<span class='selection'></span>").get( 0 );
 
 	this.apply = function( )
 	{
@@ -60,16 +61,16 @@ module.exports = function( container )
 	var _updateSelection = function( )
 	{
 		var hadSelection = !_isSelectionEmpty( );
-		_selection = InputHelper.getSelectionOffsets( container.get( 0 ) );
+		_selection = InputHelper.getSelectionOffsets( $container.get( 0 ) );
 		if (hadSelection)
 		{
 			_bake( );
-			InputHelper.selectOffsets( _selection, container.get( 0 ) );
+			InputHelper.selectOffsets( _selection, $container.get( 0 ) );
 		}
 		if (!_isSelectionEmpty( ))
 		{
 			_wrapSelection( );
-			InputHelper.selectOffsets( _selection, container.get( 0 ) );
+			InputHelper.selectOffsets( _selection, $container.get( 0 ) );
 		}
 		_saveSelection( );
 	}
@@ -90,22 +91,15 @@ module.exports = function( container )
 
 	var _wrapSelection = function( )
 	{
-		var wrapperNode = $("<span class='input-selection-wrapper'></span>").get( 0 );
-		var range = InputHelper.offsetsToRange( _selection, container.get( 0 ) );
+		var range = InputHelper.offsetsToRange( _selection, $container.get( 0 ) );
 		// It would be nice to just use range.surroundContents or range.extractContents
 		// here, but that results in a weird dangling text node that cannot be erased
 		// in the current version of chrome, which possibly leads to crashing on mobile.
-		ToolHelper.wrapRange( range, wrapperNode, container.get( 0 ) );
-		$(".input-selection-wrapper").each( function( ) {
-			ToolHelper.bubbleWrap( this, container );
+		ToolHelper.wrapRange( range, _wrapperNode, $container.get( 0 ) );
+		$(".selection").each( function( ) {
+			ToolHelper.bubbleWrap( this, $container );
 			_extractStyles( $(this) );
 		} );
-	}
-
-	var _removeIfEmptyTextNode = function( node )
-	{
-		if (node.nodeType == Node.TEXT_NODE && node.length == 0)
-			node.parentNode.removeChild( node );
 	}
 
 	var _extractStyles = function( wrapper )
@@ -128,6 +122,16 @@ module.exports = function( container )
 				case 'U':
 					styles.underline = true;
 					break;
+				case 'SPAN':
+					if (node.classList.contains( "bold" ))
+						styles.bold = true;
+					if (node.classList.contains( "italic" ))
+						styles.italic = true;
+					if (node.classList.contains( "underline" ))
+						styles.underline = true;
+					if (node.classList.contains( "link" ) && node.hasAttribute( "data-href" ))
+						styles.link = node.getAttribute( "data-href" );
+					break;
 			}
 			_.each( node.childNodes, arguments.callee );
 		} )( wrapper.get( 0 ) );
@@ -136,17 +140,11 @@ module.exports = function( container )
 
 	var _bake = function( )
 	{
-		var wrappers = container.find( ".input-selection-wrapper" );
-		if (wrappers.hasClass( "bold" ))
-			wrappers.wrap( $("<b></b>" ) );
-		if (wrappers.hasClass( "italic" ))
-			wrappers.wrap( $("<i></i>" ) );
-		if (wrappers.hasClass( "underline" ))
-			wrappers.wrap( $("<u></u>" ) );
-		if (wrappers.hasClass( "link" ))
-			wrappers.wrap( $("<a></a>" ).attr( "href", wrappers.attr( "data-href" ) ) );
+		var wrappers = $container.find( ".selection" );
 		 wrappers.each( function( ) {
-			  $(this).replaceWith( this.childNodes );
+			  $(this).removeClass( "selection" );
+			 if (!$(this).attr( "class" ))
+				 $(this).contents( ).unwrap( );
 		 } );
 		_collapseContents( );
 	}
@@ -154,22 +152,9 @@ module.exports = function( container )
 	var _collapseContents = function( )
 	{
 		// Remove emtpy tags
-		container.find( "a:empty, i:empty, u:empty, b:empty" )
-			.remove( );
-		// Remove tags whose only children are the same thing.
-		while (true)
-		{
-			var redundantTags =
-				container.find( "a > a, b > b, i > i, u > u")
-					.parent( );
-			redundantTags = redundantTags.filter( function( e ) {
-				return e.childNodes == 1;
-			} );
-			if (!redundantTags.length)
-				break;
-			redundantTags.replaceWith( redundantTags.children( ) );
-		}
-		container.get( 0 ).normalize( );
+		//$container.find( "*:empty" ).remove( );
+
+		$container.get( 0 ).normalize( );
 	}
 
 	var _toggleTool = function( toggle )
@@ -188,7 +173,7 @@ module.exports = function( container )
 
 	var _moveTool = function( )
 	{
-		var range = InputHelper.offsetsToRange( _selection, container.get( 0 ) );
+		var range = InputHelper.offsetsToRange( _selection, $container.get( 0 ) );
 		var selBounds = range.getBoundingClientRect( );
 		var pos = {
 			"left": (selBounds.left + selBounds.width / 2) - _tool.outerWidth( ) / 2,
@@ -220,9 +205,8 @@ module.exports = function( container )
 		_tool.css( pos );
 		if (toggle)
 			_initToolStyles( );
-		/*
-		else if (container.is( ":focus" ))
-			InputHelper.selectOffsets( _selection, container.get( 0 ) );*/
+		else if (_selection)
+			InputHelper.selectOffsets( _selection, $container.get( 0 ) )
 	}
 
 	var _initToolStyles = function( )
@@ -241,19 +225,20 @@ module.exports = function( container )
 
 	var _toggleSelectionStyle = function( style, value )
 	{
-		var wrappers = container.find( ".input-selection-wrapper" );
+		var containerNode = $container.get( 0 );
+		var wrappers = $container.find( ".selection" );
 		wrappers.toggleClass( style, !!value );
 		if (style == "link")
 			wrappers.attr( "data-href", value || "" );
 		// Remove any inner styles.
 		wrappers.each( function( ) {
-			ToolHelper.stripTags( this, ["A","I","U","B"] );
+			ToolHelper.stripTags( this, ["A","I","U","B","SPAN"] );
 			// Make the node top-level so it's outside the influence
 			// of any inherited styles.
-			ToolHelper.isolateNode( this, container.get( 0 ) );
+			ToolHelper.isolateNode( this, containerNode );
 		} );
-		if (container.is( ":focus" ))
-			InputHelper.selectOffsets( _selection, container.get( 0 ) );
+		if (InputHelper.isSelectionInContainer( containerNode ))
+			InputHelper.selectOffsets( _selection, containerNode );
 	}
 
 	var _onURLFocus = function( e )
@@ -277,7 +262,7 @@ module.exports = function( container )
 		if (e.keyCode == 13) // Enter
 		{
 			e.preventDefault( );
-			container.focus( );
+			$container.focus( );
 			_expandTool( false );
 		}
 	}
@@ -292,7 +277,7 @@ module.exports = function( container )
 			style = "underline";
 		$(this).toggleClass( "on" );
 		_toggleSelectionStyle( style, $(this).hasClass( "on" ) );
-		container.focus( );
+		$container.focus( );
 	}
 
 	var _onResize = function( )
