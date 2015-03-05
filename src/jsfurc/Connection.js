@@ -32,6 +32,9 @@ module.exports = function( address, port )
 	this.connect = function( )
 	{
 		chrome.sockets.tcp.create(
+			{
+				"bufferSize": 8192
+			},
 			function( createInfo ) {
 				_socket = createInfo.socketId;
 				chrome.sockets.tcp.onReceive.addListener( _onReceive );
