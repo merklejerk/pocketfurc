@@ -71,7 +71,7 @@ module.exports = function( container, app )
       this.initiateWhisper = function( player )
       {
          var canonicalName = jsfurcUtil.createCanonicalPlayerName( player );
-         _chatInput.set( "/" + canonicalName + " " );
+         _chatInput.set( "/%" + canonicalName + " \xA0" );
          _chatInput.focus( );
       }
    }
