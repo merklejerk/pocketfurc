@@ -8,16 +8,26 @@ var ChatArea = require( "./ChatArea" );
 var LoginPrompt = require( "./LoginPrompt" );
 var FriendsList = require( "./FriendsList" );
 var templates = require( "./templates" );
+var Device = require( "./Device" );
 
 var _client = null;
 var _chatArea;
 var _loginInfo;
 var _loginPrompt = new LoginPrompt( );
 var _rawLog = false;
+var _autoReconnect = true;
 var _header;
 var _friends;
+var _device;
+var _missedWhispers = [];
 
 var _init = function( )
+{
+	_device = new Device( _onDeviceReady );
+	_device.on( "foreground", _onForeground );
+}
+
+var _onDeviceReady = function( )
 {
 	_initWindow( );
 	_initHeader( );
@@ -31,7 +41,7 @@ var _initWindow = function( )
 {
 	// Don't rely on this ever getting fired.
 	chrome.app.window.current( ).onClosed.addListener( function( ) {
-			// Attempt graceful shutdown. happening
+			// Attempt graceful shutdown.
 			if (_client)
 				_client.quit( true );
 		} );
@@ -65,6 +75,9 @@ var _displayStatus = function( msg, lvl )
 
 var _createClient = function( )
 {
+	_autoReconnect = true;
+	_header.getApp( ).events.raise( "connect" );
+
 	_client = new jsfurcClient( );
 	_client.on( "log", _displayStatus );
 	_client.on( "disconnected", _onDisconnected );
@@ -109,11 +122,17 @@ var _onDisconnected = function( err )
 		_loginPrompt.close( );
 	_header.getApp( ).events.raise( "disconnect" );
 	_friends.reset( );
+	var willAutoReconnect = _autoReconnect && !_client.wasKicked( );
+	if (!willAutoReconnect)
+		_device.allowBackgroundMode( false );
+	else
+		_reconnect( );
+	_updateBackgroundNotification( );
 }
 
 var _onConnected = function( err )
 {
-	_header.getApp( ).events.raise( "connect" );
+	_updateBackgroundNotification( );
 }
 
 var _reconnect = function( )
@@ -129,10 +148,13 @@ var _onLoginReady = function( )
 	else
 		_login( );
 }
+
 var _onLoggedIn = function( )
 {
 	_header.getApp( ).events.raise( "login" );
 	_chatArea.focusInput( );
+	_device.allowBackgroundMode( true );
+	_updateBackgroundNotification( );
 }
 
 var _onEnterMap = function( mapName )
@@ -162,6 +184,53 @@ var _getFriendsOnline = function( )
 	} );
 }
 
+var _onForeground = function( )
+{
+	if (_missedWhispers.length)
+	{
+		_chatArea.appendChat( _createMissedWhispersMessage( ) );
+		_missedWhispers = [];
+	}
+	_updateBackgroundNotification( );
+}
+
+var _createMissedWhispersMessage = function( )
+{
+	var players = _.keys( _.groupBy( _missedWhispers, "player" ) );
+	var chatMsg = "You receieved " + _missedWhispers.length +
+		" whisper" + (_missedWhispers.length > 1 ? "s": "") +
+		" from ";
+	_.each( players,
+		function( name, index, list ) {
+			chatMsg += "<name>" + name.replace( /\|/g, " " ) + "</name>";
+			chatMsg += (index+1 < list.length ? ", " : "");
+		} );
+	chatMsg += " while you were away.";
+	return chatMsg;
+}
+
+var _updateBackgroundNotification = function( )
+{
+	var msg;
+	if (!_client || !_client.isConnected( ))
+		msg = "Disconnected";
+	else if (!_client.isLoggedIn( ))
+		msg = "Connected"
+	else // Logged in.
+	{
+		msg = "Logged in";
+		var numFriendsOnline = _getFriendsOnline( ).length;
+		var numPlayersNearby = _getVisiblePlayers( ).length;
+		if (_missedWhispers.length)
+			msg = _missedWhispers.length + " whisper" + (_missedWhispers.length > 1 ? "s" : "") + " received";
+		else if (numFriendsOnline)
+			msg = numFriendsOnline + " friend" + (numFriendsOnline > 1 ? "s" : "") + " online";
+		else if (numPlayersNearby)
+			msg = numPlayersNearby + " player" + (numPlayersNearby > 1 ? "s" : "") + " nearby";
+	}
+	_device.setBackgroundText( msg );
+}
+
 var _ChatListener = function( )
 {
 	this.onChat = function( msg )
@@ -179,6 +248,11 @@ var _ChatListener = function( )
 	{
 		_friends.setStatus( player, true );
 		_chatArea.appendWhisper( player, msg );
+		if (_device.isBackground( ))
+		{
+			_missedWhispers.push( {"player": player, "msg": msg } );
+			_updateBackgroundNotification( );
+		}
 	}
 
 	this.onEmote = function( player, msg )
@@ -241,6 +315,7 @@ var _ChatAreaApp = function( )
 			_displayStatus( username.replace( /\|/g, " " ) + " removed from friends." );
 		}
 		_updateHeaderCounts( );
+		_updateBackgroundNotification( );
 	}
 
 	this.sendWhisper = function( player, msg )
@@ -321,6 +396,7 @@ var _HeaderApp = function( )
 	{
 		_loginInfo = null;
 		_loginPrompt.clear( );
+		_autoReconnect = false;
 		if (_client)
 			_client.quit( true );
 	}
@@ -374,11 +450,13 @@ var _MapListener = function( )
 	this.onPlayerVisible = function( )
 	{
 		_updateHeaderCounts( );
+		_updateBackgroundNotification( );
 	}
 
 	this.onPlayerNotVisible = function( )
 	{
 		_updateHeaderCounts( );
+		_updateBackgroundNotification( );
 	}
 
 	this.onPlayerRemoved = function( )
@@ -410,8 +488,13 @@ var _FriendsListListener = function( )
 
 	this.onFriendStatus = function( name, online )
 	{
-		name = name.replace( /\|/g, " " );
-		_displayStatus( name + " is " + (online ? "online." : "offline.") );
+		if (_client && _client.isLoggedIn( ))
+		{
+			name = name.replace( /\|/g, " " );
+			_displayStatus( name + " is " + (online ? "online." : "offline.") );
+			//_notifyFriendOnline( name );
+			_updateBackgroundNotification( );
+		}
 		_updateHeaderCounts( );
 	}
 }

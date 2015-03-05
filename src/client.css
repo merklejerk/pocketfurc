@@ -739,27 +739,27 @@ body .login-prompt > .contents > .error
    text-align: center;
 }
 
-#content .chat-input > .text .input-selection-wrapper
+#content .chat-input > .text .selection
 {
 	background-color: rgba( 255, 0, 0, 0.2 );
 }
 
-#content .chat-input > .text .input-selection-wrapper.bold
+#content .chat-input > .text .bold
 {
    font-weight: bold;
 }
 
-#content .chat-input > .text .input-selection-wrapper.italic
+#content .chat-input > .text .italic
 {
    font-style: italic;
 }
 
-#content .chat-input > .text .input-selection-wrapper.underline
+#content .chat-input > .text .underline
 {
    text-decoration: underline;
 }
 
-#content .chat-input > .text .input-selection-wrapper.link
+#content .chat-input > .text .link
 {
    font-weight: bold;
    color: blue;
