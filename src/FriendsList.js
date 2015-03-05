@@ -148,5 +148,5 @@ module.exports = function( client )
    }
 
    _load( );
-   var _tickInterval = setInterval( _onTick, 1000 );
+   var _tickInterval = setInterval( _onTick, 5000 );
 };
