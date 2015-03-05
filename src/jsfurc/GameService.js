@@ -223,6 +223,11 @@ module.exports = function( connection )
             } );
          }
       }
+
+		this.onKicked = function( )
+		{
+			_events.raise( "kicked" );
+		}
    }
 
    _init( );

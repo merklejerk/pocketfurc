@@ -21,6 +21,8 @@ module.exports = function( )
       switch (initial)
       {
       case "(":
+			if (line == "(Communications error.")
+				return _listeners.raise( "onKicked" );
          return _decodeChat( line );
       case "]":
          if (params = _fmt.parse( "]q %w %d", line, ["patchID","patchNum"] ))
