@@ -73,6 +73,7 @@ module.exports = function( address, port )
 		else
 		{
 			_connected = true;
+			_netPump( );
 			_events.raise( "connected" );
 		}
 	}
@@ -141,8 +142,6 @@ module.exports = function( address, port )
 					_linesReceived.push( line );
 				}
 			}
-			if (_linesReceived.length)
-				_events.raise( "received", line );
 		}
 	}
 
@@ -151,6 +150,16 @@ module.exports = function( address, port )
 		if (info.socketId == _socket)
 		{
 			_onDisconnected( info.resultCode );
+		}
+	}
+
+	var _netPump = function( )
+	{
+		if (_socket && _connected)
+		{
+			if (_linesReceived.length)
+				_events.raise( "received" );
+			setTimeout( arguments.callee, 333 );
 		}
 	}
 };
