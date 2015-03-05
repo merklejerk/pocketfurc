@@ -41,6 +41,7 @@ module.exports = function( address, port )
 				chrome.sockets.tcp.onReceiveError.addListener( _onReceiveError );
 				chrome.sockets.tcp.connect( _socket,
 					address, port, _onConnected );
+				setTimeout( _onConnectTimeout, 30 * 1000 );
 				} );
 	}
 
@@ -60,10 +61,19 @@ module.exports = function( address, port )
 
 	this.disconnect = function( )
 	{
-		if (_socket)
+		if (_socket && _connected)
 			chrome.sockets.tcp.disconnect( _socket, _onDisconnected );
 		else
 			_onDisconnected( );
+	}
+
+	var _onConnectTimeout = function( )
+	{
+		if (_socket && !_connected)
+		{
+			_closeSocket( );
+			_events.raise( "connect-fail", "Timed out" );
+		}
 	}
 
 	var _onConnected = function( resultCode )
@@ -76,6 +86,7 @@ module.exports = function( address, port )
 		else
 		{
 			_connected = true;
+			chrome.sockets.tcp.setKeepAlive( _socket, true, 10, _.noop );
 			_netPump( );
 			_events.raise( "connected" );
 		}
@@ -109,25 +120,28 @@ module.exports = function( address, port )
 
 	var _send = function( )
 	{
-		_.each( _sendBuffer,
-			function( line ) {
-				if (_logging)
-					console.log( ">>> " + line );
-				var data = Util.stringToBuffer( line + "\n" );
-				chrome.sockets.tcp.send( _socket, data.buffer,
-					 function( resultCode ) {
-						if (resultCode < 0)
-							_onDisconnected( resultCode )
-					} );
-				_events.on( "sent", line );
-			} );
-		_sendBuffer = [];
+		if (_socket && _connected)
+		{
+			_.each( _sendBuffer,
+				function( line ) {
+					if (_logging)
+						console.log( ">>> " + line );
+					var data = Util.stringToBuffer( line + "\n" );
+					chrome.sockets.tcp.send( _socket, data.buffer,
+						 function( resultCode ) {
+							if (resultCode < 0)
+								_onDisconnected( )
+						} );
+					_events.on( "sent", line );
+				} );
+			_sendBuffer = [];
+		}
 	}
 
-	var _onDisconnected = function( resultCode )
+	var _onDisconnected = function( )
 	{
-		_closeSocket( );
-		_events.raise( "disconnected", resultCode );
+		_connected = false;
+		// Let netpump deliver this event.
 	}
 
 	var _onReceive = function( info )
@@ -158,11 +172,18 @@ module.exports = function( address, port )
 
 	var _netPump = function( )
 	{
-		if (_socket && _connected)
+		if (_socket)
 		{
 			if (_linesReceived.length)
 				_events.raise( "received" );
-			setTimeout( arguments.callee, 333 );
+			if (_connected)
+				setTimeout( arguments.callee, 333 );
+			else if (!_linesReceived.length)
+			{
+				// Don't raise a disconnect until all lines have been read.
+				_closeSocket( );
+				_events.raise( "disconnected" );
+			}
 		}
 	}
 };
