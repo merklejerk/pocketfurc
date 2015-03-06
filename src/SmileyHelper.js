@@ -1,4 +1,5 @@
 var _ = require( "underscore" );
+require( "string.fromcodepoint" );
 
 module.exports = new (function( ) {
 

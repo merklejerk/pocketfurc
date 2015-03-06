@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?><widget id="com.pocketfurc.client" version="0.32" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<?xml version='1.0' encoding='utf-8'?><widget id="com.pocketfurc.client" version="0.33" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>PocketFurc</name>
     <description>A rudimentary Furcadia client.</description>
     <author email="ftp.dump@gmail.com">cluracan</author>
