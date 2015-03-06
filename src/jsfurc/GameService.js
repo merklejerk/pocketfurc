@@ -138,6 +138,20 @@ module.exports = function( connection )
       return null;
    }
 
+	this.getMapPlayerByName = function( name )
+   {
+      if (_map)
+         return _map.getPlayerInfoByName( name );
+      return null;
+   }
+
+	this.getCameraPosition = function( )
+	{
+		if (_map)
+			return _map.getCameraPosition( );
+		return { "x": 0, "y": 0 };
+	}
+
    this.addMapListener = function( listener )
    {
       if (_map)
