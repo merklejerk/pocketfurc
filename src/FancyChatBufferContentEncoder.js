@@ -61,10 +61,9 @@ module.exports = function( ){
 		$root.find( "name" ).each( function( ) {
 			var $this = $(this);
 			var username = $this.text( ).replace( /\|/g, " " );
-			var canonicalName = Util.createCanonicalPlayerName( username );
 			var span = $("<span></span>")
-				.attr( "class", "username" )
-				.attr( "data-username", canonicalName )
+				.attr( "class", "player" )
+				.attr( "data-username", username )
 				.text( username );
 			$this.replaceWith( span );
 		} );

@@ -19,18 +19,14 @@ module.exports = function( app, $container )
 	var _initPopupMenu = function( )
 	{
 		_menu = new PopupMenu( [
-			/*
 			[
 				{
 					"id": "ignores",
-					"label": "Ignores",
-				}
-			],*/
-			[
+					"label": "List Ignores",
+				},
 				{
 					"id": "log-out",
-					"label": "Log Out",
-					"disabled": app.isConnected( )
+					"label": "Log Out"
 				}
 			],
 			[
@@ -71,7 +67,7 @@ module.exports = function( app, $container )
 		switch (id)
 		{
 			case "ignores":
-				app.toggleIgnores( !checked );
+				app.listIgnores( );
 				break;
 			case "log-out":
 				app.logOut( );
@@ -85,11 +81,6 @@ module.exports = function( app, $container )
 	var _onMenuOut = function( )
 	{
 		_toggleMenu( false );
-	}
-
-	var _toggleLoggedIn = function( loggedIn )
-	{
-		_menu.toggleItemEnabled( "log-out", loggedIn );
 	}
 
 	this.setPlayersVisible = function( count )
@@ -164,13 +155,11 @@ module.exports = function( app, $container )
 	_initPopupMenu( );
 	app.on( "disconnect", function( ) {
 		_toggleReconnectButton( true );
-		_toggleLoggedIn( false );
 		_this.setFriendsOnline( 0 );
 		_this.setPlayersVisible( 0 );
 		} );
 	app.on( "connect", function( ) {
 		_toggleReconnectButton( false );
-		_toggleLoggedIn( true );
 		} );
 	/*
 	app.on( "login", function( ) {

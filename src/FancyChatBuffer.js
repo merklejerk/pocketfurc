@@ -128,7 +128,7 @@ module.exports = function( container, app ) {
 
 	var _wire = function( elem )
 	{
-		elem.find( ".username" )
+		elem.find( ".player" )
 			.on( "click", function( e ) {
 					e.preventDefault( );
 					_showPlayerMenu( $(this).attr( "data-username" ), $(this) );
@@ -200,12 +200,12 @@ module.exports = function( container, app ) {
 						"id": "friend",
 						"label": "Friend",
 						"checked": app.isFriend( username )
-					}/*,
+					},
 					{
 						"id": "ignore",
 						"label": "Ignore",
 						"checked": app.isIgnored( username )
-					}*/
+					}
 				]
 			] );
 		menu.on( "pick", _.partial( _onPlayerMenuPick,
@@ -226,7 +226,7 @@ module.exports = function( container, app ) {
 				app.initiateWhisper( username );
 				return;
 			case "ignore":
-				app.ignore( username, true );
+				app.ignore( username, !checked );
 				return;
 			case "friend":
 				app.friend( username, !checked );

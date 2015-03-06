@@ -271,7 +271,7 @@ body
    margin: 0.25ex 0 0.5em 0;
 }
 
-#content .chat-buffer .fancy-block > .content-container .username
+#content .chat-buffer .fancy-block > .content-container .player
 {
    font-size: 1.15em;
    color: rgb(255,127,42);
@@ -279,12 +279,12 @@ body
    cursor: pointer;
 }
 
-#content .chat-buffer .fancy-block.echo > .content-container .username
+#content .chat-buffer .fancy-block.echo > .content-container .player
 {
    color: rgb(34, 170, 240);
 }
 
-#content .chat-buffer .fancy-block.whisper.echo > .content-container .username
+#content .chat-buffer .fancy-block.whisper.echo > .content-container .player
 {
    color: rgb(255,127,42);
 }
@@ -356,7 +356,7 @@ body
    color: rgb(228,228,228);
 }
 
-#content .chat-buffer .fancy-block.system > .content-container > .content .username
+#content .chat-buffer .fancy-block.system > .content-container > .content .player
 {
    color: rgb(218, 255, 206);
 }

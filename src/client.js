@@ -9,6 +9,7 @@ var LoginPrompt = require( "./LoginPrompt" );
 var FriendsList = require( "./FriendsList" );
 var templates = require( "./templates" );
 var Device = require( "./Device" );
+var Ignores = require( "./Ignores" );
 
 var _client = null;
 var _chatArea;
@@ -18,6 +19,7 @@ var _rawLog = false;
 var _autoReconnect = true;
 var _header;
 var _friends;
+var _ignores;
 var _device;
 var _missedWhispers = [];
 
@@ -34,6 +36,7 @@ var _onDeviceReady = function( )
 	_initChatArea( );
 	_createClient( );
 	_initFriendsList( );
+	_initIgnores( );
 	_loginPrompt.on( "log", _displayStatus );
 }
 
@@ -66,6 +69,11 @@ var _initFriendsList = function( )
 {
 	_friends = new FriendsList( new _FriendsListClient( ) );
 	_friends.addListener( new _FriendsListListener( ) );
+}
+
+var _initIgnores = function( )
+{
+	_ignores = new Ignores( );
 }
 
 var _displayStatus = function( msg, lvl )
@@ -202,7 +210,7 @@ var _createMissedWhispersMessage = function( )
 		" from ";
 	_.each( players,
 		function( name, index, list ) {
-			chatMsg += "<name>" + name.replace( /\|/g, " " ) + "</name>";
+			chatMsg += "<name>" + name + "</name>";
 			chatMsg += (index+1 < list.length ? ", " : "");
 		} );
 	chatMsg += " while you were away.";
@@ -235,30 +243,50 @@ var _ChatListener = function( )
 {
 	this.onChat = function( msg )
 	{
+		var player;
+		if (player = _parsePlayerSystemMessage( msg ))
+		{
+			if (_ignores.isIgnored( player ))
+				return;
+		}
 		_chatArea.appendChat( msg );
+	}
+
+	var _parsePlayerSystemMessage = function( msg )
+	{
+		var re = /^<font color='[^']+'><name shortname='[^']+'>([^<]+)<\/name>/;
+		var m = msg.match( re );
+		if (!m)
+			return false;
+		return m[1];
 	}
 
 	this.onSpeech = function( player, msg )
 	{
 		_friends.setStatus( player, true );
-		_chatArea.appendSpeech( player, msg );
+		if (!_ignores.isIgnored( player ))
+			_chatArea.appendSpeech( player, msg );
 	}
 
 	this.onWhisper = function( player, msg )
 	{
 		_friends.setStatus( player, true );
-		_chatArea.appendWhisper( player, msg );
-		if (_device.isBackground( ))
+		if (!_ignores.isIgnored( player ))
 		{
-			_missedWhispers.push( {"player": player, "msg": msg } );
-			_updateBackgroundNotification( );
+			_chatArea.appendWhisper( player, msg );
+			if (_device.isBackground( ))
+			{
+				_missedWhispers.push( {"player": player, "msg": msg } );
+				_updateBackgroundNotification( );
+			}
 		}
 	}
 
 	this.onEmote = function( player, msg )
 	{
 		_friends.setStatus( player, true );
-		_chatArea.appendEmote( player, msg );
+		if (!_ignores.isIgnored( player ))
+			_chatArea.appendEmote( player, msg );
 	}
 
 	this.onSpeechEcho = function( player, msg )
@@ -288,8 +316,7 @@ var _ChatAreaApp = function( )
 
 	this.isIgnored = function( username )
 	{
-		console.log( "TODO" );
-		return false;
+		return _ignores.isIgnored( username );
 	}
 
 	this.lookAt = function( username )
@@ -299,7 +326,11 @@ var _ChatAreaApp = function( )
 
 	this.ignore = function( username, toggle )
 	{
-		console.log( "TODO" );
+		_ignores.toggleIgnore( username, toggle );
+		if (toggle)
+			_displayStatus( username + " ignored." );
+		else
+			_displayStatus( username + " no longer ignored." );
 	}
 
 	this.friend = function( username, toggle )
@@ -307,12 +338,12 @@ var _ChatAreaApp = function( )
 		if (toggle)
 		{
 			_friends.addFriend( username );
-			_displayStatus( username.replace( /\|/g, " " ) + " added to friends." );
+			_displayStatus( username + " added to friends." );
 		}
 		else
 		{
 			_friends.removeFriend( username );
-			_displayStatus( username.replace( /\|/g, " " ) + " removed from friends." );
+			_displayStatus( username + " removed from friends." );
 		}
 		_updateHeaderCounts( );
 		_updateBackgroundNotification( );
@@ -408,15 +439,10 @@ var _HeaderApp = function( )
 			return _client.isLoggedIn( );
 	}
 
-	this.areIgnoresEnabled = function( )
+	this.listIgnores = function( )
 	{
-		console.log( "TODO" );
-		return false;
-	}
-
-	this.toggleIgnores = function( toggle )
-	{
-		console.log( "TODO" );
+		var template = templates["chat-message-list-ignores"];
+		_chatArea.appendChat( template( { "players": _ignores.getList( ) } ) );
 	}
 
 	this.logOut = function( )
@@ -517,7 +543,6 @@ var _FriendsListListener = function( )
 	{
 		if (_client && _client.isLoggedIn( ))
 		{
-			name = name.replace( /\|/g, " " );
 			_displayStatus( name + " is " + (online ? "online." : "offline.") );
 			//_notifyFriendOnline( name );
 			_updateBackgroundNotification( );
