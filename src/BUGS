@@ -1,6 +1,0 @@
-- Input tool doesn't respect tags outside of selection.
-- Programmatic inconsistencies between use of canonical and noncanonical names.
-- Input tool steals keyboard focus on click.
-- Header buttons get partially obscured when status message fades.
-- Buddy (offline) notifications occur on disconnect.
-- Weirdness when changing chat mode while something is highlighted.
