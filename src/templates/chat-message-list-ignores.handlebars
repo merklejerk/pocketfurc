@@ -1,0 +1,8 @@
+{{#if players}}
+	These players have been ignored:
+	{{# each players}}
+		<name>{{this}}</name>{{#if @last}}.{{else}}, {{/if}}
+	{{/each}}
+{{else}}
+	No players have been ignored.
+{{/if}}
