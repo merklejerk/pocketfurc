@@ -139,29 +139,19 @@ module.exports = function( container, app )
 
 	var _fitSendButton = function( )
 	{
-		// There is no precise way to do this, so relax it.
 		var $button = $root.children( ".send" );
 		var $spacer = $root.children( ".spacer" );
 		var buttonHeight = $button.outerHeight( );
 		var contentTop = $content.offset( ).top;
 
-		var spacerHeight = 0;
+		$spacer.css( "height", "1em" );
+		var spacerHeightBasis = $spacer.height( );
 		$spacer.css( "height", "0" );
-		for (var i = 0; i < 256; ++i)
-		{
-			var contentBottom = contentTop + $content.height( );
-			var buttonBottom = $button.offset( ).top + buttonHeight;
-			var dy = contentBottom - buttonBottom;
-			if (dy < 4)
-			{
-				if (dy >= 0)
-					break;
-				else
-					spacerHeight -= 0.33;
-			}
-			spacerHeight += 0.25;
-			$spacer.css( "height", spacerHeight + "em" );
-		}
+		var contentBottom = contentTop + $content.height( );
+		var buttonBottom = $button.offset( ).top + buttonHeight;
+		var dy = contentBottom - buttonBottom;
+		var spacerHeight = dy / spacerHeightBasis;
+		$spacer.css( "height", spacerHeight + "em" );
 	}
 
 	var _setChatMode = function( mode )
