@@ -1,5 +1,6 @@
 var $ = require( "jquery" );
 var _ = require( "underscore" );
+var SmileyHelper = require( "./SmileyHelper" );
 
 module.exports = new (function( ) {
 
@@ -222,6 +223,7 @@ module.exports = new (function( ) {
 	var _prepareTextNode = function( node, preparedParent )
 	{
 		var value = node.nodeValue.replace( "\xA0", " " );
+		value = SmileyHelper.encodeEmojis( value );
 		if (value.length > 0)
 			preparedParent.appendChild( new Text( value ) );
 	}
