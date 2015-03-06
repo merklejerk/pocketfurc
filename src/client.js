@@ -335,21 +335,33 @@ var _ChatAreaApp = function( )
 
 	this.sendRaw = function( msg )
 	{
-		if (msg == "rawlog")
+		var m = msg.match( /^\S+/ );
+		if (m)
 		{
-			_client.toggleRawLog( !_client.isRawLogOn( ) );
-			_rawLog = _client.isRawLogOn( );
+			var firstWord = m[0];
+			switch (firstWord)
+			{
+			case "rawlog":
+				_client.toggleRawLog( !_client.isRawLogOn( ) );
+				_rawLog = _client.isRawLogOn( );
+				break;
+			case "purge":
+				chrome.storage.sync.clear( );
+				break;
+			case "reload":
+				_friends.reload( );
+				break;
+			case "pos":
+				var m = msg.match( /^pos\s+(\S+)/ );
+				if (!m)
+					_printCameraPosition( );
+				else
+					_printPlayerPosition( m[0] );
+				break;
+			default:
+				_client.sendRawLine( msg );
+			}
 		}
-		else if (msg == "purge")
-		{
-			chrome.storage.sync.clear( );
-		}
-		else if (msg == "reload")
-		{
-			_friends.reload( );
-		}
-		else
-			_client.sendRawLine( msg );
 	}
 
 	this.summon = function( player )
@@ -360,6 +372,21 @@ var _ChatAreaApp = function( )
 	this.join = function( player )
 	{
 		_client.join( player );
+	}
+
+	var _printCameraPosition = function( )
+	{
+		var pos = _client.getCameraPosition( );
+		_chatArea.appendChat( "(" + pos.x + "," + pos.y + ")" );
+	}
+
+	var _printPlayerPosition = function( player )
+	{
+		var player = _client.getMapPlayerByName( player );
+		if (player)
+			_chatArea.appendChat( "(" + player.x + "," + player.y + ")" );
+		else
+			_chatArea.appendChat( "No player by that name." );
 	}
 }
 
