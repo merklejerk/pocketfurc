@@ -36,6 +36,11 @@ module.exports = function( ) {
 		} );
 	}
 
+	this.reload = function( )
+	{
+		_load( );
+	}
+
 	var _save = function( )
 	{
 		chrome.storage.sync.set( {
