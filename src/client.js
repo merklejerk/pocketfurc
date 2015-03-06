@@ -356,7 +356,7 @@ var _ChatAreaApp = function( )
 				if (!m)
 					_printCameraPosition( );
 				else
-					_printPlayerPosition( m[0] );
+					_printPlayerPosition( m[1] );
 				break;
 			default:
 				_client.sendRawLine( msg );
