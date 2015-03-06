@@ -29,12 +29,12 @@ module.exports = new (function( ){
 
 	this.createCanonicalPlayerName = function( name )
 	{
-		return name.toLowerCase( ).replace( /\s/, "|" );
+		return name.toLowerCase( ).replace( /\s/g, "|" );
 	}
 
 	this.expandPlayerName = function( name )
 	{
-		return name.replace( "|", " " );
+		return name.replace( /\|/g, " " );
 	}
 
 	this.encodeBase95 = function( num, width )
