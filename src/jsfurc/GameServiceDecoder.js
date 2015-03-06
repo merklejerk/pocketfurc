@@ -43,8 +43,8 @@ module.exports = function( )
                params.uid, params.name, params.x, params.y, params.frame );
          break;
       case "/":
-         if (params = _fmt.parse( "<%4N%2N%2N%2N", line,
-            ["uid","x","y", "frame"] ))
+         if (params = _fmt.parse( "/%4N%2N%2N%2N%4N", line,
+            ["uid","x","y", "frame", "unk"] ))
             return _listeners.raise( "onMovePlayer",
                params.uid, params.x, params.y, params.frame );
          break;

@@ -1,10 +1,11 @@
 var _ = require( "underscore" );
 var ListenerHost = require( "./ListenerHost" );
+var Util = require( "./Util" );
 
 module.exports = function( decoder ) {
 
-	var VIEW_WIDTH = 17;
-	var VIEW_HEIGHT = 16;
+	var VIEW_WIDTH = 8;
+	var VIEW_HEIGHT = 20;
 
 	var _this = this;
 	var _events = new ListenerHost( this );
@@ -47,10 +48,8 @@ module.exports = function( decoder ) {
 			var player = _players[uid];
 			player.x = x;
 			player.y = y;
-			if (!this.isPointVisible( x, y ))
-				_this.removePlayer( player.uid );
-			else
-				_events.raise( "onPlayerMoved", player.uid );
+			_events.raise( "onPlayerMoved", player.uid );
+			_toggleVisible( player, this.isPointVisible( x, y ) );
 		}
 	}
 
@@ -111,8 +110,11 @@ module.exports = function( decoder ) {
 
 	this.getPlayerInfoByName = function( name )
 	{
+		name = Util.createCanonicalPlayerName( name );
 		var player =_.find( _players,
-				function( player ) { return player.name == name; } );
+				function( player ) {
+			return Util.createCanonicalPlayerName( player.name ) == name;
+		} );
 		if (player)
 			return _.extend( {}, player );
 	}
@@ -141,7 +143,7 @@ module.exports = function( decoder ) {
 			_this.removePlayer( uid );
 		}
 
-		this.onMovePlayer = function( uid, x, y )
+		this.onMovePlayer = function( uid, x, y, frame )
 		{
 			_this.movePlayer( uid, x, y, frame );
 		}
