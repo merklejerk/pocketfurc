@@ -381,6 +381,7 @@ var _ChatAreaApp = function( )
 				break;
 			case "reload":
 				_friends.reload( );
+				_ignores.reload( );
 				break;
 			case "pos":
 				var m = msg.match( /^pos\s+(\S+)/ );
