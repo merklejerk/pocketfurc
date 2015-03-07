@@ -113,7 +113,8 @@ var CordovaDevice = function( )
 		_plugin.ondeactivate = _onForeground;
 		_plugin.setDefaults( {
 				"title": "PocketFurc",
-				"text": _lastBackgroundNotificationText
+				"text": _lastBackgroundNotificationText,
+				"ticker": ""
 			}
 		 );
 		_events.raise( "ready" );
