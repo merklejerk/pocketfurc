@@ -228,4 +228,65 @@ module.exports = new (function( ) {
 			preparedParent.appendChild( new Text( value ) );
 	}
 
+	this.sanitize = function( container )
+	{
+		var unwrapCount;
+		do
+		{
+			unwrapCount = 0
+			_.each( _.toArray( container.childNodes ), function( child )
+			{
+				if (child.nodeType == Node.ELEMENT_NODE)
+				{
+					switch (child.tagName)
+					{
+					case "SPAN":
+						_filterAttributes( child, ["class"] );
+						_filterClasses( child, ["bold","italic","underline","selection"] )
+						_this.sanitize( child );
+						break;
+					case "BR":
+					case "B":
+					case "I":
+					case "U":
+						_filterAttributes( child, [] );
+						_this.sanitize( child );
+						break;
+					case "A":
+						_filterAttributes( child, ["href"] );
+						_this.sanitize( child );
+						break;
+					default:
+						if (child.hasChildNodes)
+						{
+							unwrapCount++;
+							$(child).contents( ).unwrap( );
+						}
+						else
+							container.removeChild( child );
+						break;
+					}
+				}
+				else if (child.nodeType == Node.TEXT_NODE)
+					child.nodeValue = child.nodeValue.replace( /[\n\r]/g, " " );
+			} );
+		} while (container.hasChildNodes && unwrapCount)
+	}
+
+	var _filterAttributes = function( element, whitelist )
+	{
+		_.each( _.toArray( element.attributes ), function( attr ) {
+			if (!_.contains( whitelist, attr.name.toLowerCase( ) ))
+				 element.removeAttribute( attr.name );
+		} );
+	}
+
+	var _filterClasses = function( element, whitelist )
+	{
+		_.each( _.toArray( element.classList ), function( className ) {
+			if (!_.contains( whitelist, className ))
+				element.classList.remove( className );
+		} );
+	}
+
 })( );

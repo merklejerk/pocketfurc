@@ -126,5 +126,10 @@ module.exports = function( container ) {
 			_bufferElem.scrollTop( _bufferElem.get(0).scrollHeight );
 	}
 
+	this.showFind = function( )
+	{
+
+	}
+
 	_init( );
 };

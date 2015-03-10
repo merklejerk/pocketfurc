@@ -21,7 +21,7 @@ $CHROME_BUILD_CMD $CHROME_BUILD_FLAGS
 popd
 cca build $CCA_FLAGS
 
-if [ CCA_FLAGS="--release" ]; then
+if [ "$CCA_FLAGS" == "--release" ]; then
    echo "Running zipalign"
    RELEASE_APKS="platforms/android/build/outputs/apk/android-*-release-unsigned.apk"
    for INFILE in $RELEASE_APKS; do
