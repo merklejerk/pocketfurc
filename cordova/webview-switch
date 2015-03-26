@@ -1,0 +1,51 @@
+#!/usr/bin/python
+
+import json, argparse
+from lxml import etree
+
+def read_file_as_string( path ):
+	with open( path, "r" ) as f:
+		return f.read( )
+
+def read_file_as_bytes( path ):
+	with open( path, "rb" ) as f:
+		return f.read( )
+
+def write_string_as_file( path, contents ):
+	with open( path, "wb" ) as f:
+		f.write( contents.encode( encoding="UTF-8" ) )
+
+
+def modify_manifest( path, webview ):
+	data = json.loads( read_file_as_string( path ) )
+	data["webview"] = webview
+	write_string_as_file( path,
+		json.dumps( data, separators=(",",": "), indent=3, sort_keys=True ) )
+
+def modify_config( path, min_api, target_api ):
+	tree = etree.XML( read_file_as_bytes( path ) )
+	namespaces = { "ns": "http://www.w3.org/ns/widgets" }
+	for pref in tree.xpath( "/ns:widget/ns:preference[@name='android-minSdkVersion']", namespaces=namespaces ):
+		pref.set( "value", str( min_api ) )
+	for pref in tree.xpath( "/ns:widget/ns:preference[@name='android-targetSdkVersion']", namespaces=namespaces ):
+		pref.set( "value", str( target_api ) )
+	write_string_as_file( path,
+		etree.tostring( tree, encoding="UTF-8",
+			xml_declaration=True, pretty_print=True ) )
+
+parser = argparse.ArgumentParser( description="Switch webview platforms for a CCA project." )
+parser.add_argument( "-s", "--system", action="store_true", help="Use system webview" )
+parser.add_argument( "-m", metavar="manifest" )
+parser.add_argument( "-c", metavar="config" )
+args = parser.parse_args( )
+
+if __name__ == "__main__":
+	use_system_webview = args.system
+	print( "Modifying config files for webview %s" % ("system" if use_system_webview else "crosswalk") )
+	if args.m is not None:
+		modify_manifest( args.m, "system" if use_system_webview else "crosswalk" )
+	if args.c is not None:
+		min_api = 19 if use_system_webview else 14
+		target_api = 19
+		modify_config( args.c, min_api, target_api )
+

@@ -1,3 +1,4 @@
 {
-    "packageId": "com.pocketfurc.client"
+   "packageId": "com.pocketfurc.client",
+   "webview": "system"
 }

@@ -5,7 +5,7 @@ BUILD_FLAGS=""
 CCA_FLAGS="--debug"
 CCA_TARGET=""
 
-while getopts "rdet:" OPT; do
+while getopts "rkdet:" OPT; do
    case $OPT in
       r)
          BUILD_FLAGS="$BUILD_FLAGS -r"
@@ -20,6 +20,9 @@ while getopts "rdet:" OPT; do
       t)
          CCA_TARGET="--target=$OPTARG"
          ;;
+		k)
+			BUILD_FLAGS="$BUILD_FLAGS -k"
+			;;
    esac
 done
 

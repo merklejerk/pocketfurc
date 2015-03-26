@@ -3,22 +3,33 @@
 SRC_DIR="../src"
 CHROME_BUILD_CMD="./build"
 CHROME_BUILD_FLAGS=""
+WEBVIEW_SWITCH_CMD="./webview-switch"
+WEBVIEW_SWITCH_FLAGS=""
+MOBILE_MANIFEST="../src/manifest.mobile.json"
+CONFIG_XML="./config.xml"
 CCA_FLAGS="--debug"
 
-while getopts "r" OPT; do
+while getopts "rk" OPT; do
    case $OPT in
       r)
-         CHROME_BUILD_FLAGS="-r"
+	 		# Debug data seems to crash chrome dev tool in remote inspection with this
+	 		# version of crosswalk.
+         #CHROME_BUILD_FLAGS="-r"
          CCA_FLAGS="--release"
          ;;
+		k)
+			# KitKat-specific. (API 19, system webview)
+			WEBVIEW_SWITCH_FLAGS="-s"
+			;;
    esac
 done
 
 set -e
 
 pushd $SRC_DIR
-$CHROME_BUILD_CMD $CHROME_BUILD_FLAGS
+"$CHROME_BUILD_CMD" $CHROME_BUILD_FLAGS
 popd
+"$WEBVIEW_SWITCH_CMD" $WEBVIEW_SWITCH_FLAGS -m "$MOBILE_MANIFEST" -c "$CONFIG_XML"
 cca build $CCA_FLAGS
 
 if [ "$CCA_FLAGS" == "--release" ]; then
