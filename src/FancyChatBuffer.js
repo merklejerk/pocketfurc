@@ -14,6 +14,7 @@ module.exports = function( container, app ) {
 	var _updateTimer;
 	var _lastBlock;
 	var _contentEncoder = new ContentEncoder( );
+	var _menu;
 
 	this.getApp = function( )
 	{
@@ -23,6 +24,8 @@ module.exports = function( container, app ) {
 	this.resize = function( height )
 	{
 		_buffer.resize( height );
+		if (_menu)
+			_menu.fit( );
 	}
 
 	this.appendSystemMessage = function( msg )
@@ -176,7 +179,9 @@ module.exports = function( container, app ) {
 
 	var _showPlayerMenu = function( username, triggerElem )
 	{
-		var menu = new PopupMenu( [
+		if (_menu)
+			_menu.destroy( );
+		_menu = new PopupMenu( [
 				[
 					{
 						"id": "look",
@@ -208,11 +213,11 @@ module.exports = function( container, app ) {
 					}
 				]
 			] );
-		menu.on( "pick", _.partial( _onPlayerMenuPick,
+		_menu.on( "pick", _.partial( _onPlayerMenuPick,
 			triggerElem.attr( "data-username") ) );
-		menu.on( "out", function( ) { menu.destroy( ); } );
+		_menu.on( "out", function( ) { _menu.destroy( ); } );
 		var pos = triggerElem.offset( );
-		menu.show( pos.left, pos.top );
+		_menu.show( pos.left, pos.top );
 	}
 
 	var _onPlayerMenuPick = function( username, id, checked )

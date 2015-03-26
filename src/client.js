@@ -48,11 +48,8 @@ var _initWindow = function( )
 			if (_client)
 				_client.quit( true );
 		} );
-	$(window).on( "resize", function( ) {
-			$("body").css( {
-				"width": $(window).width( ),
-				"height": $(window).height( ) } );
-		} );
+	$(window).on( "resize", _.debounce( _onResize, 150 ) );
+	_.defer( _onResize );
 }
 
 var _initHeader = function( )
@@ -106,6 +103,14 @@ var _promptForLogin = function( )
 		if (_client.isReadyToLogin( ))
 			_login( );
 	} );
+}
+
+var _onResize = function( )
+{
+	_header.fit( );
+	_chatArea.fit( );
+	_loginPrompt.fit( );
+
 }
 
 var _amendLoginInfo = function( )

@@ -9,8 +9,7 @@ module.exports = function( container, child, clear, onClickOut )
 
    var _init = function( )
    {
-      _fit( );
-      $(window).on( "resize", _onResize );
+      _this.fit( );
 
       _elem.toggleClass( "clear", !!clear );
       _elem.on( "click", _.bind( _onClick, _this ) );
@@ -22,7 +21,6 @@ module.exports = function( container, child, clear, onClickOut )
    {
       child.detach( );
       _elem.remove( );
-      $(window).off( "resize", _onResize );
    }
 
    var _onClick = function( )
@@ -31,12 +29,7 @@ module.exports = function( container, child, clear, onClickOut )
          onClickOut( );
    }
 
-   var _onResize = function( )
-   {
-      _fit( );
-   }
-
-   var _fit = function( )
+   this.fit = function( )
    {
       var bounds = container.offset( );
       bounds.width = container.width( );

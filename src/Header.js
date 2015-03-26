@@ -44,7 +44,7 @@ module.exports = function( app, $container )
 	var _toggleReconnectButton = function( toggle )
 	{
 		$container.find( ".reconnect-button" ).toggle( toggle );
-		_fit( );
+		_this.fit( );
 	}
 
 	var _toggleMenu = function( toggle )
@@ -100,7 +100,7 @@ module.exports = function( app, $container )
 		else
 			$button.show( );
 		$button.find( ".count" ).text( "" + count );
-		_fit( );
+		_this.fit( );
 	}
 
 	this.pushStatus = function( msg, level )
@@ -123,7 +123,7 @@ module.exports = function( app, $container )
 		}
 	}
 
-	var _fit = function( )
+	this.fit = function( )
 	{
 		var $header = $container.find( "> .header" );
 		var $logoText = $header.find( "> .left > .logo-text" );
@@ -132,6 +132,8 @@ module.exports = function( app, $container )
 		$logoText.hide( );
 		var widthWithoutText = $header.width( );
 		$logoText.toggle( widthWithText <= widthWithoutText );
+		if (_menu)
+			_menu.fit( );
 	}
 
 	$container.prepend( templates["app-header"]( ) );
@@ -167,6 +169,5 @@ module.exports = function( app, $container )
 		_toggleLoggedIn( true );
 		} );*/
 	setInterval( _updateStatus, 500 );
-	$(window).on( "resize", _fit );
-	_fit( );
+	this.fit( );
 }

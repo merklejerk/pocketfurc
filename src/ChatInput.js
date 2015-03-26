@@ -96,7 +96,7 @@ module.exports = function( container, app )
       _toggleEmpty( empty );
       _togglePlaceholder( empty && !$content.is( ":focus" ) );
       _setChatMode( _parseInputMode( ) );
-      _fit( );
+      _this.fit( );
    }
 
    var _parseInputMode = function( )
@@ -122,8 +122,9 @@ module.exports = function( container, app )
       $root.children( ".send" ).toggleClass( "empty", empty );
    }
 
-   var _fit = function( )
+   this.fit = function( )
    {
+		_floatingTool.fit( );
       _fitSendButton( );
       var prevHeight = $root.height( );
       $root.css( "height", "" );
@@ -314,7 +315,6 @@ module.exports = function( container, app )
       e.preventDefault( );
       _cycleChatMode( );
    } );
-   $(window).on( "resize", _fit );
    _cleanInput( );
    _refresh( );
 };

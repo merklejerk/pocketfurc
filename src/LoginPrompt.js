@@ -134,6 +134,12 @@ module.exports = function( )
 		_events.raise( "log", msg, Constants.LOG_LEVEL_INFO )
 	}
 
+	this.fit = function( )
+	{
+		if (_modal)
+			_modal.fit( );
+	}
+
 	_elem.find( "> .contents .login-button" )
 		.on( "click", _onSubmitClicked );
 	_elem.find( "> .contents input" )

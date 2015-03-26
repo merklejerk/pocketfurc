@@ -57,11 +57,12 @@ module.exports = function( container, app )
 		_chatInput.focus( );
 	}
 
-	var _fit = function( )
+	this.fit = function( )
 	{
 		var containerHeight = _elem.height( );
 		var bufferHeight = Math.max( 0, containerHeight - _chatInput.getHeight( ) );
 		_chatBuffer.resize( bufferHeight );
+		_chatInput.fit( );
 	}
 
 	var ChatBufferApp = function( )
@@ -79,7 +80,6 @@ module.exports = function( container, app )
 	container.append( _elem );
 	_chatBuffer = new FancyChatBuffer( _elem, new ChatBufferApp( ) );
 	_chatInput = new ChatInput( _elem, app );
-	_chatInput.on( "grow shrink", _fit );
-	$(window).on( "resize", _fit );
-	_.defer( _fit );
+	_chatInput.on( "grow shrink", _this.fit );
+	_.defer( _this.fit );
 }

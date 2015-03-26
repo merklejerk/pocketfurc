@@ -280,14 +280,13 @@ module.exports = function( $container )
 		$container.focus( );
 	}
 
-	var _onResize = function( )
+	this.fit = function( )
 	{
 		if (_tool.parent( ).length > 0)
 			_moveTool( );
 	}
 
 	setInterval( _this.update, 250 );
-	$(window).on( "resize", _onResize );
 	_expandTool( false );
 	_tool.find( "> .content" )
 		.on( "mouseenter", _onMouseEnter )
