@@ -12,9 +12,7 @@ CCA_FLAGS="--debug"
 while getopts "rk" OPT; do
    case $OPT in
       r)
-	 		# Debug data seems to crash chrome dev tool in remote inspection with this
-	 		# version of crosswalk.
-         #CHROME_BUILD_FLAGS="-r"
+         CHROME_BUILD_FLAGS="-r"
          CCA_FLAGS="--release"
          ;;
 		k)
@@ -32,9 +30,12 @@ popd
 "$WEBVIEW_SWITCH_CMD" $WEBVIEW_SWITCH_FLAGS -m "$MOBILE_MANIFEST" -c "$CONFIG_XML"
 cca build $CCA_FLAGS
 
+exit 0
+
+# New CCA seems to zipalign automatically now.
 if [ "$CCA_FLAGS" == "--release" ]; then
    echo "Running zipalign"
-   RELEASE_APKS="platforms/android/build/outputs/apk/android-*-release-unsigned.apk"
+   RELEASE_APKS="platforms/android/build/outputs/apk/android*-release.apk"
    for INFILE in $RELEASE_APKS; do
       OUTFILE=`echo "$INFILE" | sed -e 's~^\(.\+\).apk$~\1-aligned.apk~g'`
       zipalign -f 4 "$INFILE" "$OUTFILE"

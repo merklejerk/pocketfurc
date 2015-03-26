@@ -15,10 +15,13 @@ def write_string_as_file( path, contents ):
 	with open( path, "wb" ) as f:
 		f.write( contents.encode( encoding="UTF-8" ) )
 
-
-def modify_manifest( path, webview ):
+def modify_manifest( path, webview, min_api=None, target_api=None ):
 	data = json.loads( read_file_as_string( path ) )
 	data["webview"] = webview
+	if min_api is not None:
+		data["minSdkVersion"] = min_api
+	if target_api is not None:
+		data["targetSdkVersion"] = target_api
 	write_string_as_file( path,
 		json.dumps( data, separators=(",",": "), indent=3, sort_keys=True ) )
 
@@ -41,11 +44,16 @@ args = parser.parse_args( )
 
 if __name__ == "__main__":
 	use_system_webview = args.system
-	print( "Modifying config files for webview %s" % ("system" if use_system_webview else "crosswalk") )
+	min_api = 19 if use_system_webview else 14
+	target_api = 19
+	webview = "system" if use_system_webview else "crosswalk"
+	print( "Modifying config files for webview %s. MinSDK: %u TargetSDK: %u" % (webview,min_api,target_api) )
 	if args.m is not None:
-		modify_manifest( args.m, "system" if use_system_webview else "crosswalk" )
+		modify_manifest( args.m, webview, min_api=min_api, target_api=target_api )
+	"""
+	cca 6.0 ignores the minsdk preference in config.xml but
+	respects sdk options in mobile manifest.
 	if args.c is not None:
-		min_api = 19 if use_system_webview else 14
-		target_api = 19
 		modify_config( args.c, min_api, target_api )
+	"""
 
