@@ -29,4 +29,4 @@ In order to build, you must have the following dependencies installed on your sy
 - `browserify`
 
 ### Running the build script ###
-Simply run the shell script `build` in the root directory to build the project. This script will generate files in the `src` directory, including another script. Depending on how your system is set up, you may have to manually run the `build` script generated in the `src` directory.
+Simply run the shell script `build` in the root directory to build the project. This script will package the files in the `src` directory by running another script. Depending on how your system is set up, you may have to manually run the `build` script in the `src` directory.
