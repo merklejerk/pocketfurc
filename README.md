@@ -1,4 +1,4 @@
-# pocketfurc
+# PocketFurc #
 PocketFurc is a discreet, light-weight Furcadia (http://www.furcadia.com) chat client written for Chrome.
 As such, it runs anywhere Chrome runs.
 
@@ -7,7 +7,6 @@ You can install it from the Chrome Web Store at https://chrome.google.com/websto
 It's also available for Android 4.4+ devices: https://play.google.com/store/apps/details?id=com.pocketfurc.client
 
 ![screenshot](http://i.imgur.com/VQh22qi.png)
-
 
 You must have a character already registered with the game in order to log in.
 You will appear wherever you last logged off with whatever colors and description you last had in-game.
@@ -20,3 +19,14 @@ Basic features currently include:
 - Interactive player names.
 - HTML chat support.
 - Friends list.
+
+## Building ##
+
+### Dependencies ###
+In order to build, you must have the following dependencies installed on your system:
+
+- `handlebars`
+- `browserify`
+
+### Running the build script ###
+Simply run the shell script `build` in the root directory to build the project. This script will package the files in the `src` directory by running another script. Depending on how your system is set up, you may have to manually run the `build` script in the `src` directory.
