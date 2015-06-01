@@ -36,7 +36,8 @@ module.exports = function( container ) {
 
 	var _updatePinned = function( )
 	{
-		var h = _bufferElem.get(0).scrollHeight;
+		var FUDGE = 5;
+		var h = _bufferElem.get(0).scrollHeight - FUDGE;
 		_pinned = _bufferElem.height( ) + _bufferElem.scrollTop( ) >= h;
 		if (_pinned)
 			_toggleNewLineAlert( false );

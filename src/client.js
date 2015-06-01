@@ -48,7 +48,7 @@ var _initWindow = function( )
 			if (_client)
 				_client.quit( true );
 		} );
-	$(window).on( "resize", _.debounce( _onResize, 150 ) );
+	$(window).on( "resize", _.debounce( _onResize, 100 ) );
 	_.defer( _onResize );
 }
 
@@ -135,6 +135,7 @@ var _onDisconnected = function( err )
 		_loginPrompt.close( );
 	_header.getApp( ).events.raise( "disconnect" );
 	_friends.reset( );
+	_chatArea.appendChat( "Disconnected." );
 	var willAutoReconnect = _autoReconnect && !_client.wasKicked( );
 	if (!willAutoReconnect)
 		_device.allowBackgroundMode( false );

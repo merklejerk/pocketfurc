@@ -1,7 +1,7 @@
 {
 	"name": "PocketFurc",
 	"description": "A rudimentary Furcadia client.",
-	"version": "0.36",
+	"version": "0.37",
 	"author": "cluracan",
 	"manifest_version": 2,
 	"icons": {
