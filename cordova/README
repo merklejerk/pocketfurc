@@ -1,0 +1,3 @@
+Install the following cordova plugins for full functionality (via cca plugin add ...):
+	- de.appplant.cordova.plugin.background-mode
+
