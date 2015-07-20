@@ -109,8 +109,8 @@ var CordovaDevice = function( )
 	{
 		_platform = device.platform;
 		_plugin = cordova.plugins.backgroundMode;
-		_plugin.onactivate = _onBackground;
-		_plugin.ondeactivate = _onForeground;
+		document.addEventListener( "pause", _onBackground );
+		document.addEventListener( "resume", _onForeground );
 		_plugin.setDefaults( {
 				"title": "PocketFurc",
 				"text": _lastBackgroundNotificationText,
