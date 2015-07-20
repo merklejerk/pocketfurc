@@ -20,9 +20,9 @@ while getopts "rkdet:" OPT; do
       t)
          CCA_TARGET="--target=$OPTARG"
          ;;
-		k)
-			BUILD_FLAGS="$BUILD_FLAGS -k"
-			;;
+      k)
+         BUILD_FLAGS="$BUILD_FLAGS -k"
+	 ;;
    esac
 done
 
