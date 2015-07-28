@@ -60,7 +60,7 @@ module.exports = function( container, app )
 	this.fit = function( )
 	{
 		_chatBuffer.resize( 0 );
-		var containerHeight = _elem.height( );
+		var containerHeight = _elem.parent( ).height( );
 		var bufferHeight = Math.max( 0, containerHeight - _chatInput.getHeight( ) );
 		_chatBuffer.resize( bufferHeight );
 		_chatInput.fit( );
