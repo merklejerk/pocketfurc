@@ -15,10 +15,10 @@ while getopts "rk" OPT; do
          CHROME_BUILD_FLAGS="-r"
          CCA_FLAGS="--release"
          ;;
-		k)
-			# KitKat-specific. (API 19, system webview)
-			WEBVIEW_SWITCH_FLAGS="-s"
-			;;
+      k)
+	# KitKat-specific. (API 19, system webview)
+	WEBVIEW_SWITCH_FLAGS="-s"
+	;;
    esac
 done
 
