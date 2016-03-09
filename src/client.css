@@ -482,7 +482,7 @@ body .login-prompt > .contents
    padding: 2ex;
 }
 
-body .login-prompt > .contents > input
+body .login-prompt > .contents > input.field
 {
    padding: 0.4em;
    border: 0;
@@ -496,6 +496,11 @@ body .login-prompt > .contents > input
    font-size: 1.1em;
    background-repeat: no-repeat;
    background-position: 50%;
+}
+
+body .login-prompt > .contents > .test-server-opt
+{
+   display: none;
 }
 
 body .login-prompt > .contents > input.name.empty:not(:focus)

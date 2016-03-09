@@ -216,6 +216,7 @@ module.exports = function( )
 		_service = new LoginService( _connection );
 		_service.on( "login-ready", _onLoginReady );
 		_service.on( "logged-in", _onLoggedIn );
+		_service.on( "login-fail", _onLoginFail );
 		_events.raise( "connected" );
 	}
 
@@ -225,8 +226,11 @@ module.exports = function( )
 		if (_service)
 			_service.destroy( );
 		_service = null;
-		_info( "Disconnected" );
-		_events.raise( "disconnected" );
+		if (err)
+			_warning( "Disconnected (" + err + ")" );
+		else
+			_info( "Disconnected" );
+		_events.raise( "disconnected", err );
 	}
 
 	var _onLoginReady = function( )
@@ -244,6 +248,12 @@ module.exports = function( )
 		_initGameService( );
 		_service.initPlayer( _loginInfo.colors, _loginInfo.description );
 		_events.raise( "logged-in" );
+	}
+
+	var _onLoginFail = function( msg )
+	{
+		_error( "Login failed: " + msg );
+		_events.raise( "login-fail", msg );
 	}
 
 	var _initGameService = function( )

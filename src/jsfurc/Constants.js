@@ -5,5 +5,5 @@ module.exports = {
 		  "LOG_LEVEL_ERROR": 3,
 
 		  "ServerAddress": "lightbringer.furcadia.com",
-		  "ServerPort": 80
+		  "ServerPort": 6500
 	 };

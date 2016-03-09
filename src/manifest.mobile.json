@@ -1,6 +1,6 @@
 {
-   "minSdkVersion": 14,
+   "minSdkVersion": 19,
    "packageId": "com.pocketfurc.client",
    "targetSdkVersion": 19,
-   "webview": "crosswalk"
+   "webview": "system"
 }

@@ -14,6 +14,8 @@ module.exports = function( address, port )
 	var _connected = false;
 	var _logging = false;
 
+	this.lastError = 0;
+
 	this.close = function( )
 	{
 		_closeSocket( );
@@ -130,7 +132,7 @@ module.exports = function( address, port )
 					chrome.sockets.tcp.send( _socket, data.buffer,
 						 function( resultCode ) {
 							if (resultCode < 0)
-								_onDisconnected( )
+								_onDisconnected( resultCode );
 						} );
 					_events.on( "sent", line );
 				} );
@@ -138,9 +140,10 @@ module.exports = function( address, port )
 		}
 	}
 
-	var _onDisconnected = function( )
+	var _onDisconnected = function( err )
 	{
 		_connected = false;
+		lastError = err;
 		// Let netpump deliver this event.
 	}
 

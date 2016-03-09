@@ -89,6 +89,7 @@ var _createClient = function( )
 	_client.on( "connected", _onConnected );
 	_client.on( "login-ready", _onLoginReady );
 	_client.on( "logged-in", _onLoggedIn );
+	_client.on( "login-fail", _onLoginFail );
 	_client.addChatListener( new _ChatListener( ) );
 	_client.on( "enter-map", _onEnterMap );
 	_client.toggleRawLog( _rawLog );
@@ -129,13 +130,21 @@ var _login = function( )
 		_loginInfo.description, _loginInfo.colors );
 }
 
+var _onLoginFail = function( msg )
+{
+	_chatArea.appendChat( "Login failed: " + msg );
+}
+
 var _onDisconnected = function( err )
 {
 	if (_loginPrompt.isOpen( ))
 		_loginPrompt.close( );
 	_header.getApp( ).events.raise( "disconnect" );
 	_friends.reset( );
-	_chatArea.appendChat( "Disconnected." );
+	if (err)
+		_chatArea.appendChat( "Disconnected (" + err + ")" );
+	else
+		_chatArea.appendChat( "Disconnected." );
 	var willAutoReconnect = _autoReconnect && !_client.wasKicked( );
 	if (!willAutoReconnect)
 		_device.allowBackgroundMode( false );

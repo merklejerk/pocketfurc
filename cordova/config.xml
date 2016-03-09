@@ -1,12 +1,39 @@
-<?xml version='1.0' encoding='UTF-8'?><widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.pocketfurc.client" version="0.38">
+<?xml version='1.0' encoding='utf-8'?><widget id="com.pocketfurc.client" version="0.41" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>PocketFurc</name>
     <description>A rudimentary Furcadia client.</description>
     <author email="ftp.dump@gmail.com">cluracan</author>
     <content src="plugins/cordova-plugin-chrome-apps-bootstrap/chromeapp.html"/>
-<!--
-	minSdkVersion does not work in cca 6.0,
-	but accepts minSdkVersion and targetSdkVersion in the mobile manifest.
-	So be sure to set them there for now.
--->
-
-<preference name="android-minSdkVersion" value="14"/><preference name="android-targetSdkVersion" value="19"/><access origin="http://www.furcadia.com/*"/><platform name="android"><icon src="www/icon256.png"/><icon src="www/icon16.png" width="16"/><icon src="www/icon32.png" width="32"/><icon src="www/icon36.png" width="36"/><icon src="www/icon48.png" width="48"/><icon src="www/icon72.png" width="72"/><icon src="www/icon78.png" width="78"/><icon src="www/icon96.png" width="96"/><icon src="www/icon120.png" width="120"/><icon src="www/icon128.png" width="128"/><icon src="www/icon144.png" width="144"/><icon src="www/icon152.png" width="152"/><icon src="www/icon256.png" width="256"/></platform><platform name="ios"><icon src="www/icon256.png"/><icon src="www/icon16.png" width="16"/><icon src="www/icon32.png" width="32"/><icon src="www/icon36.png" width="36"/><icon src="www/icon48.png" width="48"/><icon src="www/icon72.png" width="72"/><icon src="www/icon78.png" width="78"/><icon src="www/icon96.png" width="96"/><icon src="www/icon120.png" width="120"/><icon src="www/icon128.png" width="128"/><icon src="www/icon144.png" width="144"/><icon src="www/icon152.png" width="152"/><icon src="www/icon256.png" width="256"/></platform></widget>
+    <preference name="android-minSdkVersion" value="19"/>
+    <preference name="android-targetSdkVersion" value="19"/>
+    <platform name="android">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    <icon src="www/icon256.png"/><icon src="www/icon16.png" width="16"/><icon src="www/icon32.png" width="32"/><icon src="www/icon36.png" width="36"/><icon src="www/icon48.png" width="48"/><icon src="www/icon72.png" width="72"/><icon src="www/icon78.png" width="78"/><icon src="www/icon96.png" width="96"/><icon src="www/icon120.png" width="120"/><icon src="www/icon128.png" width="128"/><icon src="www/icon144.png" width="144"/><icon src="www/icon152.png" width="152"/><icon src="www/icon256.png" width="256"/></platform>
+    <platform name="ios">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    <icon src="www/icon256.png"/><icon src="www/icon16.png" width="16"/><icon src="www/icon32.png" width="32"/><icon src="www/icon36.png" width="36"/><icon src="www/icon48.png" width="48"/><icon src="www/icon72.png" width="72"/><icon src="www/icon78.png" width="78"/><icon src="www/icon96.png" width="96"/><icon src="www/icon120.png" width="120"/><icon src="www/icon128.png" width="128"/><icon src="www/icon144.png" width="144"/><icon src="www/icon152.png" width="152"/><icon src="www/icon256.png" width="256"/></platform>
+    
+<access origin="http://www.furcadia.com/*"/></widget>
