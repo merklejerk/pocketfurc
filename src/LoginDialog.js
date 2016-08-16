@@ -27,7 +27,8 @@ module.exports = function( )
 		_.defer( function( ) {
 				_elem.show( );
 				_elem.addClass( "expanded" )
-				_elem.find( "> .contents .email" ).focus( );
+				if (!_elem.find( "> .contents .email" ).val( ))
+					_elem.find( "> .contents .email" ).focus( );
 			} );
 	}
 
