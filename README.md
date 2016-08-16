@@ -23,10 +23,14 @@ Basic features currently include:
 ## Building ##
 
 ### Dependencies ###
-In order to build, you must have the following dependencies installed on your system:
+In order to build the chrome app, you should have the following npm dependencies installed on your system:
 
 - `handlebars`
 - `browserify`
+
+The Android app will require:
+
+- `cca`
 
 ### Running the build script ###
 Simply run the shell script `build` in the root directory to build the project. This script will package the files in the `src` directory by running another script. Depending on how your system is set up, you may have to manually run the `build` script in the `src` directory.
