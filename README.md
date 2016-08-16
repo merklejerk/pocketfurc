@@ -28,7 +28,8 @@ In order to build the chrome app, you should have the following npm dependencies
 - `handlebars`
 - `browserify`
 
-The Android app is build on  will require the [Mobile Chrome Apps](https://github.com/MobileChromeApps/mobile-chrome-apps) npm module, `cca`:
+Building the Android app will require the [Mobile Chrome Apps](https://github.com/MobileChromeApps/mobile-chrome-apps) npm module, `cca`, and the
+relevant Android SDKs.
 
 ### Running the build script ###
 Simply run the shell script `build` in the root directory to build the project. This script will package the files in the `src` directory by running another script. Depending on how your system is set up, you may have to manually run the `build` script in the `src` directory.
