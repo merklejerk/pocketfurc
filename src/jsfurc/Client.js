@@ -84,15 +84,15 @@ module.exports = function( )
 		return (_states & STATE_LOGGED_IN) == STATE_LOGGED_IN;
 	}
 
-	this.login = function( name, password, description, colors )
+	this.login = function( email, password, name, description )
 	{
 		if (_states & STATE_LOGIN_READY)
 		{
 			_loginInfo = {
-				"name": name,
+				"email": email,
 				"password": password,
+				"name": name,
 				"description": description || "",
-				"colors": colors || "t$$$$$$$$$$$$#"
 			};
 			_login( );
 		}
@@ -101,7 +101,7 @@ module.exports = function( )
 	var _login = function( )
 	{
 		_info( "Logging in..." );
-		_service.login( _loginInfo.name, _loginInfo.password );
+		_service.login( _loginInfo.email, _loginInfo.password, _loginInfo.name );
 	}
 
 	this.speak = function( msg )
@@ -246,7 +246,8 @@ module.exports = function( )
 		_info( "Logged in." );
 		_service.destroy( );
 		_initGameService( );
-		_service.initPlayer( _loginInfo.colors, _loginInfo.description );
+		_service.initCostume( );
+		_service.setPlayerDescription( _loginInfo.description );
 		_events.raise( "logged-in" );
 	}
 

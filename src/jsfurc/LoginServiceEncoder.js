@@ -9,7 +9,7 @@ module.exports = function( )
 
 	this.login = function( params, pattern )
 	{
-		return _format( "connect %p %s", ["name","password"], params, pattern );
+		return _format( "account %s %p %s", ["email","name","password"], params, pattern );
 	}
 
 	this.register = function( params, pattern )

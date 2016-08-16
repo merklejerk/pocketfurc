@@ -136,11 +136,11 @@ module.exports = function( sections )
 		_elem.remove( );
 	}
 
-	this.fit = function( )
+	this.fit = _.debounce( function( )
 	{
 		if (_modal)
 			_modal.fit( );
-	}
+	}, 100 );
 
 	_init( );
 }

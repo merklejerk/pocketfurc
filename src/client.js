@@ -1,6 +1,7 @@
 var $ = require( "jquery" );
 var _ = require( "underscore" );
 var util = require( "./util" );
+var jsfurcUtil = require( "./jsfurc/Util" );
 var jsfurcClient = require( "./jsfurc/Client" );
 var Eventful = require( "./jsfurc/Eventful" );
 var Header = require( "./Header" );
@@ -14,7 +15,7 @@ var Ignores = require( "./Ignores" );
 var _client = null;
 var _chatArea;
 var _loginInfo;
-var _loginPrompt = new LoginPrompt( );
+var _loginPrompt;
 var _rawLog = false;
 var _autoReconnect = true;
 var _header;
@@ -33,6 +34,7 @@ var _onDeviceReady = function( )
 {
 	_initWindow( );
 	_initHeader( );
+	_initLoginPrompt( );
 	_initChatArea( );
 	_createClient( );
 	_initFriendsList( );
@@ -55,6 +57,11 @@ var _initWindow = function( )
 var _initHeader = function( )
 {
 	_header = new Header( new _HeaderApp( ), $("#header") );
+}
+
+var _initLoginPrompt = function( )
+{
+	_loginPrompt = new LoginPrompt( );
 }
 
 var _initChatArea = function( )
@@ -98,8 +105,12 @@ var _createClient = function( )
 
 var _promptForLogin = function( )
 {
-	_loginPrompt.show( $("#content"), function( loginInfo ) {
-		_loginInfo = _.extend( {}, loginInfo );
+	_loginPrompt.prompt( $("#content"), function( accountInfo, characterId ) {
+		_loginInfo = {
+			"email": accountInfo.email,
+			"password": accountInfo.password,
+			"character": accountInfo.characters[characterId]
+		};
 		_amendLoginInfo( );
 		if (_client.isReadyToLogin( ))
 			_login( );
@@ -111,7 +122,6 @@ var _onResize = function( )
 	_header.fit( );
 	_chatArea.fit( );
 	_loginPrompt.fit( );
-
 }
 
 var _amendLoginInfo = function( )
@@ -119,15 +129,17 @@ var _amendLoginInfo = function( )
 	if (_loginInfo)
 	{
 		var stamp = "[<a href=\"https://github.com/cluracan/pocketfurc\">pocketfurc</a>]";
-		if (_loginInfo.description.indexOf( stamp ) == -1)
-			_loginInfo.description += " " + stamp;
+		if (_loginInfo.character.desc.indexOf( stamp ) == -1)
+			_loginInfo.character.desc += " " + stamp;
 	}
 }
 
 var _login = function( )
 {
-	_client.login( _loginInfo.name, _loginInfo.password,
-		_loginInfo.description, _loginInfo.colors );
+	_chatArea.appendChat( "[Logging in as " +
+		jsfurcUtil.expandPlayerName( _loginInfo.character.name ) + "]" );
+	_client.login( _loginInfo.email, _loginInfo.password,
+		_loginInfo.character.name, _loginInfo.character.desc );
 }
 
 var _onLoginFail = function( msg )
@@ -464,7 +476,7 @@ var _HeaderApp = function( )
 	this.logOut = function( )
 	{
 		_loginInfo = null;
-		_loginPrompt.clear( );
+		//_loginPrompt.clear( );
 		_autoReconnect = false;
 		if (_client)
 			_client.quit( true );

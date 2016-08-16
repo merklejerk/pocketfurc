@@ -55,15 +55,16 @@ module.exports = function( connection )
       connection.sendLine( _encoder.lookAtPosition( { "x": 0, "y": 0 } ) );
    }
 
-   this.initPlayer = function( colorCode, description )
+   this.setPlayerDescription = function( description )
    {
-      connection.sendLines(
-         [
-            _encoder.setPlayerDescription(
-               { "description": description } ),
-            _encoder.setPlayerColorsSpeciesRaw(
-               { "colorCode": colorCode } )
-         ] );
+     connection.sendLine(
+       _encoder.setPlayerDescription( { "description": description } )
+        );
+   }
+
+   this.initCostume = function( )
+   {
+     connection.sendLine( "costume %-1" );
    }
 
    this.mapReady = function( )

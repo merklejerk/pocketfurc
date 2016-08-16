@@ -1,148 +1,98 @@
 var $ = require( "jquery" );
 var _ = require( "underscore" );
 var util = require( "./util" );
-var templates = require( "./templates" );
-var ModalCover = require( "./ModalCover" );
-var RetrieveToon = require( "./jsfurc/RetrieveToon" );
 var Eventful = require( "./jsfurc/Eventful" );
-var Constants = require( "./jsfurc/Constants" );
+var LoginDialog = require( "./LoginDialog.js" );
+var CharacterPickerDialog = require( "./CharacterPickerDialog.js" );
 
 module.exports = function( )
 {
 	var _this = this;
-	var _modal;
-	var _elem = $(templates["login-prompt"]( ));
-	var _open = false;
 	var _done;
 	var _events = new Eventful( this );
+	var _login = new LoginDialog( );
+	var _picker = new CharacterPickerDialog( );
 
-	this.show = function( parent, done )
+	this.prompt = function( parent, done )
 	{
 		_done = done || _.noop;
-		_open = true;
-		_modal = new ModalCover( parent, _elem );
-		_setWorking( false );
-		_clearError( );
-		_elem.hide( );
-		_.defer( function( ) {
-				_elem.show( );
-				_elem.addClass( "expanded" )
-				_elem.find( "> .contents .name" ).focus( );
-			} );
+		_login.show( parent, function( accountInfo ) {
+
+			var fields = _login.getFields( );
+			if (fields.remember)
+				_saveCredentials( fields.email, fields.password  );
+			else
+				_unsaveCredentials( );
+			
+			_picker.show( accountInfo, parent, function( characterId ) {
+						success = true;
+						_done( accountInfo, characterId );
+					}, function( ) {
+						_this.prompt( parent, done );
+					} );
+		} );
 	}
 
-	this.isOpen = function( )
+	var _populate = function( )
 	{
-		return _open;
-	}
-
-	this.close = function( )
-	{
-		_elem.removeClass( "expanded" );
-		_modal.destroy( );
-		_modal = null;
-		_open = false;
-	}
-
-	this.clear = function( )
-	{
-		_elem.find( "> .contents input" ).val( "" );
-		_validateInput( );
-	}
-
-	var _submit = function( )
-	{
-		var name = _elem.find( "> .contents .name" ).val( );
-		var password = _elem.find( "> .contents .password" ).val( );
-		_fetchToon( name, password );
-	}
-
-	var _fetchToon = function( name, password )
-	{
-		_clearError( );
-		_setWorking( true );
-		_log( "Fetching character info..." );
-		RetrieveToon.retrieve( name, password,
-			function( err, info ) {
-				_setWorking( false );
-				if (err)
-					_setError( "Invalid login." )
-				else
+		chrome.storage.sync.get( "credentials",
+			function( items ) {
+				if ("credentials" in items)
 				{
-					_log( "Character info retrieved." );
-					_this.close( );
-					_done( info );
+					var credentials = items["credentials"];
+					_login.setFields( credentials.email, credentials.password, true );
 				}
 		} );
 	}
 
-	var _setWorking = function( working )
+	var _saveCredentials = function( email, password )
 	{
-		_elem.find( "> .contents > .login-button" ).toggle( !working );
-		_elem.find( "> .contents > .working" ).toggle( !!working );
+		chrome.storage.sync.set( {
+			"credentials": {
+				"email": email,
+				"password": password
+			}
+		} );
 	}
 
-	var _clearError = function ( )
+	var _unsaveCredentials = function( )
 	{
-		_elem.find( "> .contents > .error").hide( );
+		chrome.storage.sync.remove( "credentials" );
 	}
 
-	var _setError = function( msg )
+	this.isOpen = function( )
 	{
-		_elem.find( "> .contents > .error" ).text( msg ).show( );
+		return _login.isOpen( ) || _picker.isOpen( );
 	}
 
-	var _validateInput = function( )
+	this.close = function( )
 	{
-		var inputs = _elem.find( "> .contents .required" );
-		_.each( inputs, function( x ) {
-				$(x).toggleClass( "empty", !$(x).val( ) );
-			} );
-		var valid = _.every( inputs, function( x ) {
-				return !!$(x).val( );
-			} );
-		_elem.find( "> .contents .login-button" )
-			.toggleClass( "enabled", valid );
+		if (_login.isOpen( ))
+			_login.close( );
+		if (_picker.isOpen( ))
+			_picker.close( );
 	}
 
-	var _onSubmitClicked = function( e )
+	this.clear = function( )
 	{
-		e.preventDefault( );
-		if (_isSubmitEnabled( ))
-			_submit( );
+		_login.clear( );
+		_picker.clear( );
+		_unsaveCredentials( );
 	}
 
-	var _isSubmitEnabled = function( )
+	var _log = function( msg, lvl )
 	{
-		return _elem.find("> .contents .login-button").hasClass( "enabled" );
+		_events.raise( "log", msg, lvl )
 	}
 
-	var _onKeyUp = function( e )
+	this.fit = _.debounce( function( )
 	{
-		if (e.keyCode == 13)
-		{
-			e.preventDefault( );
-			if (_isSubmitEnabled( ))
-				_submit( );
-		}
-		else
-			_validateInput( );
-	}
+		if (_login.isOpen( ))
+			_login.fit( );
+		if (_picker.isOpen( ))
+			_picker.fit( );
+	}, 100 );
 
-	var _log = function( msg )
-	{
-		_events.raise( "log", msg, Constants.LOG_LEVEL_INFO )
-	}
-
-	this.fit = function( )
-	{
-		if (_modal)
-			_modal.fit( );
-	}
-
-	_elem.find( "> .contents .login-button" )
-		.on( "click", _onSubmitClicked );
-	_elem.find( "> .contents input" )
-		.on( "change", _validateInput )
-		.on( "keyup", _onKeyUp );
+	_login.on( "log", _log );
+	_populate( );
 };

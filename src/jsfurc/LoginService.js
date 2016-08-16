@@ -42,11 +42,11 @@ module.exports = function( connection )
 		}
 	}
 
-	this.login = function( name, password )
+	this.login = function( email, password, name )
 	{
 		_pending |= PENDING_LOGIN;
 		connection.sendLine( _encoder.login(
-			{ "name": name, "password": password } ) );
+			{ "email": email, "password": password, "name": name } ) );
 	}
 
 	this.register = function( name, password, email )

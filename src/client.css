@@ -461,28 +461,127 @@ body
    background-color: initial;
 }
 
-body .login-prompt
+.dialog-base
 {
-   background-color: rgb( 155, 114, 165 );
-   box-shadow: 0 10px 18px rgba(0,0,0,0.6);
+  background-color: rgb( 155, 114, 165 );
+  box-shadow: 0 10px 18px rgba(0,0,0,0.6);
+  width: 60%;
+  max-width: 35ex;
+  min-width: 16ex;
+  transform: scale( 0.1, 0.1 );
+  transition: transform 0.5s;
+}
+
+.dialog-base.expanded
+{
+  transform: scale( 1, 1 );
+}
+
+.dialog-base > .contents
+{
+  padding: 2ex;
+  color: white;
+}
+
+.dialog-base > .contents .dialog-button
+{
+  cursor: pointer;
+  width: 80%;
+  text-align: center;
+  padding: 0.25em 1.0ex;
+  border-radius: 0.9em;
+  margin: 1em auto 0 auto;
+  color: #CCC;
+  background-color: #999;
+}
+
+.dialog-base > .contents .dialog-button.enabled
+{
+  color: white;
+  background-color: rgb(255,127,42);
+}
+
+.dialog-base > .contents > .title
+{
+  color: white;
+  font-size: 1.1em;
+  display: block;
+  font-weight: bold;
+  margin: 0 0 1em 0;
+}
+
+.dialog-base > .contents .login-button > .label
+{
+   font-weight: bold;
+   font-size: 1.5em;
+   transform: scale( 1.1, 0.8 );
+}
+
+.character-picker-dialog
+{
    width: 60%;
    max-width: 35ex;
    min-width: 16ex;
-   transform: scale( 0.1, 0.1 );
-   transition: transform 0.5s;
 }
 
-body .login-prompt.expanded
+.character-picker-dialog > .contents .characters
 {
-   transform: scale( 1, 1 );
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(255, 250, 231);
+  max-height: 15em;
+  overflow-y: auto;
+  overflow-x: hidden;
+  color: black;
 }
 
-body .login-prompt > .contents
+.character-picker-dialog > .contents .characters > .entry
 {
-   padding: 2ex;
+  display: block;
+  padding: 0.5em 0;
+  font-style: italic;
+  font-size: 1em;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.1s linear;
 }
 
-body .login-prompt > .contents > input.field
+.character-picker-dialog > .contents .characters > .entry:nth-child(odd)
+{
+  background-color: rgba(255,255,255,0.8);
+}
+
+.character-picker-dialog > .contents .characters > .entry:hover
+{
+  background-color: #ecd9f1;
+}
+
+.character-picker-dialog > .contents .characters > .entry.picked
+{
+  animation: 0.25s linear 0s 2 bubble;
+}
+
+@keyframes bubble
+{
+  0% {
+    transform: scale(1,1)
+  }
+  50% {
+    transform: scale(1.2,1.25)
+  }
+  100% {
+    transform: scale(1,1)
+  }
+}
+
+.login-dialog
+{
+   width: 60%;
+   max-width: 35ex;
+   min-width: 16ex;
+}
+
+.login-dialog > .contents > input.field
 {
    padding: 0.4em;
    border: 0;
@@ -498,65 +597,54 @@ body .login-prompt > .contents > input.field
    background-position: 50%;
 }
 
-body .login-prompt > .contents > .test-server-opt
+.login-dialog > .contents > input.email.empty:not(:focus)
 {
-   display: none;
+   background-image: url( "img/login-email-bg.png" );
+   background-size: auto 48%;
 }
 
-body .login-prompt > .contents > input.name.empty:not(:focus)
-{
-   background-image: url( "img/login-name-bg.png" );
-   background-size: auto 35%;
-}
-
-body .login-prompt > .contents > input.password.empty:not(:focus)
+.login-dialog > .contents > input.password.empty:not(:focus)
 {
    background-image: url( "img/login-pw-bg.png" );
    background-size: auto 55%;
 }
 
-body .login-prompt > .contents > .login-button
+.login-dialog > .contents > .remember
 {
-   cursor: pointer;
-   width: 80%;
-   text-align: center;
-   padding: 0.25em 1.0ex;
-   border-radius: 0.9em;
-   margin: 0 auto;
-   color: #CCC;
-   background-color: #999;
+  font-size: 0.85em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 
-body .login-prompt > .contents > .login-button.enabled
+.login-dialog > .contents > .remember input[type="checkbox"]
 {
-   color: white;
-   background-color: rgb(255,127,42);
+  margin: 0 1ex;
 }
 
-body .login-prompt > .contents > .login-button > .label
-{
-   font-weight: bold;
-   font-size: 1.5em;
-   transform: scale( 1.1, 0.8 );
-}
-
-body .login-prompt > .contents > .working
+.login-dialog > .contents > .working
 {
    display: none;
    text-align: center;
-   margin: 0 auto;
+   margin: 0.5em auto;
    text-align: center;
    vertical-align: middle;
    color: white;
 }
 
-body .login-prompt > .contents > .error
+.login-dialog > .contents > .working > img
+{
+  margin-bottom: 0.25em;
+}
+
+.login-dialog > .contents > .error
 {
    display: none;
    font-size: 0.9em;
    color: rgb(111, 44, 44);
    text-align: center;
-   margin-bottom: 0.8em;
+   margin: 0.8em auto;
    font-style: italic;
 }
 
