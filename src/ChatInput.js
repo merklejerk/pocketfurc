@@ -122,7 +122,7 @@ module.exports = function( container, app )
       $root.children( ".send" ).toggleClass( "empty", empty );
    }
 
-   this.fit = function( )
+   this.fit = _.debounce( function( )
    {
 		_floatingTool.fit( );
       _fitSendButton( );
@@ -136,7 +136,7 @@ module.exports = function( container, app )
          _events.raise( newHeight > prevHeight ? "grow" : "shrink",
             _this.getHeight( ) );
       }
-   }
+   }, 100 );
 
    var _fitSendButton = function( )
    {

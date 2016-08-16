@@ -57,14 +57,14 @@ module.exports = function( container, app )
 		_chatInput.focus( );
 	}
 
-	this.fit = function( )
+	this.fit = _.debounce( function( )
 	{
 		_chatBuffer.resize( 0 );
 		var containerHeight = _elem.parent( ).height( );
 		var bufferHeight = Math.max( 0, containerHeight - _chatInput.getHeight( ) );
 		_chatBuffer.resize( bufferHeight );
 		_chatInput.fit( );
-	}
+	}, 100 );
 
 	var ChatBufferApp = function( )
 	{
