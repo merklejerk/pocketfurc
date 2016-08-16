@@ -32,4 +32,4 @@ Building the Android app will require the [Mobile Chrome Apps](https://github.co
 relevant Android SDKs.
 
 ### Running the build script ###
-Simply run the shell script `build` in the root directory to build the project. This script will package the files in the `src` directory by running another script. Depending on how your system is set up, you may have to manually run the `build` script in the `src` directory.
+Simply run the shell script `build` in the root directory to build the chrome app. This script will package the files in the `src` directory by running another script. Running the `build` script located inside the `src` directory will build an unpackaged chrome app therein suitable for use in development mode.
