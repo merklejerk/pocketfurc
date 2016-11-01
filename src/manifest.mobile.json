@@ -1,4 +1,5 @@
 {
+   "csp": "connect-src * gopher: ws:;",
    "minSdkVersion": 14,
    "packageId": "com.pocketfurc.client",
    "targetSdkVersion": 19,
