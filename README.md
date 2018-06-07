@@ -1,3 +1,7 @@
+## This project is currently dead.
+The platforms on which this project was built on (Chrome Apps and Mobile Chrome Apps) have, sadly, been phased out.
+This repo will stay up as reference for anyone that wants to try to do something similar.
+
 # PocketFurc #
 PocketFurc is a discreet, light-weight Furcadia (http://www.furcadia.com) chat client written for Chrome.
 As such, it runs anywhere Chrome runs.
